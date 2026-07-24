@@ -22,6 +22,7 @@
     padding:env(safe-area-inset-top) 10px env(safe-area-inset-top);min-height:48px;display:flex;align-items:center;gap:8px;}
   .topbar h1{font-size:18px;margin:0;font-weight:700;flex:1;text-align:center;}
   .syncbtn{background:linear-gradient(135deg,#f0c869,#d9a524);color:#fff;border:none;border-radius:10px;padding:6px 12px;font-size:13px;font-weight:700;white-space:nowrap;}
+  .gearbtn{background:#eceef1;color:#555;border:none;border-radius:10px;padding:6px 10px;font-size:14px;font-weight:700;white-space:nowrap;cursor:pointer;}
   .userchip{background:#eef3ff;color:#2f6fed;border:1px solid #d6e2ff;border-radius:999px;padding:3px 11px;font-size:12px;font-weight:700;white-space:nowrap;max-width:48vw;overflow:hidden;text-overflow:ellipsis;}
   .foot #syncStat{color:var(--brand);}
   .back{width:32px;height:32px;background:#f2f3f5;border:none;border-radius:10px;font-size:18px;line-height:1;color:var(--ink);display:flex;align-items:center;justify-content:center;padding:0;}
@@ -151,7 +152,7 @@
 <body>
 <div id="app">
   <section id="menu" class="view">
-    <header class="topbar"><h1>会计中级 · 五章答题</h1><span id="userChip" class="userchip" onclick="switchUser()" title="点击切换账号"></span><button class="syncbtn" onclick="manualSync()">☁ 上云</button></header>
+    <header class="topbar"><h1>会计中级 · 五章答题</h1><span id="userChip" class="userchip" onclick="switchUser()" title="点击切换账号"></span><button class="gearbtn" onclick="setGistToken()" title="设置 gist token">⚙</button><button class="syncbtn" onclick="manualSync()">☁ 上云</button></header>
     <div id="chapterList"></div>
     <footer class="foot">小地图定位题号 · 颜色区分答题状态 · <span id="syncStat">进度自动上云</span></footer>
   </section>
@@ -199,6 +200,17 @@
         <input id="loginInput" placeholder="或输入其他用户名" onkeydown="if(event.key==='Enter')confirmInput()" />
         <button class="ubtn small" onclick="confirmInput()">确定</button>
       </div>
+    </div>
+  </section>
+  <section id="tokenPanel" class="overlay hidden">
+    <div class="sheet login-sheet">
+      <div class="login-title">设置 gist token</div>
+      <div class="login-sub">token 只保存在本机，不会上传。需要 <b>gist</b> 权限的 GitHub 私人令牌（PAT）。</div>
+      <div class="login-other" style="flex-direction:column;align-items:stretch;gap:10px;">
+        <input id="tokenInput" type="text" inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="粘贴 ghP_ 开头的 token" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:14px;" onkeydown="if(event.key==='Enter')saveToken()" />
+        <button class="ubtn" onclick="saveToken()">保存并上云</button>
+      </div>
+      <div style="text-align:center;padding:8px 0 2px;font-size:12px;color:var(--sub);">不知道怎么生成？点右上角账号胶囊下方说明或联系 jiaqu。</div>
     </div>
   </section>
 </div>
@@ -6240,8 +6252,9 @@ function loadWrongStreak(){ try{ var s=localStorage.getItem(WRONG_STREAK_KEY); i
 function saveWrongStreak(){ try{ localStorage.setItem(WRONG_STREAK_KEY, JSON.stringify(wrongStreak||{})); }catch(e){} scheduleSync(); }
 
 /* ===== 上云（路线2：GitHub Gist 存储进度，无后端）===== */
-const SYNC_PAT="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";
 const GIST_ID="1d7936e91501ec557739f0ddfbe32735";
+function gistToken(){ try{ return localStorage.getItem('quiz_gist_token')||''; }catch(e){ return ''; } }
+function syncHeaders(){ const h={}; const t=gistToken(); if(t) h['Authorization']='token '+t; return h; }
 function gistFileName(){ return "progress_"+(curUser||"guest")+".json"; }
 let syncBusy=false, syncTimer=null;
 function syncStatus(t){ const e=document.getElementById('syncStat'); if(e) e.textContent=t; }
@@ -6255,7 +6268,7 @@ function restoreLocal(json){
   return false;
 }
 function syncPull(){
-  fetch("https://api.github.com/gists/"+GIST_ID,{headers:{'Authorization':'token '+SYNC_PAT},cache:'no-store'})
+  fetch("https://api.github.com/gists/"+GIST_ID,{headers:syncHeaders(),cache:'no-store'})
     .then(r=>r.ok?r.json():null).then(j=>{
       if(j&&j.files){
         const f=j.files[gistFileName()];
@@ -6268,10 +6281,12 @@ function syncPull(){
       }
     }).catch(()=>{});
 }
-function syncPush(){
-  if(syncBusy) return; syncBusy=true; syncStatus('上云中…');
+function syncPush(showHint){
+  if(syncBusy) return;
+  if(!gistToken()){ if(showHint) syncStatus('请先点 ⚙ 设置 token'); return; }
+  syncBusy=true; syncStatus('上云中…');
   const body={files:{}}; body.files[gistFileName()]={content:snapshotLocal()};
-  fetch("https://api.github.com/gists/"+GIST_ID,{method:'PATCH',headers:{'Authorization':'token '+SYNC_PAT,'Content-Type':'application/json'},body:JSON.stringify(body)})
+  fetch("https://api.github.com/gists/"+GIST_ID,{method:'PATCH',headers:Object.assign(syncHeaders(),{'Content-Type':'application/json'}),body:JSON.stringify(body)})
     .then(r=>{
       if(r.ok){ syncStatus('已上云'); }
       else { return r.text().then(t=>{ console.warn('gist push fail',r.status,t); syncStatus('上云失败'); }); }
@@ -6280,7 +6295,17 @@ function syncPush(){
     .finally(()=>{ syncBusy=false; });
 }
 function scheduleSync(){ if(syncTimer) clearTimeout(syncTimer); syncTimer=setTimeout(syncPush,1000); }
-function manualSync(){ syncStatus('正在上云…'); syncPush(); }
+function manualSync(){ syncStatus('正在上云…'); syncPush(true); }
+function showTokenPanel(){ const b=document.getElementById('tokenPanel'); if(b) b.classList.remove('hidden'); }
+function hideTokenPanel(){ const b=document.getElementById('tokenPanel'); if(b){ b.classList.add('hidden'); const i=document.getElementById('tokenInput'); if(i) i.value=''; } }
+function setGistToken(){ showTokenPanel(); }
+function saveToken(){
+  const i=document.getElementById('tokenInput'); const t=(i&&i.value||'').trim();
+  if(!t){ syncStatus('请先粘贴 token'); return; }
+  try{ localStorage.setItem('quiz_gist_token', t); }catch(e){}
+  hideTokenPanel();
+  syncStatus('token 已保存，正在上云…'); syncPush(true);
+}
 function showMenu(){ curKey=null; isWrongMode=false; isFavMode=false; document.getElementById('grid').classList.add('hidden'); renderMenu(); show('menu'); }
 
 function renderMenu(){
