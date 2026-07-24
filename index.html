@@ -21,12 +21,12 @@
   .topbar{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line);
     padding:env(safe-area-inset-top) 10px 8px;display:flex;align-items:center;gap:8px;}
   .topbar h1{font-size:18px;margin:0;font-weight:700;flex:1;text-align:center;}
-  .back,.mapbtn{background:#f2f3f5;border:none;border-radius:10px;padding:6px 10px;font-size:13px;color:var(--ink);}
-  .mapbtn{background:var(--brand);color:#fff;}
-  .topbar.quizbar{gap:6px;}
-  .quizbar .prog{flex:1;min-width:0;text-align:center;font-size:13px;color:var(--sub);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;}
+  .back{background:#f2f3f5;border:none;border-radius:10px;padding:6px 10px;font-size:13px;color:var(--ink);}
+  .topbar.quizbar{gap:8px;}
+  .quizbar .prog{flex:1;min-width:0;text-align:left;font-size:13px;color:var(--sub);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;}
   .quizbar #chTitle{display:block;font-size:15px;color:var(--ink);font-weight:600;line-height:1.2;}
-  .topbar .stats{display:flex;align-items:center;gap:6px;}
+  .topbar .stats{display:flex;align-items:center;gap:5px;}
+  .topbar .stats .qpos{font-size:12px;color:var(--sub);font-weight:600;}
   .topbar .stats .s-correct,.topbar .stats .s-wrong,.topbar .stats .s-left{display:flex;align-items:center;gap:3px;font-weight:700;padding:2px 6px;border-radius:8px;font-size:12px;}
   .topbar .stats .s-correct{color:var(--ok);background:#e7f6ed;}
   .topbar .stats .s-wrong{color:var(--bad);background:#fdecea;}
@@ -58,8 +58,8 @@
   .ch-wrong .go{background:var(--bad);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;
     padding:0 14px;align-self:center;}
   .foot{text-align:center;color:var(--sub);font-size:12px;padding:12px;}
-  .menu-tip{margin:0 14px 8px;font-size:13px;color:var(--sub);background:#fff;border-radius:12px;padding:10px 12px;}
 
+  /* MENU */
   /* QUIZ */
   #cardWrap{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:18px 16px 96px;}
   #card{min-height:60%;}
@@ -123,7 +123,6 @@
 <div id="app">
   <section id="menu" class="view">
     <header class="topbar"><h1>会计中级 · 五章答题</h1></header>
-    <div class="menu-tip">点击章节开始练习 · 答完即显答案与解析 · 进度自动保存</div>
     <div id="chapterList"></div>
     <footer class="foot">小地图定位题号 · 颜色区分答题状态</footer>
   </section>
@@ -133,14 +132,13 @@
       <button class="back" onclick="showMenu()">‹</button>
       <div class="prog">
         <span id="chTitle"></span>
-        <span class="stats">
-          <span id="pos"></span>
-          <span class="s-correct">对<b id="cOk">0</b></span>
-          <span class="s-wrong">错<b id="cBad">0</b></span>
-          <span class="s-left">未答<b id="cLeft">0</b></span>
-        </span>
       </div>
-      <button class="mapbtn" onclick="openGrid()">小地图</button>
+      <div class="stats">
+        <span id="pos" class="qpos"></span>
+        <span class="s-correct">对<b id="cOk">0</b></span>
+        <span class="s-wrong">错<b id="cBad">0</b></span>
+        <span class="s-left">未答<b id="cLeft">0</b></span>
+      </div>
     </header>
     <div id="cardWrap"><div id="card"></div></div>
     <nav class="navbar">
@@ -6311,10 +6309,10 @@ function check(){
   // apply the "two consecutive correct answers to clear" rule
   if(correct){
     const n=(wrongStreak[id]||0)+1;
-    if(n>=2){ wrongSet.delete(id); delete wrongStreak[id]; toast('连续答对两次，已从错题库移除'); }
-    else { wrongStreak[id]=n; toast('答对！再答对一次即可移除（'+n+'/2）'); }
+    if(n>=2){ wrongSet.delete(id); delete wrongStreak[id]; if(isWrongMode) toast('连续答对两次，已从错题库移除'); }
+    else { wrongStreak[id]=n; if(isWrongMode) toast('答对！再答对一次即可移除（'+n+'/2）'); }
   } else {
-    wrongSet.add(id); delete wrongStreak[id]; toast('答错了，需连续答对两次才能移除');
+    wrongSet.add(id); delete wrongStreak[id]; if(isWrongMode) toast('答错了，需连续答对两次才能移除');
   }
   if(isWrongMode) writeBack(q[idx]._key, q[idx]._idx, status[idx], sel[idx]);
   else saveProgress();
