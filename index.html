@@ -63,12 +63,11 @@
   /* QUIZ */
   #cardWrap{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:18px 16px 96px;}
   #card{min-height:60%;}
+  .qno{font-size:16px;color:var(--ink);margin-bottom:10px;font-weight:700;display:flex;align-items:center;gap:8px;}
+  .qno .typ{background:#eef2ff;color:var(--brand);border-radius:8px;padding:3px 10px;margin-left:0;font-weight:800;font-size:14px;}
+  .qno .yr{background:#fff4e6;color:#d98a00;border-radius:8px;padding:3px 10px;margin-left:0;font-weight:700;font-size:14px;}
+  .qno .idx{color:var(--ink);font-weight:800;font-size:18px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:4px 12px;}
   .qtitle{font-size:18px;font-weight:600;line-height:1.55;margin-bottom:16px;}
-  .qmeta{display:inline-flex;align-items:center;gap:6px;margin-right:8px;vertical-align:middle;flex-wrap:wrap;}
-  .qmeta .meta-idx{color:var(--ink);font-weight:800;font-size:14px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:2px 10px;white-space:nowrap;}
-  .qmeta .meta-typ{background:#eef2ff;color:var(--brand);border-radius:8px;padding:3px 10px;font-weight:800;font-size:14px;white-space:nowrap;}
-  .qmeta .meta-year{background:#fff4e6;color:#d98a00;border-radius:8px;padding:3px 10px;font-weight:700;font-size:14px;white-space:nowrap;}
-  .meta-title{font-weight:600;}
   .opts{display:flex;flex-direction:column;gap:11px;}
   .opt{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;font-size:16px;
     transition:.12s;word-break:break-word;}
@@ -6265,8 +6264,9 @@ function render(){
   if(!q.length) return;
   const item=q[idx]; const card=document.getElementById('card');
   let h='';
-  const yr=item.year?'<i class="meta-year">'+esc(item.year)+'</i>':'';
-  h+='<div class="qtitle"><span class="qmeta"><b class="meta-idx">第 '+(idx+1)+' 题 / '+q.length+'</b><i class="meta-typ">'+typeLabel(item.type)+'</i>'+yr+'</span><span class="meta-title">'+esc(item.title)+'</span></div>';
+  const yr=item.year?'<span class="yr">'+esc(item.year)+'</span>':'';
+  h+='<div class="qno"><span class="idx">第 '+(idx+1)+' 题 / '+q.length+'</span><span class="typ">'+typeLabel(item.type)+'</span>'+yr+'</div>';
+  h+='<div class="qtitle">'+esc(item.title)+'</div>';
   h+='<div class="opts">';
   item.options.forEach((opt,oi)=>{
     let cls='opt';
