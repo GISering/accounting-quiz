@@ -1,0 +1,6362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>会计中级 · 五章答题</title>
+<style>
+  :root{
+    --bg:#f2f3f5; --card:#ffffff; --ink:#1f2329; --sub:#8a8f99;
+    --line:#eceef1; --brand:#3a6df0; --brand-d:#2f5bd0;
+    --ok:#1f9d55; --ok-bg:#e7f6ed; --bad:#e0483b; --bad-bg:#fdecea;
+    --un:#f4f5f7; --un-ink:#9aa0aa;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--ink);font-size:16px;line-height:1.6;}
+  #app{height:100%;}
+  .view{height:100%;display:flex;flex-direction:column;}
+  .hidden{display:none !important;}
+  .topbar{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line);
+    padding:env(safe-area-inset-top) 14px 10px;display:flex;align-items:center;gap:10px;}
+  .topbar h1{font-size:18px;margin:0;font-weight:700;flex:1;text-align:center;}
+  .back,.mapbtn{background:#f2f3f5;border:none;border-radius:10px;padding:8px 12px;font-size:14px;color:var(--ink);}
+  .mapbtn{background:var(--brand);color:#fff;}
+  .quizbar .prog{flex:1;text-align:center;font-size:13px;color:var(--sub);}
+  .quizbar #chTitle{display:block;font-size:15px;color:var(--ink);font-weight:600;}
+
+  /* MENU */
+  #menu{padding-top:0;}
+  #chapterList{padding:14px;overflow:auto;flex:1;}
+  .chapter{display:flex;align-items:stretch;gap:10px;background:var(--card);border-radius:14px;
+    padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .ch-main{flex:1;min-width:0;}
+  .ch-name{font-size:17px;font-weight:700;margin-bottom:4px;}
+  .ch-meta{font-size:13px;color:var(--sub);margin-bottom:8px;}
+  .ch-bar{height:7px;background:#eef0f3;border-radius:5px;overflow:hidden;}
+  .ch-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),#5b8bff);border-radius:5px;}
+  .ch-reset{background:#fff;border:1px solid var(--line);color:var(--sub);border-radius:10px;
+    font-size:13px;padding:0 12px;align-self:center;}
+  .ch-wrong{display:flex;align-items:stretch;gap:10px;background:linear-gradient(135deg,#ffffff,#fff6f3);
+    border:1.5px solid #ffd6c4;border-radius:14px;padding:14px;margin-bottom:12px;
+    box-shadow:0 1px 4px rgba(224,72,59,.08);}
+  .ch-wrong .ch-main{flex:1;min-width:0;}
+  .ch-wrong .ch-name{font-size:17px;font-weight:800;margin-bottom:4px;color:var(--bad);display:flex;align-items:center;}
+  .ch-wrong .ch-name .badge{font-size:12px;font-weight:800;color:#fff;background:var(--bad);border-radius:8px;
+    padding:1px 9px;margin-left:8px;}
+  .ch-wrong .ch-meta{font-size:13px;color:var(--sub);margin-bottom:8px;}
+  .ch-wrong .ch-bar{height:7px;background:#ffe7df;border-radius:5px;overflow:hidden;}
+  .ch-wrong .ch-bar i{display:block;height:100%;background:linear-gradient(90deg,#ff9a6b,var(--bad));border-radius:5px;}
+  .ch-wrong .go{background:var(--bad);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;
+    padding:0 14px;align-self:center;}
+  .foot{text-align:center;color:var(--sub);font-size:12px;padding:12px;}
+  .menu-tip{margin:0 14px 8px;font-size:13px;color:var(--sub);background:#fff;border-radius:12px;padding:10px 12px;}
+
+  /* QUIZ */
+  .statbar{display:flex;align-items:center;gap:12px;padding:12px 16px;font-size:17px;background:#fff;border-bottom:1px solid var(--line);}
+  .statbar b{font-weight:800;display:inline-block;min-width:1.2em;text-align:center;}
+  .s-correct,.s-wrong,.s-left{display:flex;align-items:center;gap:4px;font-weight:700;padding:4px 7px;border-radius:10px;background:#f8f9fa;}
+  .s-correct{color:var(--ok);background:#e7f6ed;}
+  .s-wrong{color:var(--bad);background:#fdecea;}
+  .s-left{color:var(--sub);background:#f4f5f7;}
+  .s-bar{flex:1;height:10px;background:#eef0f3;border-radius:6px;overflow:hidden;}
+  .s-bar i{display:block;height:100%;background:var(--brand);border-radius:6px;transition:width .25s;box-shadow:0 0 6px rgba(58,109,240,.35);}
+  #cardWrap{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:18px 16px 96px;}
+  #card{min-height:60%;}
+  .qno{font-size:16px;color:var(--ink);margin-bottom:10px;font-weight:700;display:flex;align-items:center;gap:8px;}
+  .qno .typ{background:#eef2ff;color:var(--brand);border-radius:8px;padding:3px 10px;margin-left:0;font-weight:800;font-size:14px;}
+  .qno .yr{background:#fff4e6;color:#d98a00;border-radius:8px;padding:3px 10px;margin-left:0;font-weight:700;font-size:14px;}
+  .qno .idx{color:var(--ink);font-weight:800;font-size:18px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:4px 12px;}
+  .qtitle{font-size:18px;font-weight:600;line-height:1.55;margin-bottom:16px;}
+  .opts{display:flex;flex-direction:column;gap:11px;}
+  .opt{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;font-size:16px;
+    transition:.12s;word-break:break-word;}
+  .opt .lab{flex:0 0 auto;width:24px;height:24px;border-radius:50%;background:#f0f2f5;color:var(--sub);
+    font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px;}
+  .opt .otext{flex:1;line-height:1.5;}
+  .opt.correct .lab{background:var(--ok);color:#fff;}
+  .opt.wrong .lab{background:var(--bad);color:#fff;}
+  .opt.sel .lab{background:var(--brand);color:#fff;}
+  .opt.sel{border-color:var(--brand);background:#f3f7ff;}
+  .opt.correct{border-color:var(--ok);background:var(--ok-bg);color:#0f6b39;font-weight:600;}
+  .opt.wrong{border-color:var(--bad);background:var(--bad-bg);color:#a5281c;font-weight:600;}
+  .opt.dim{opacity:.5;}
+  .confirm{margin-top:16px;width:100%;background:var(--brand);color:#fff;border:none;border-radius:12px;
+    padding:13px;font-size:16px;font-weight:600;}
+  .result{margin-top:16px;border-radius:12px;padding:12px 14px;font-size:16px;font-weight:700;}
+  .result.r-ok{background:var(--ok-bg);color:var(--ok);}
+  .result.r-bad{background:var(--bad-bg);color:var(--bad);}
+  .explain{margin-top:10px;background:#fafbfc;border:1px solid var(--line);border-radius:12px;padding:14px 15px;
+    font-size:16.5px;color:#3a3f47;line-height:1.75;}
+  .explain b{color:var(--ink);}
+  .retry{margin-top:12px;background:none;border:1px solid var(--line);color:var(--sub);border-radius:10px;padding:8px 14px;font-size:14px;}
+
+  .navbar{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;gap:10px;padding:10px 14px;
+    padding-bottom:calc(10px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--line);}
+  .navbar button{flex:1;background:#f4f5f7;border:none;border-radius:11px;padding:13px;font-size:15px;font-weight:600;color:var(--ink);}
+  .navbar button:nth-child(2){background:#fff;border:1px solid var(--line);color:var(--brand);}
+
+  /* GRID overlay */
+  .overlay{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.42);display:flex;align-items:flex-end;}
+  .sheet{background:#fff;width:100%;border-radius:18px 18px 0 0;max-height:80%;display:flex;flex-direction:column;
+    animation:up .2s ease;}
+  @keyframes up{from{transform:translateY(20px);opacity:.6}to{transform:none;opacity:1}}
+  .sheet-hd{display:flex;justify-content:space-between;align-items:center;padding:16px 18px 10px;font-size:16px;font-weight:700;}
+  .sheet-hd button{background:#f2f3f5;border:none;border-radius:10px;padding:7px 14px;font-size:14px;color:var(--sub);}
+  .legend{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:0 18px 12px;font-size:12px;color:var(--sub);}
+  .legend i{width:13px;height:13px;border-radius:4px;display:inline-block;vertical-align:-2px;margin-right:2px;}
+  .g-un{background:var(--un);border:1px solid var(--line);} .g-ok{background:var(--ok);} .g-bad{background:var(--bad);} .g-cur{background:#fff;border:2px solid var(--brand);}
+  #gridCells{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;padding:4px 16px 22px;overflow:auto;}
+  .cell{aspect-ratio:1;border-radius:7px;display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--un);color:var(--un-ink);}
+  .cell.ok{background:var(--ok);color:#fff;border-color:var(--ok);}
+  .cell.bad{background:var(--bad);color:#fff;border-color:var(--bad);}
+  .cell.cur{background:#fff;color:var(--brand);border:2px solid var(--brand);box-shadow:0 0 0 2px rgba(58,109,240,.18);}
+  .cell.un{background:#fff;color:var(--un-ink);}
+
+  #toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:rgba(30,34,40,.9);
+    color:#fff;padding:9px 16px;border-radius:20px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:40;max-width:80%;text-align:center;}
+  #toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div id="app">
+  <section id="menu" class="view">
+    <header class="topbar"><h1>会计中级 · 五章答题</h1></header>
+    <div class="menu-tip">点击章节开始练习 · 答完即显答案与解析 · 进度自动保存</div>
+    <div id="chapterList"></div>
+    <footer class="foot">小地图定位题号 · 颜色区分答题状态</footer>
+  </section>
+
+  <section id="quiz" class="view hidden">
+    <header class="topbar quizbar">
+      <button class="back" onclick="showMenu()">‹ 章节</button>
+      <div class="prog"><span id="chTitle"></span><span id="pos"></span></div>
+      <button class="mapbtn" onclick="openGrid()">小地图</button>
+    </header>
+    <div class="statbar">
+      <span class="s-correct">对 <b id="cOk">0</b></span>
+      <span class="s-wrong">错 <b id="cBad">0</b></span>
+      <span class="s-left">未答 <b id="cLeft">0</b></span>
+      <span class="s-bar"><i id="barFill" style="width:0%"></i></span>
+    </div>
+    <div id="cardWrap"><div id="card"></div></div>
+    <nav class="navbar">
+      <button onclick="prev()">上一题</button>
+      <button onclick="openGrid()">题号</button>
+      <button onclick="next()">下一题</button>
+    </nav>
+  </section>
+
+  <section id="grid" class="overlay hidden" onclick="if(event.target===this)closeGrid()">
+    <div class="sheet">
+      <div class="sheet-hd"><span id="gridTitle">小地图 · 点击跳题</span><button onclick="closeGrid()">关闭</button></div>
+      <div class="legend">
+        <i class="g-un"></i>未答 <i class="g-ok"></i>答对 <i class="g-bad"></i>答错 <i class="g-cur"></i>当前
+      </div>
+      <div id="gridCells"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+const ALL = {
+ "ch1": {
+  "name": "第一章 总论",
+  "questions": [
+   {
+    "type": "single",
+    "year": "2022",
+    "title": "下列选项中，不属于公司制企业缺点的是( )。",
+    "options": [
+     "导致双重课税",
+     "组建公司的成本高",
+     "存在代理问题",
+     "股东须承担无限连带责任"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "公司制企业股东以其认缴的出资额为限对公司承担责任。当公司资产不足以偿还其所欠债务时，股东无须承担连带清偿责任，选项D当选。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2024",
+    "title": "相对于其他企业组织形式，关于公司制企业的优点，下列表述正确的有（）。",
+    "options": [
+     "公司制企业可以无限存续",
+     "企业融资渠道较多，更容易筹集所需资金",
+     "所有权与经营权分离，有助于缓解代理问题",
+     "股东权益被划分为若干股权份额比较容易转让"
+    ],
+    "answer": [
+     0,
+     1,
+     3
+    ],
+    "explain": "公司制企业的优点：①容易转让所有权。公司的股东权益被划分为若干股权份额，每个份额可以单独转让。②有限债务责任。公司债务是法人的债务，不是股东的债务。股东对公司承担的责任以其出资额为限。当公司资产不足以偿还其所欠债务时，股东无须承担连带清偿责任。③公司制企业可以无限存续，一个公司在最初的股东和经营者退出后仍然可以继续存在。④公司制企业融资渠道较多，更容易筹集所需资金。选项A、B、D正确。所有权与经营权分离，导致公司制企业存在代理问题。选项C错误。\n\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列关于公司制企业的说法中，正确的有（ ）。",
+    "options": [
+     "公司债务独立于所有者的债务",
+     "公司在最初投资者退出后仍然可以继续存在",
+     "公司是独立法人",
+     "公司股权可以转让"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "公司是独立法人，相对于个人独资企业和合伙企业，具有以下优点:（1）无限存续。一个公司在最初的股东和经营者退出后仍然可以继续存在。（2）股权可以转让。公司的股东权益被划分为若干股权份额，每个份额可以单独转让，无须经过其他股东同意。（3）有限责任。公司债务是法人的债务，不是股东的债务。股东对公司债务的责任以其出资额为限。选项A、B、C、D正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2021CPA",
+    "title": "下列有关有限合伙企业与公司制企业共同点的说法中，正确的是（ ）。",
+    "options": [
+     "都是独立法人",
+     "都需要缴纳企业所得税",
+     "都需要两个或两个以上出资人",
+     "都可以有法人作为企业的出资人"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "合伙企业的合伙人是两个或两个以上的自然人、法人或其他组织，合伙企业不是独立法人。公司制企业的出资人自然人、法人均可，公司制企业是独立法人，所以选项A错误、D正确。有限责任公司可以是1人有限责任公司，所以选项C错误。有限合伙企业先分后税，合伙企业自身不缴纳企业所得税，当合伙人是自然人时，合伙人缴纳个人所得税，选项B错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列关于公司制企业的说法中，正确的有（ ）。",
+    "options": [
+     "公司债务独立于所有者的债务",
+     "公司在最初投资者退出后仍然可以继续存在",
+     "公司制企业存在代理问题",
+     "公司股权可以转让"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "公司是独立法人，相对于个人独资企业和合伙企业，具有以下优点:（1）无限存续。一个公司在最初的所有者和经营者退出后仍然可以继续存在。（2）股权可以转让。公司的所有者权益被划分为若干股权份额，每个份额可以单独转让，无须经过其他股东同意。（3）有限责任。公司债务是法人的债务，不是所有者的债务，公司以其自身资产为限对债务承担责任。选项A、B、D正确。公司制企业所有权和经营权分离，存在代理问题，选项C正确。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2021",
+    "title": "相对于个人独资企业与合伙企业，公司制企业受政府的监管较为宽松。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "解析：相对于个人独资企业与合伙企业，公司制企业受政府的监管较为严格，需要定期提交各种报告。\n\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "下列各项企业财务管理目标中，既没有考虑资金的时间价值，也没有考虑投资风险的是（ ）。",
+    "options": [
+     "股东财富最大化",
+     "每股收益最大化",
+     "企业价值最大化",
+     "每股市价最大化"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "以利润最大化作为财务管理目标存在以下缺陷:①没有考虑利润实现时间和资金时间价值;②没有考虑风险问题;③没有反映创造的利润与投入资本之间的关系;④可能导致企业财务决策短期倾向，影响企业长远发展。利润最大化的另一种表现形式是每股收益最大化，相比较利润最大化，它只反映了所创造利润与投入资本额之间的关系，既没有考虑资金的时间价值，也没有考虑投资风险的问题，所以选项B正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "与利润最大化目标相比，以每股收益最大化作为企业财务管理的目标，其优点在于（ ）。",
+    "options": [
+     "考虑了资金的时间价值",
+     "考虑了利润与所承担风险的关系",
+     "可以避免企业经营行为的短期化",
+     "能将企业的利润与股东投入的资本相联系"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "每股收益最大化观点将企业的利润与股东投入的资本联系起来，考虑了投资额与利润的关系。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2022",
+    "title": "没有股东财富最大化的目标，利润最大化、企业价值最大化以及相关者利益最大化的目标也就难以实现。（ ）",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "解析：利润最大化、 企业价值最大化、相关者利益最大化等各种财务管理目标，都以股东财富最大化为基础，本题表述正确。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2020",
+    "title": "公司以股东财富最大化作为财务管理目标，意味着公司创造的财富应首先满足股东期望的回报要求，然后再考虑其他利益相关者。（ ）",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "解析：以股东财富最大化为核心和基础，还应该考虑利益相关者的利益。各国公司法都规定，股东权益是剩余权益，只有满足了其他方面的利益之后才会有股东的利益。其他利益相关者的要求先于股东被满足，因此这种满足必须是有限度的，如果对其他利益相关者的要求不加限制，股东就不会有剩余了，除非股东确信投资会带来满意的回报，否则股东不会投资。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2018",
+    "title": "与企业价值最大化财务管理目标相比，股东财富最大化目标的局限性是（ ）。",
+    "options": [
+     "对债权人的利益重视不够",
+     "容易导致企业的短期行为",
+     "没有考虑风险因素",
+     "没有考虑货币时间价值"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "股东财富最大化考虑了时间价值和风险因素，克服了短期化行为。但是它强调得更多的是股东利益，而对其他相关者的利益重视不够。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2019",
+    "title": "若上市公司以股东财富最大化作为财务管理目标，则衡量股东财富大小的最直观的指标是（ ）。",
+    "options": [
+     "净利润",
+     "资本公积",
+     "每股收益",
+     "股价"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "在上市公司，股东财富是由其所拥有的股票数量和股票市场价格两方面来决定的。在股票数量一定时，股票价格达到最高，股东财富也就达到最大。选项D当选。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2021",
+    "title": "某上市公司以股东财富最大化作为财务管理目标，下列各项中，能够恰当反映股东财富水平的是( )。",
+    "options": [
+     "每股市价×股票数量",
+     "每股总资产×股票数量",
+     "每股收益×股票数量",
+     "每股净资产×股票数量"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "在上市公司，股东财富=股票市场价格(每股市价)×股票数量。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2021",
+    "title": "关于企业价值最大化财务管理目标，下列说法正确的有（ ）。",
+    "options": [
+     "以股东财富最大化为基础",
+     "有助于克服企业追求利润的短期行为",
+     "考虑了收益的时间价值",
+     "考虑了风险与收益的关系"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "各种财务管理目标，都以股东财富最大化为基础。以企业价值最大化作为财务管理目标，具有以下优点:（1）考虑了取得收益的时间，并用时间价值的原理进行了计量;（2）考虑了风险与收益的关系;（3）将企业长期、稳定的发展和持续的获利能力放在首位，能克服企业在追求利润.上的短期行为，因为不仅目前利润会影响企业的价值，预期未来的利润对企业价值增加也会产生重大影响;（4）用价值代替价格，避免了过多外界市场因素的干扰，有效地规避了企业的短期行为。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "某公司董事会召开公司战略发展讨论会，拟将企业价值最大化作为财务管理目标，下列理由中，难以成立的是（ ）。",
+    "options": [
+     "有利于规避企业短期行为",
+     "有利于量化考核和评价",
+     "有利于持续提升企业获利能力",
+     "有利于均衡风险与报酬的关系"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "企业价值最大化考虑了时间价值和风险价值，将企业长期、稳定的发展和持续获利能力放在了首位，能克服企业在追求利润的短期行为。但是过于理论化，不易操作，对于非上市公司，只有对企业进行专门的评估才能确定其价值，难以做到客观、准确。所以选项B结论不成立。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列关于企业财务管理目标的表述中，错误的是（ ）。",
+    "options": [
+     "企业价值最大化目标有利于量化考核和评价",
+     "相关者利益最大化目标认为应当将消费者的利益置于首要地位",
+     "每股收益最大化目标可能导致企业短期化倾向",
+     "股东财富最大化目标考虑了风险因素"
+    ],
+    "answer": [
+     0,
+     1
+    ],
+    "explain": "企业价值最大化目标过于理论化，不易操作，只有进行专门的评估才能确定其价值，所以选项A说法错误。相关者利益最大化目标强调股东的首要地位，所以选项B说法错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2014税务师",
+    "title": "下列关于财务管理目标理论的表述中，正确的有（ ）。",
+    "options": [
+     "利润最大化不能反映企业财富的增加",
+     "利润最大化和股东财富最大化都未考虑风险因素",
+     "企业价值最大化同时考虑了风险和货币的时间价值因素",
+     "股东财富最大化和企业价值最大化都能规避管理层追求利润的短期行为",
+     "利润最大化、股东财富最大化和企业价值最大化各有优劣、适用于不同企业或同一企业的不同发展阶段"
+    ],
+    "answer": [
+     2,
+     3,
+     4
+    ],
+    "explain": "以利润最大化作为财务管理目标，其主要原因之一是利润代表了企业新创造的价值，利润增加代表着企业财富的增加，所以选项A的说法错误;股东财富最大化考虑了风险因素，所以选项B的说法错误。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2021",
+    "title": "与企业价值最大化目标相比，股东财富最大化目标的局限性在于未能克服企业追求利润的短期行为。（ ）",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "解析：股东财富最大化的主要优点是在一定程度上能避免企业短期行为，因为不仅目前的利润会影响股票价格，预期未来的利润同样会对股价产生重要影响。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024",
+    "title": "如果以企业价值最大化为财务管理目标，下列各项指标中，最能反映企业价值的是（ ）。",
+    "options": [
+     "企业所发行的全部普通股的市场价值",
+     "企业所能创造的预计未来现金流量的现值",
+     "企业所能提供的全部产品和服务的公允价值",
+     "企业所拥有的全部资金账面价值"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "企业价值可以理解为企业股东权益和债权人权益的市场价值，或者是企业所能创造的预计未来现金流量的现值，选项B正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列关于企业财务管理目标的表述中，正确的有（ ）。",
+    "options": [
+     "企业价值最大化目标弥补了股东财富最大化目标过于强调股东利益的不足",
+     "相关者利益最大化目标认为应当将除股东之外的其他利益相关者置于首要地位",
+     "利润最大化目标要求企业提高资源配置效率",
+     "股东财富最大化目标不能反映资本保值增值的要求"
+    ],
+    "answer": [
+     0,
+     2
+    ],
+    "explain": "企业价值等于股东权益和债权人权益的市场价值，兼顾了债权人权益；利润最大化目标有利于企业提高资源配置效率；股东财富最大化的衡量指标是股价，非上市公司不适用。但是相关者利益最大化目标，强调股东的首要地位，并强调企业与股东之间的协调关系，所以选项B的说法不正确。股东财富增加，说明股东的财富在增值，能够反映资本保值增值的要求，选项D错误。\n\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2024",
+    "title": "企业以相关者利益最大化作为财务管理目标时，就不应当再强调股东的首要地位。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "相关者利益最大化目标的具体内容包括强调股东的首要地位，并强调企业与股东之间的协调关系。\n\n\n*"
+   },
+   {
+    "type": "judge",
+    "year": "",
+    "title": "如果公司以股东财富最大化作为财务管理目标，存在利益冲突时，应优先满足股东的利益要求。（ ）",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "解析：以股东财富最大化为核心和基础，还应该考虑利益相关者的利益。各国公司法都规定，股东权益是剩余权益，只有满足了其他方面的利益之后才会有股东的利益。企业必须缴税、给职工发工资、给顾客提供他们满意的产品和服务，然后才能获得税后收益。可见，其他利益相关者的要求先于股东被满足。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "某上市公司职业经理人在任职期间不断提高在职消费，损害股东利益。这一现象所揭示的公司制企业的缺点主要是（ ）。",
+    "options": [
+     "产权问题",
+     "激励问题",
+     "代理问题",
+     "责任分配问题"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "现代企业，所有权和经营权分离，股东为委托人，经营者只是股东的代理人，代理人可能为了自身利益而伤害委托人的利益，属于存在代理问题，选项C正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "关于利益相关者的利益冲突与协调，下列说法错误的有（ ）。",
+    "options": [
+     "股东与经营者利益冲突的原因是两者的经营理念不同",
+     "\"接收\"是股东约束经营者的一种方法",
+     "限制性股票（属于绩效股）有助于协调股东与经营者的矛盾",
+     "规定借款的信用条件有助于协调经营者和债权人的矛盾"
+    ],
+    "answer": [
+     0,
+     1,
+     3
+    ],
+    "explain": "股东与经营者利益冲突的原因是两者的目标不同;“接收”是市场约束经营者的一种方法;限制性股票属于股权激励的一种方式，有助于协调股东与经营者的矛盾，所以选项C说法正确;规定借款的信用条件有助于协调股东和债权人的矛盾。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2010",
+    "title": "某上市公司针对经常出现中小股东质询管理层的情况，你采取措施协调所有者与经营者的矛盾。下列各项中，不能实现上述目的的是（ ）。",
+    "options": [
+     "强化内部人控制",
+     "解聘总经理",
+     "加强对经营者的监督",
+     "将经营者的报酬与其绩效挂钩"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "股东和经营者矛盾协调的方式:（1）解聘;（2）接收;（3）激励。内部人控制公司只会加剧股东和经营者之间的矛盾。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024",
+    "title": "下列行为中，一般不构成公司大股东侵害中小股东利益的是（ ）。",
+    "options": [
+     "大股东要求公司将借入资金用于风险更高的项目",
+     "大股东发布虚假信息操纵公司股价",
+     "大股东以不合理的高价向公司出售资产",
+     "大股东要求公司向其委派的高管支付不合理高薪"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "大股东侵害中小股东利益的主要形式：（1）利用关联交易转移上市公司的资产；（2）非法占用上市公司巨额资金，或以上市公司的名义进行担保和恶意筹资；（3）通过发布虚假信息进行股价操纵，欺骗中小股东；（4）为大股东委派的高管支付不合理的报酬及特殊津贴；（5）采用不合理的股利政策，掠夺中小股东的既得利益。选项A，无论投资成功或者失败，大股东和中小股东同样都会享受收益或者共同承担损失。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列属于大股东侵害中小股东利益的形式有（ ）。",
+    "options": [
+     "利用关联交易转移上市公司的资产",
+     "非法占用上市公司巨额资金",
+     "通过发布虚假信息进行股价操纵",
+     "对高管进行股权激励"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "大股东侵害中小股东利益的主要形式:（1）利用关联交易转移上市公司的资产;（2）非法占用上市公司巨额资金，或以上市公司的名义进行担保和恶意筹资;（3）通过发布虚假信息进行股价操纵，欺骗中小股东;（4）为大股东委派的高管支付不合理的报酬及特殊津贴;（5）采用不合理的股利政策，掠夺中小股东的既得利益。选项D对高管的股权激励，不一定是不合理的报酬和津贴。所以，D错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2016CPA",
+    "title": "公司的下列行为中，可能损害债权人利益的有（ ）。",
+    "options": [
+     "提高股利支付率",
+     "加大为其他企业提供的担保",
+     "加大高风险投资比例",
+     "提高资产负债率"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "提高股利支付率会减少企业的利润留存，在存在资本需求时就很可能增加外部负债融资，可能会损害债权人利益，选项A正确;提高资产负债率，加大为其他企业提供的担保存在潜在债务风险，可能会损害债权人利益，选项B、D正确;加大高风险投资比例，如果投资成功，超额收益归股东独享，如果投资失败，债权人可能要承担损失，选项C正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2023",
+    "title": "下列各项中，属于大股东侵犯中小股东利益的有（ ）。",
+    "options": [
+     "上市公司出售具有严重质量问题的产品",
+     "上市公司为大股东的债务提供担保",
+     "大股东利用关联方关系转移上市公司的资产",
+     "大股东非法侵占上市公司巨额资金"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "大股东侵害中小股东利益的主要形式包括：（1）利用关联交易转移上市公司的资产；（2）非法占用上市公司巨额资金，或以上市公司的名义进行担保和恶意筹资；（3）通过发布虚假信息进行股价操纵，欺骗中小股东；（4）为大股东委派的高管支付不合理的报酬及特殊津贴；（5）采用不合理的股利政策，掠夺中小股东的既得利益。\n\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列关于大股东与中小股东之间的利益冲突及协调的说法正确的有（ ）。",
+    "options": [
+     "提高董事会中独立董事的比例，有助于保护大股东的权益",
+     "赋予监事会更大的监督与起诉权，有助于保护中小股东的权益",
+     "加强对信息披露的监管，有助于降低大股东对中小股东利益的侵占",
+     "中小股东因按其持股比例享有利润索取权，故其利益不会受到大股东的侵害"
+    ],
+    "answer": [
+     1,
+     2
+    ],
+    "explain": "提高董事会中独立董事的比例，独立董事可以代表中小股东的利益，在董事会中行使表决权，有助于保护中小股东的权益而非大股东的权益，选项 A 不当选;中小股东按其持股比例享有利润索取权，但由于与大股东之间存在严重的信息不对称，他们的各种权利会受到大股东的侵害，选项 D 不当选。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "公司制企业可能存在经营者和股东之间的利益冲突，解决这一冲突的方式有（ ）。",
+    "options": [
+     "解聘",
+     "接收",
+     "收回借款",
+     "授予股票期权"
+    ],
+    "answer": [
+     0,
+     1,
+     3
+    ],
+    "explain": "协调股东与经营者的矛盾通常可采取以下方式解决:（1）解聘;（2）接收;（3）激励。选项D属于激励方式。选项C属于股东和债权人之间矛盾协调的方式。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列属于是为了协调大股东与中小股东之间的冲突所采取的方式有（ ）。",
+    "options": [
+     "采取法律措施增强中小股东的投票权和知情权",
+     "提高董事会中独立董事的比例",
+     "赋予监事会更大的监督与起诉权",
+     "规范上市公司的信息披露制度"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "为了协调大股东与中小股东之间的冲突所采取的方式有包括完善上市公司的治理结构和规范上市公司的信息披露制度。选项ABC属于完善上市公司的治理结构的具体形式。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2022",
+    "title": "如果某上市公司不存在控股股东，则该公司不存在股东与债权人之间的利益冲突。( )",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "解析：股东属于公司的所有者，即使不存在控股股东，股东的目标也可能与债权人期望实现的目标发生矛盾，股东与债权人之间的利益冲突与股东是否控股无关。本题表述错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "为了缓解公司债权人和股东之间的利益冲突，债权人可以采取的措施有（ ）。",
+    "options": [
+     "设置借债担保条款",
+     "不再给予新的借款",
+     "限制支付现金股利",
+     "事先规定借债用途"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "股东与债权人的利益冲突，可以通过以下方式解决:（1）限制性借债。债权人事先规定借债用途限制、借债担保条款和借债信用条件。（2）收回借款或停止借款。当债权人发现企业有侵蚀其债权价值的意图时，采取收回债权或不再给予新的借款的措施，从而保护自身权益。限制支付现金股利属于事先规定借债用途限制，后续在第4章我们会介绍借款的保护性条款，限制支付现金股利属于一般性保护条款的内容。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "以下关于大股东与中小股东之间的利益冲突的说法正确的有（ ）。",
+    "options": [
+     "应该规范上市公司的定期信息披露制度",
+     "控股股东有权决定以上市公司的名义进行担保",
+     "独立董事代表大股东的利益，应该限制相关权利",
+     "应完善上市公司的股东大会、董事会和监事会的三权分立机制"
+    ],
+    "answer": [
+     0,
+     3
+    ],
+    "explain": "控股股东以上市公司的名义进行担保，侵害了中小股民的利益，选项B错误。独立董事可以代表中小股东的利益，在董事会中行使表决权，应提高董事会中独立董事的比例，选项C错误。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2017",
+    "title": "公司将已筹集资金投资于高风险项目会给原债权人带来高风险和高收益。（ ）",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "解析：公司将已筹集资金投资于高风险项目，会增大偿债风险，债权人的债权价值也必然会降低，造成债权人风险与收益的不对称。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2015CPA",
+    "title": "为防止经营者背离股东目标，股东可采取的措施有（ ）。",
+    "options": [
+     "对经营者实行固定年薪制",
+     "要求经营者定期披露信息",
+     "给予经营者股票期权奖励",
+     "聘请注册会计师审计财务报告"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "为了防止经营者背离股东目标，一般有两种方式:监督和激励。选项A没有激励作用，选项C属于激励措施，选项B、D属于监督措施。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "财务管理原则是企业进行财务管理活动的行为规范和行动指南。下面有关财务管理原则说法正确的是（ ）。",
+    "options": [
+     "风险权衡原则认为高风险必然获得高报酬",
+     "现金收支平衡原则认为，财务管理贯彻的是收付实现制，现金收支平衡是财务管理工作的首要出发点",
+     "战略导向原则认为财务管理所有工作首先要符合企业总体战略",
+     "利益关系协调原则认为因妥善处理各相关利益者之间的财务关系"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "风险权衡原则认为高收益的投资机会必然伴随着较高的风险，风险小的投资机会必然只有较低的收益，所以选项A错误。系统性原则是财务管理工作的首要出发点，所以选项B错误。战略导向原则不属于财务管理的原则，所以选项C错误。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "利用有用信息和特定手段对企业的财务活动施加影响或调节，以便实现计划所规定的财务目标的过程是指（ ）",
+    "options": [
+     "财务决策",
+     "财务控制",
+     "财务分析",
+     "财务计划"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "财务控制是指利用有用信息和特定手段，对企业的财务活动施加影响或调节，以便实现计划所规定的财务目标的过程。所以选项B正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024",
+    "title": "下列选项中，被视为财务管理核心的是（ ）。",
+    "options": [
+     "财务决策",
+     "财务控制",
+     "财务分析",
+     "财务预算"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "财务决策是指按照财务战略目标的总体要求，利用专门的方法对各种备选方案进行比较和分析，从中选出最佳方案的过程，财务决策是财务管理的核心，故选项A正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列关于财务管理原则的说法不正确的有（ ）。",
+    "options": [
+     "在财务管理中坚持风险权衡原则是财务管理工作的首要出发点",
+     "财务管理贯彻的是权责发生制，而非收付实现制",
+     "在营运资金管理中，收益难以量化，但应追求成本最低化体现的是成本收益权衡原则",
+     "风险权衡原则指风险与报酬之间存在着高风险低收益，低风险高收益的对应关系"
+    ],
+    "answer": [
+     0,
+     1,
+     3
+    ],
+    "explain": "在财务管理中坚持系统性原则是财务管理工作的首要出发点，而非风险权衡原则，选项 A 当选;财务管理贯彻的是收付实现制，而非权责发生制，选项 B 当选;风险权衡原则指风险与报酬之间存在着一个对应关系，所谓对应关系指高收益的投资机会必然伴随着较高的风险，风险小的投资机会必然只有较低的收益，选项 D 当选。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "企业在分配管理中，应在追求分配管理成本最小的前提下，妥善处理好各种财务关系，这体现了财务管理的（ ）。",
+    "options": [
+     "现金收支平衡原则",
+     "风险权衡原则",
+     "成本收益权衡原则",
+     "利益关系协调原则"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "在财务管理中，时刻都需要进行成本与收益的权衡。在筹资管理中，要进行资金成本和筹资收益的权衡;在长期投资管理中，要进行投资成本和投资收益的权衡;在营运资金管理中，收益难以量化，但应追求成本最低化;在分配管理中，应在追求分配管理成本最小的前提下，妥善处理好各种财务关系。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2017",
+    "title": "集权型财务管理体制可能导致的问题是（ ）。",
+    "options": [
+     "利润分配无序",
+     "削弱所属单位主动性",
+     "资金成本增大",
+     "资金管理分散"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "集权型财务管理体制下企业内部的主要管理权限集中于企业总部，各所属单位执行企业总部的各项指令。缺点是集权过度会使各所属单位缺乏主动性、积极性，丧失活力，也可能因为决策程序相对复杂而失去适应市场的弹性，丧失市场机会，因此选项B正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2011",
+    "title": "某企业集团经过多年的发展，已初步形成从原料供应、生产制造到物流服务上下游密切关联的产业集群，当前集团总部管理层的素质较高，集团内部信息化管理的基础较好。据此判断，该集团最适宜的财务管理体制类型是（ ）。",
+    "options": [
+     "集权型",
+     "分权型",
+     "自主型",
+     "集权与分权相结合型"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "该企业业务可以进行上下游调配，而且集团总部管理层的素质较高，集团内部信息化管理的基础较好，有利于企业实行集权化管理，因此选项A正确。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2016",
+    "title": "企业集团内部各所属单位之间业务联系越紧密，就越有必要采用相对集中的财务管理体制。（ ）",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "解析：各所属单位之间业务联系越密切，就越有必要采用相对集中的财务管理体制。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列偏重于采用集权型财务管理体制的有（ ）。",
+    "options": [
+     "各所属单位之间业务联系密切",
+     "企业规模大，财务管理工作量大",
+     "管理水平较高",
+     "企业内部有一个能及时、准确传递信息的网络系统"
+    ],
+    "answer": [
+     0,
+     2,
+     3
+    ],
+    "explain": "一般而言，企业规模小，财务管理工作量小，为财务管理服务的财务组织制度也应简单、集中，偏重于集权模式。企业规模大，财务管理工作量大，复杂性增加，财务管理各种权限就有必要根据需要重新设置规划，选项B不当选。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "",
+    "title": "由于控股公司组织（H型组织）的母、子公司均为独立的法人，是典型的分权组织，因而不能进行集权管理。（ ）",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "解析：随着企业管理实践的深入，H型组织的财务管理体制也在不断演化。总部作为子公司的出资人对子公司的重大事项拥有最后的决定权，因此，也就拥有了对子公司“集权”的法律基础。现代意义上的H型组织既可以分权管理，也可以集权管理。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2022",
+    "title": "关于企业财务管理体制的模式选择，下列说法错误的是( )。",
+    "options": [
+     "若企业处于初创阶段，经营风险高，则更适合采用分权型财务管理体制",
+     "若企业管理者的素质高、能力强，则可以采用集权型财务管理体制",
+     "若企业面临的环境是稳定的、对生产经营的影响不显著，则更适合采用集权型财务管理体制",
+     "若企业规模小，财务管理工作量少，则更适合采用集权型财务管理体制"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "企业处于初创阶段，企业经营风险高，财务管理宜偏重集权模式，选项A当选。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列属于影响企业财务管理体制集权与分权选择的因素的有（ ）。",
+    "options": [
+     "企业规模",
+     "企业所处市场环境",
+     "信息网络系统",
+     "企业生命周期"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "选项A、B、C、D都属于影响企业财务管理体制集权与分权选择的因素，故均应当选。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "某企业集团选择集权与分权相结合的财务管理体制，下列各项中，通常应当集权的有（ ）。",
+    "options": [
+     "收益分配权",
+     "财务机构设置权",
+     "费用开支审批权",
+     "子公司业务定价权"
+    ],
+    "answer": [
+     0,
+     1
+    ],
+    "explain": "采用集权与分权相结合型财务管理体制，企业总部应做到制度统一、资金集中、信息集成和人员委派。具体应集中制度制定权，筹资、融资权，投资权，用资、担保权，固定资产购置权，财务机构设置权，收益分配权;分散经营自主权，人员管理权，业务定价权，费用开支审批权。因此，选项A、B是正确的。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "",
+    "title": "M型组织即事业部制，是总部设置的中间管理组织，通常不能够独立对外从事生产经营活动，因此，M型组织的集权程度要高于H型组织。（ ）",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "解析：M型组织体制即事业部制，事业部是总部设置的中间管理组织，不是独立法人，不能够独立对外从事生产经营活动，因此，M型组织比H型组织集权程度更高。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "分权型财务管理体制可能导致的问题是（ ）。",
+    "options": [
+     "利润分配无序",
+     "削弱所属单位主动性",
+     "资金成本增大",
+     "决策效率低"
+    ],
+    "answer": [
+     0,
+     2
+    ],
+    "explain": "分权型财务管理体制有利于对存在的问题作出有效决策、分散经营风险、能够调动所属单位人员主动性，促进人员成长。缺点是缺乏全局观念和整体意识，导致资金管理分散、资金成本增大、费用失控、利润分配无序。所以选项AC是答案。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "",
+    "title": "集权与分权相结合型财务管理体制下，通常企业总部应做到制度统一、资金集中、信息集成和人员委派，因此在制度制定权、收益分配权等方面应实行集中管理。（ ）",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "解析：集权与分权相结合型财务管理体制的核心内容是企业总部应做到制度统一、资金集中、信息集成和人员委派。具体应集中制度制定权，筹资、融资权，投资权，用资、担保权，固定资产购置权，财务机构设置权，收益分配权；分散经营自主权、人员管理权、业务定价权、费用开支审批权。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2010",
+    "title": "某集团公司有A、B两个控股子公司，采用集权与分权相结合的财务管理体制，下列各项中，集团总部应当分权给子公司的是（ ）。",
+    "options": [
+     "日常费用开支审批权",
+     "收益分配权",
+     "投资权",
+     "担保权"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "集权与分权相结合的财务管理体制下，应集中管理的权利有:制度制定权、财务机构设置权、筹资和融资权、投资权、用资和担保权、固定资产购置权、收益分配权。应分散管理的权利有:经营自主权、人员管理权、业务定价权、费用开支审批权，选项A当选。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2024",
+    "title": "相对于分权型财务管理体制，集权型财务管理体制更有利于在整个企业内部优化资源配置。 （ ）",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "采用集权型财务管理体制，有利于在整个企业内部优化配置资源，有利于实行内部调拨价格，有利于内部采取避税措施及防范汇率风险等。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "",
+    "title": "在经济衰退初期，公司一般应当出售多余设备，停止长期采购。（ ）",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "解析：企业在经济衰退中，应该停止扩张，出售多余设备，停止长期采购，削减存货。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024税务师",
+    "title": "在企业经济周期的不同阶段应实施不同的财务管理战略，下列表述正确的是（ ）。",
+    "options": [
+     "经济衰退阶段，应开发新产品和停产不利产品",
+     "经济繁荣阶段，应实行长期租赁和提高产品价格",
+     "经济萧条阶段，应开展营销规划和压缩管理费用",
+     "经济复苏阶段，应建立存货储备和增加厂房设备"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "（1）选项A不当选:在经济衰退阶段，应停止扩张、出售多余设备、停产不利产品、停止长期采购、削减存货、停止扩招雇员;开发新产品属于复苏阶段的财务管理战略。（2）选项B不当选:在经济繁荣阶段，应扩充厂房设备、继续增加存货、提高产品价格、开展营销规划、增加劳动力;实行长期租赁属于复苏阶段的财务管理战略。（3）选项C不当选:在经济萧条阶段，应建立投资标准、保持市场份额、压缩管理费用、放弃次要利益、削减存货、裁减雇员;开展营销规划属于繁荣阶段的财务管理战略。（4）选项D当选:在经济复苏阶段，应增加厂房设备、实行长期租赁、建立存货储备、开发新产品、增加劳动力。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "在经济周期的不同阶段，企业应采用不同的财务管理战略。在衰退期，企业应当采取的策略是（ ）。",
+    "options": [
+     "出售多余设备",
+     "开发新产品",
+     "削减存货",
+     "停止长期采购"
+    ],
+    "answer": [
+     0,
+     2,
+     3
+    ],
+    "explain": "在经济衰退期，财务战略一般为停止扩张、出售多余设备、停产不利产品、停止长期采购、削减存货、停止扩招雇员。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2025",
+    "title": "在经济周期中的复苏阶段，企业通常适合采用的财务管理战略有（ ）。",
+    "options": [
+     "建立存货储备",
+     "停止长期采购",
+     "出售多余设备",
+     "开发新产品"
+    ],
+    "answer": [
+     0,
+     3
+    ],
+    "explain": "复苏阶段适合采用的财务管理战略有:增加厂房设备、实行长期租赁，增加劳动力、建立存货储备和开发新产品，选项A、D当选;停止长期采购和出售多余设备属于衰退阶段采用的财务管理战略，选项B、C不当选。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2019",
+    "title": "为了应对通货膨胀给企业造成的影响，企业可以采取的措施有（ ）。",
+    "options": [
+     "放宽信用期限",
+     "取得长期负债",
+     "减少企业债权",
+     "签订长期购货合同"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "在通货膨胀初期，货币面临着贬值的风险，这时企业进行投资可以避免风险，实现资本保值;与客户应签订长期购货合同，以减少物价上涨造成的损失，选项D正确;取得长期负债，保持资本成本的稳定，选择B正确。在通货膨胀持续期，企业可以采用比较严格的信用条件，减少企业债权，选项A错误，选项C正确;调整财务政策，防止和减少企业资本流失等。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2018",
+    "title": "不考虑其他因素的影响，通货膨胀一般导致市场利率下降，从而降低了企业的筹资难度。（ ）",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "解析：通货膨胀会导致市场利率上升，引起有价证券价格下降，增加企业的筹资难度。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "企业应对通货膨胀风险的措施中，说法正确的有（ ）。",
+    "options": [
+     "在通货膨胀初期，应进行长期投资",
+     "在通货膨胀初期，应与客户签订长期购货合同",
+     "在通货膨胀持续期，采用比较宽松的信用条件",
+     "在通货膨胀持续期，应采用高股利支付政策"
+    ],
+    "answer": [
+     0,
+     1
+    ],
+    "explain": "在通货膨胀持续期，企业可以采用比较严格的信用条件减少企业债权（选项C错误）;调整财务政策，防止和减少企业资本流失。高股利支付政策会导致资本流失（选项D错误）。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2021",
+    "title": "某公司预测将出现通货膨胀，于是提前购置一批存货备用。从财务管理的角度看，这种行为属于（ ）。",
+    "options": [
+     "长期投资管理",
+     "收入管理",
+     "营运资金管理",
+     "筹资管理"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "企业在日常的生产经营活动中，会发生一系列流动资产和流动负债资金的收付。购置一批存货备用，属于将资金投资于流动资产，属于营运资金管理。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "为应对通货膨胀的不利影响，企业可以采取的措施有（ ）。",
+    "options": [
+     "筹集固定利率的长期资金",
+     "以固定租金融资租出固定资产",
+     "采用偏紧的利润分配政策",
+     "采用宽松的信用政策"
+    ],
+    "answer": [
+     0,
+     2
+    ],
+    "explain": "在通货膨胀时期，应取得长期负债，保持资本成本的稳定，所以选项A正确;以固定租金融资租出固定资产会增加通货膨胀时期的长期债权，使企业承担购买力损失，所以选项B错误;在通货膨胀时期，应采用比较严格的信用条件，减少企业债权，采用偏紧的利润分配政策，所以选项C正确，选项D错误。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "下列各项中，不属于金融工具特征的是（ ）。",
+    "options": [
+     "流动性",
+     "风险性",
+     "稳定性",
+     "收益性"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "一般认为，金融工具具有流动性、风险性和收益性的特征。稳定性不是金融工具的特征，所以选项C是答案。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列关于金融市场的表述中，正确的有（ ）。",
+    "options": [
+     "一级市场也称次级市场或流通市场",
+     "公司发行新股票属于一级市场融资行为",
+     "公司向原股东配股融资属于一级市场融资行为",
+     "证券的发行公司不会从二级市场交易中得到新的资金"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "二级市场也称次级市场或流通市场，选项A错误。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "金融市场按照功能标准可划分为（ ）。",
+    "options": [
+     "一级市场与二级市场",
+     "期货市场与现货市场",
+     "债券市场与股票市场",
+     "短期市场与长期市场"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "以功能为标准，金融市场可分为发行市场和流通市场。发行市场又称为一级市场，它主要处理金融工具的发行与最初购买者之间的交易;流通市场又称为二级市场，它主要处理现有金融工具转让和变现的交易。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2021",
+    "title": "属于衍生金融工具的是（ ）。",
+    "options": [
+     "股票期货",
+     "远期外汇",
+     "银行承兑汇票",
+     "股票期权"
+    ],
+    "answer": [
+     0,
+     1,
+     3
+    ],
+    "explain": "衍生金融工具又称派生金融工具，是在基本全融工具的基础上通过待定技术设计形成的新的金融工具，常见的衍生金融工具包括远期合同，期货合同、互换合同和期权合同等。选项A、B、D属于衍生金融工具，选项C属于基本金融工具。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "与货币市场相比，资本市场的特点有（ ）。",
+    "options": [
+     "投资收益较高",
+     "融资期限较长",
+     "投资风险较大",
+     "价格波动较小"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "与货币市场相比，资本市场特点主要有:（1）融资期限长;（2）流动性相对较差;（3）风险大而收益较高;（4）资金借贷量大;（5）价格变动幅度大。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2024",
+    "title": "金融工具包括基本金融工具和衍生金融工具，下列各项中，属于衍生金融工具的有（ ）。",
+    "options": [
+     "短期融资券",
+     "股票期权",
+     "股指期货",
+     "商业票据"
+    ],
+    "answer": [
+     1,
+     2
+    ],
+    "explain": "金融工具分为基本金融工具和衍生金融工具两大类。常见的基本金融工具:企业持有的现金、从其他方收取现金或其他金融资产的合同权利和向其他方交付现金或其他金融资产的合同义务等;衍生金融工具又称派生金融工具，常见的衍生金融工具包括:远期合同、期货合同、互换合同和期权合同等。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2019",
+    "title": "相对于资本市场而言，下列各项中，属于货币市场特点的是（ ）。",
+    "options": [
+     "收益高",
+     "期限长",
+     "流动性强",
+     "风险大"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "货币市场的主要功能是调节短期资金融通。其主要特点是:（1）期限短;（2）交易目的是解决短期资金周转;（3）货币市场上的金融工具有较强的“货币性”，具有流动性强、价格平稳、风险较小等特性。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2021",
+    "title": "下列各项中，属于资本市场的是（ ）。",
+    "options": [
+     "股票市场",
+     "同业拆借市场",
+     "票据市场",
+     "大额定期存单市场"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "资本市场又称长期金融市场，是指以期限在1年以上的金融工具为媒介，进行长期资金交易活动的市场，包括股票市场、债券市场、期货市场和融资租赁市场等。选项B、C、D属于货币市场。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2014CPA",
+    "title": "下列各项中，属于货币市场工具的是（ ）。",
+    "options": [
+     "优先股",
+     "可转换债券",
+     "银行承兑汇票",
+     "银行长期贷款"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "货币市场的特点就是期限不超过一年，银行承兑汇票最长期限是六个月，所以选项C正确，选项ABD属于资本市场工具。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列金融市场类型中，能够为企业提供短期资金来源的有（ ）。",
+    "options": [
+     "大额定期存单市场",
+     "期货市场",
+     "融资租赁市场",
+     "票据贴现市场"
+    ],
+    "answer": [
+     0,
+     3
+    ],
+    "explain": "货币市场是以期限在1年以内的金融工具为媒介，进行短期资金融通的市场，包括:拆借市场、票据市场、大额定期存单市场、短期债券市场。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2014CPA",
+    "title": "下列金融工具在货币市场中交易的有（ ）。",
+    "options": [
+     "银行承兑汇票",
+     "期限为3个月的政府债券",
+     "期限为12个月的可转让定期存单",
+     "股票"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "在货币市场交易的证券期限不超过1年，选项ABC的期限都小于1年，因此答案ABC正确。股票属于资本市场工具，因此选项D不是答案。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2025",
+    "title": "金融市场包括货币市场和资本市场，下列选项中属于资本市场的有( )。",
+    "options": [
+     "大额定期存单市场",
+     "银行间同业拆借市场",
+     "股票市场",
+     "融资租赁市场"
+    ],
+    "answer": [
+     2,
+     3
+    ],
+    "explain": "资本市场是以期限在1年以上的金融工具为媒介进行长期资金交易活动的市场，包括股票市场、债券市场、期货市场和融资租赁市场等，选项C、D当选;大额定期存单市场和银行间同业拆借市场属于货币市场((短期金融市场)，选项A、B不当选。\n保存报告\n收起答题解析\n问卷星提供技术支持\n举报\n抽奖规则"
+   }
+  ]
+ },
+ "ch2": {
+  "name": "第二章 财务管理基础",
+  "questions": [
+   {
+    "type": "single",
+    "year": "",
+    "title": "纯利率是指在没有通货膨胀，无风险情况下资金市场的最低利率。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "无纯粹利率(纯利率)是指没有通货膨胀、没有风险情况下资金市场的平均利率，而不是最低利率。本题表述错误。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "已知(F/P，10%，7)＝1.9487，(F/P，10%，8)＝2.1436，(F/A，10%，7)＝9.4872，则(F/A，10%，8)为( )。",
+    "options": [
+     "A.12.4359",
+     "B.11.6308",
+     "C.10.4359",
+     "D.11.4359"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "(F/A，10%，8)＝(F/A，10%，7)×(1＋10%)＋1＝9.4872×1.1＋1＝11.4359，故选项D正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2021",
+    "title": "某工程项目现需要投入3亿元，如果延迟一年建设，投入将增加10%，假设利率为5%，则项目延迟造成的投入现值的增加额为( )。",
+    "options": [
+     "A.0.14亿元",
+     "B.0.17亿元",
+     "C.0.3亿元",
+     "D.0.47亿元"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "项目延迟造成的投入现值的增加额＝3×(1＋10%)×(P/F，5%，1)－3＝3.3×0.9524－3＝0.14(亿元)，或者＝3.3/(1+5%) －3＝0.14(亿元)\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "在利率和计息期相同的条件下，以下公式中，正确的是( )。",
+    "options": [
+     "A.普通年金终值系数×普通年金现值系数＝1",
+     "B.普通年金终值系数×偿债基金系数＝1",
+     "C.普通年金终值系数×资本回收系数＝1",
+     "D.普通年金终值系数×预付年金现值系数＝1"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "三组倒数关系：复利终值系数×复利现值系数＝1，普通年金终值系数×偿债基金系数＝1，普通年金现值系数×资本回收系数＝1，预付年金和普通年金的关系：预付年金终值(现值)＝普通年金终值(现值)×(1＋i)。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2020",
+    "title": "(P/F,i,9)与(P/F,i,10)分别表示9年期和10年期的复利现值系数，关于二者的数量关系，下列表达式正确的是( )。",
+    "options": [
+     "A.(P/F,i,10)＝(P/F,i,9)－i",
+     "B.(P/F,i,10)＝(P/F,i,9)×(1＋i)",
+     "C.(P/F,i,9)＝(P/F,i,10)×(1＋i)",
+     "D.(P/F,i,10)＝(P/F,i,9)＋i"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "(P/F,i,10)＝1/(1+i)^10，(P/F,i,9)＝1/(1+i)^9 ，即(P/F,i,9)＝(P/F,i,10)×(1＋i)\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2020税务师",
+    "title": "下列关于各项年金的表述中，正确的有( )。",
+    "options": [
+     "A.预付年金与普通年金的区别仅在于收付款时间的不同",
+     "B.普通年金终值是每次收付款的复利终值之和",
+     "C.永续年金无法计算其终值",
+     "D.递延年金无法计算其现值",
+     "E.递延年金的终值与普通年金的终值计算方法一样"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     4
+    ],
+    "explain": "递延年金可以计算现值，选项D错误。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2021",
+    "title": "某项银行贷款本金为100万元，期限为10年、利率为8%，每年年末等额偿还本息，则每年偿还额的计算式为( )。",
+    "options": [
+     "A.100/(F/A，8%，10)",
+     "B.100×(1＋8%)/(F/A，8%，10)",
+     "C.100×(1＋8%)/(P/A，8%，10)",
+     "D.100/(P/A，8%，10)"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "本题相当于已知现值求年金，A×(P/A，8%，10)＝100，A＝100/(P/A，8%，10)，选项D正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2020",
+    "title": "某公司取得3000万元的贷款，期限为6年，年利率10%，每年年初偿还等额本息，则每年年初应支付金额的计算正确的有( )",
+    "options": [
+     "A.3000/[(P/A，10%，5)＋1]",
+     "B.3000/[(P/A，10%，7)－1]",
+     "C.3000/[(P/A，10%，6)/(1＋10%)]",
+     "D.3000/[(P/A，10%，6)×(1＋10%)]"
+    ],
+    "answer": [
+     0,
+     3
+    ],
+    "explain": "设每年年初应支付的金额为A万元。方法一：把第2年至第6年支付的金额看成是普通年金，则有：A＋A×(P/A，10%，5)＝3000，选项A正确；方法二：预付年金现值＝普通年金现值×(1+i)，则有：A×(P/A，10%，6)×(1＋10%)＝3000，选项D正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "某人准备分期付款购房，如果现在一次性付款，需要支付100万元，如果分期付款，则需要在10年内，每年年初等额支付。假设房贷年利率为6%，则每年年初等额付款额为( )元(取整数)。已知：(F/A，6%，10)＝13.181，(P/A，6%，10)＝7.3601。",
+    "options": [
+     "A.75 867",
+     "B.135 868",
+     "C.144 020",
+     "D.128 177"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "本题已知预付年金现值求年金。预付年金现值＝普通年金现值×(1＋i)，1000000＝年金×7.3601×(1＋6%)，年金＝1000000/(7.3601×1.06)≈128177(元)\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024",
+    "title": "已知(P/A，8%，5)＝3.9927，(P/A，8%，6)＝4.6229，(P/A，8%，7)＝5.2064，则折现率为8%，期数为6的预付年金现值系数为（  ）。",
+    "options": [
+     "A.4.9927",
+     "B.6.2064",
+     "C.2.9927",
+     "D.4.2064"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "方法一：折现率为8%，其期数为6的预付年金现值系数＝(P/A，8%，6)×(1+8%)＝4.9927。方法二：利用期数减1，系数加1调整。折现率为8%，期数为6的预付年金现值系数＝(P/A，8%，5)+1＝3.9927+1＝4.9927，选项A正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2021",
+    "title": "每年年初存款，第10年末获得500万元，利率7%，复利计算，每年存( )。",
+    "options": [
+     "A.500/[(F/A，7%，11) -1]",
+     "B.500/[(F/A，7%，9)×(1+7%)]",
+     "C.500/[(F/A，7%，11)/(1+7%)]",
+     "D.500/[(F/A，7%，9) +1]"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "500＝A×(F/A, 7%，10)×(1＋7%)，因此A＝500/[ (F/A, 7%，10) ×(1＋7%)]， 选项B、C错误。或者：500＝A×[ (F/A，7%，11) －1], 因此A＝500[ (F/A,7%，11) －1]，选项A正确、选项D错误。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2022",
+    "title": "某投资者从现在开始存入第一笔款项，随后每年存款一次，共存款10次，每次存款金额相等，利率为6%，复利计息，该投资者期望在10年后一次性取得100万元，则其每次存款金额的计算式为( )。",
+    "options": [
+     "A.100/(F/A，6%，10)",
+     "B.100/(F/P，6%，10)",
+     "C.100/[(F/A，6%，10)×(1＋6%)]",
+     "D.100/[(F/P，6%，10) ×(1＋6%)]"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "每年存一笔相等金额，属于年金，所以使用年金现值系数而不是复利现值系数，选项B、D错误。从现在开始存入说明是预付年金系数，设每次存款金额为A，则有：A×(F/A，6%, 10)×(1＋6%)＝100。则其每次存款金额的计算式为：100/[(F/A，6%，10)×(1＋6%)]，选项C当选。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2024/2025",
+    "title": "某公司向银行借入一笔款项，年利率为10%，分6次还清，从第5年至第10年每年末偿还本息5 000元。下列计算该笔借款现值的算式中，正确的有( )。",
+    "options": [
+     "A.5000×(P/A，10%，6)×(P/F，10%，3)",
+     "B.5000×(P/A，10%，6)×(P/F，10%，4)",
+     "C.5000×[(P/A，10%，9)-(P/A，10%，3)]",
+     "D.5000×[(P/A，10%，10)-(P/A，10%，4)]"
+    ],
+    "answer": [
+     1,
+     3
+    ],
+    "explain": "从第5年至第10年每年末偿还本息5 000元，前4年没有，共6期年金，属于从第5年开始的递延年金。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2025",
+    "title": "某公司在今年年初有1000万元欠款，需要分5年偿还，年利率为6%，在每年年初等额偿还本息，则计算每次应偿还金额的正确表述式有( )。",
+    "options": [
+     "A.1000/[(P/A，6%，4)+1]",
+     "B.1000/[(P/A，6%，5)/(1+6%)]",
+     "C.1000/[(P/A，6%，5)×(1+6%)]",
+     "D.1000/[(P/A，6%，6)-1]"
+    ],
+    "answer": [
+     0,
+     2
+    ],
+    "explain": "在每年年初等额偿还本息，这属于预付年金。方法一:1000=每次应偿还金额×[(P/A，6%，4)+1]，可得，每次应偿还金额=1000/[(P/A，6%，4)+1]，选项A当选。方法二:1000=每次应偿还金额×(P/A，6%，5)×(1+6%)，可得，每次应偿还金额=1000/[(P/A，6%，5)×(1+6%)]，选项C当选。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2024",
+    "title": "某企业取得1000万元借款，年利率8%，约定第3年开始，连续5年每年年初等额偿还本息，下列关于企业偿还金额计算正确的有( )。",
+    "options": [
+     "A.1000/[(P/A，8%，5)×(P/F，8%，1)]",
+     "B.1000/[(P/A，8%，6)-(P/F，8%，1)]",
+     "C.1000/[(P/A，8%，5)×(P/F，8%，2)]",
+     "D.1000/[(P/A，8%，6)-(P/A，8%，1)]"
+    ],
+    "answer": [
+     0,
+     1,
+     3
+    ],
+    "explain": "本题为已知递延年金现值求年金A，递延期1年，年金期数5年，所以选项A正确，选项C错误。或者看成6年的年金折现扣减掉1年的年金现值因此，选项B、D正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "甲商场某型号电视机每台售价7200元，拟进行分期付款促销活动，价款可在9个月内按月分期，每期期初等额支付。假设年利率12%。下列各项金额中，最接近该电视机月初分期付款金额的是( )元。已知：（P/A，1%，8）＝7.6517，（P/A，1%，9）＝8.5660。",
+    "options": [
+     "A.832",
+     "B.800",
+     "C.841",
+     "D.850"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "计息期利率1%，月初分期付款金额＝7200/[(P/A,1%,9)×(1＋1%)]＝7200/[8.5660×(1＋1%)]＝832.21(元)。或者：付款金额现值＝7200/ [(P/A,1%,8)＋1] ＝7200/(7.6517＋1)＝832.21(元)，尾数差异为系数误差导致。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "如果马云的“乡村教师计划”拟在每年年初永久发放1 000万元奖励基金，年利率为4%，则该基金需要在第一年年初投入的资金数额为( )万元。",
+    "options": [
+     "A.25 000",
+     "B.26 000",
+     "C.∞",
+     "D.24 000"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "该基金需要在第一年年初投入的资金数额＝1000＋1000/(4%)＝26000(万元)。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "",
+    "title": "公司年初借入资金200万元，第3年年末一次性偿还本息260万元，则该笔借款的实际年利率小于10%。( )",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "解析：260＝200×（1＋i)^3，可以计算得出：i＝9.14%。或者：如果实际利率等于10%。则第3年终值＝200×（1＋10%)3＝266.2（万元）＞260（万元），说明实际年利率小于10%。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2019",
+    "title": "某公司设立一项偿债基金项目，连续10年于每年年末存入500万元，第10年年末可以一次性获取9 000万元，已知(F/A,8%,10)＝14.487，(F/A,10%,10)＝15.937，(F/A，12%，10)＝17.549，(F/A，14%,10)＝19.337，(F/A,16%,10)＝21.321，则该基金的收益率为( )。",
+    "options": [
+     "A.11.8%",
+     "B.12.5%",
+     "C.13.2%",
+     "D.14.05%"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "假设该基金的收益率为i，则500×(F/A,i,10)＝9000，解得：(F/A,i,10)＝18，同时：(F/A,12%,10)＝17.549，(F/A,14%,10)＝19.337，解得：i＝12.5%。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "某借款利息每半年偿还一次，年利率为8%，则实际借款利率为( )。",
+    "options": [
+     "A.8%",
+     "B.8.16%",
+     "C.8.24%",
+     "D.10.25%"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "实际利率＝(1＋8%/2)^2－1＝8.16%，故选项B正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "某人退休时有现金10万元，拟选择一项回报比较稳定的投资，希望每个季度能收入1 500元补贴生活。那么，该项投资的实际利率应为( )。",
+    "options": [
+     "A.1.5%",
+     "B.6%",
+     "C.6.09%",
+     "D.6.14%"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "每个季度的收益率＝1 500/100 000＝1.5%，实际利率＝(1＋1.5%)^4－1＝6.14%\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024、2025年换个数",
+    "title": "某债券名义利率为6.5%，若通货膨胀率为2.5%，则该债券的实际利率为（  ）。",
+    "options": [
+     "A.6.34%",
+     "B.3.90%",
+     "C.3.76%",
+     "D.4.28%"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "实实际利率＝(1+名义利率)/(1+通货膨胀率)-1＝(1+6.5%)/(1+2.5%)-1＝3.90%\n*"
+   },
+   {
+    "type": "single",
+    "year": "2020",
+    "title": "如果实际利率为10%，通货膨胀率为2%，则名义利率为( )。",
+    "options": [
+     "A.8%",
+     "B.7.84%",
+     "C.12.2%",
+     "D.12%"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "名义利率＝(1＋10%)×(1＋2%)－1＝12.2%。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2020",
+    "title": "如果通货膨胀率大于名义利率，则实际利率为正数。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "实际利率＝(1＋名义利率)/(1＋通货膨胀率)－1，如果通货膨胀率大于年名义利率，则实际利率为负数。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "某投资者年初以200元的价格购买A股票，当年获得分红10元，当年年末以206元的价格出售该股票，则该股票的持有期间有关收益率的说法正确的有( )。",
+    "options": [
+     "A.持有期间收益率8%",
+     "B.持有期间收益率5%",
+     "C.股息收益率5%",
+     "D.资本利得收益率3%"
+    ],
+    "answer": [
+     0,
+     2,
+     3
+    ],
+    "explain": "持有期间收益率＝[(206－200)＋10]/200×100%＝资本利得收益率3%＋股息收益率5%＝8%。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "如果纯利率为4%，通货膨胀补偿率为2%，风险收益率为6%，则必要收益率为( )。",
+    "options": [
+     "A.8%",
+     "B.6%",
+     "C.12%",
+     "D.10%"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "必要收益率＝纯粹利率＋通货膨胀补偿率＋风险收益率＝4%＋2%＋6%＝12%。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2021",
+    "title": "关于两项证券资产的风险比较，下列说法正确的有( )。",
+    "options": [
+     "A.期望值相同的情况下，标准差率越大，风险程度越大",
+     "B.期望值不同的情况下，标准差率越大，风险程度越大",
+     "C.期望值不同的情况下，标准差越大，风险程度越大",
+     "D.期望值相同的情况下，标准差越大，风险程度越大"
+    ],
+    "answer": [
+     0,
+     1,
+     3
+    ],
+    "explain": "标准差以绝对数衡量决策方案的风险，不适用于期望值不同的决策方案风险程度的比较。在期望值相同的情况下，标准差越大，风险越大；标准差越小，则风险越小。标准差率是一个相对指标，它以相对数反映决策方案的风险程度，既适用于期望值相同的决策方案，也适用于期望值不同的决策方案。标准差率越大，风险越大；标准差率越小，风险越小。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2022",
+    "title": "甲、乙两个投资项目的期望收益率分别为10%、14%，收益率标准差均为3.2%，则下列说法正确的是( )。",
+    "options": [
+     "A.乙项目的风险高于甲项目",
+     "B.无法判断两者风险的高低",
+     "C.甲项目的风险高于乙项目",
+     "D.甲项目与乙项目的风险相等"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "在期望值不同的情况下，标准差率越大，风险越大。甲项目标准差率＝3.2%/10%＝32%，乙项目标准差率＝3.2%/14%＝22.86%。所以，甲项目的风险高于乙项目，选项C当选。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "某项目的期望投资收益率为14%，风险收益率为9%，收益率的标准差为2%，则该项目收益率的标准差率为( )。",
+    "options": [
+     "A.0.29%",
+     "B.22.22%",
+     "C.14.29%",
+     "D.0.44%"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "项目收益率的标准差率＝2%/14%×100%＝14.29%，选项C正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2022",
+    "title": "某投资组合由A、B两种股票构成，权重分别为40%、60%，两种股票的期望收益率分别为10%、15%,两种股票收益率的相关系数为0.7，则该投资组合的期望收益率为( )。",
+    "options": [
+     "A.12.5%",
+     "B.9.1%",
+     "C.13%",
+     "D.17.5%"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "该投资组合的期望收益＝10%×40%＋15%×60%＝13%，选项C当选。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2021",
+    "title": "在两种证券构成的投资组合中，关于两种证券收益率的相关系数，下列说法正确的有( )。",
+    "options": [
+     "A.当相关系数为0时，两种证券的收益率不相关",
+     "B.相关系数的绝对值可能大于1",
+     "C.当相关系数为﹣1时，该投资组合能最大限度地降低风险",
+     "D.当相关系数为0.9时，该投资组合不能分散风险"
+    ],
+    "answer": [
+     0,
+     2
+    ],
+    "explain": "两种证券收益率的相关系数，理论上介于区间[-1，1]内，因此绝对值不会大于1，所以选项B错误。当相关系数等于1时，两种证券的收益率完全正相关，这样的组合不能降低任何风险。在取值范围内，只要相关系数不为1，就可以在一定程度上分散风险，所以选项D错误。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2021",
+    "title": "由两项资产构成的投资组合，如果要达到分散风险的目的，前提条件是这两项资产的收益率负相关。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "两项资产的收益率只要相关系数小于1，由两项资产构成的投资组合就可以达到分散风险的目的。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2021",
+    "title": "收益率的标准差作为衡量某单项资产风险的指标。如果将该资产作为投资组合的一部分，这种风险衡量指标可能失效。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "尽管收益率方差、标准差、标准差率是衡量风险的有效工具，但当某项资产或证券成为投资组合的一部分时，这些指标就可能不再是衡量风险的有效工具。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2020",
+    "title": "下列各项中，属于公司股票面临的系统性风险的有( )。",
+    "options": [
+     "A.公司业绩下滑",
+     "B.市场利率波动",
+     "C.宏观经济政策调整",
+     "D.公司管理层变更"
+    ],
+    "answer": [
+     1,
+     2
+    ],
+    "explain": "系统风险包括宏观经济形势的变动、国家经济政策的变化、税制改革、企业会计准则改革、世界能源状况、政治因素等，故选项B、C正确。非系统风包括工人罢工、新产品开发失败、失去重要的销售合同、诉讼失败或者宣告发现新矿藏、取得一个重要合同等。这种风险可以通过资产组合来分散，即发生于一家公司的不利事件可以被其他公司的有利事件所抵销，故选项A、D错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2020",
+    "title": "下列各项中，将导致系统性风险的有( )。",
+    "options": [
+     "A.发生通货膨胀",
+     "B.市场利率上升",
+     "C.国民经济衰退",
+     "D.企业新产品研发失败"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "系统风险又被称为市场风险或不可分散风险，是影响所有资产的、不能通过资产组合而消除的风险。选项A、B、C均会影响所有资产，所以均会导致系统性风险。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "下列各项中，属于非系统风险的是( )。",
+    "options": [
+     "A.由于利率上升而导致的价格风险",
+     "B.由于通货膨胀而导致的购买力风险",
+     "C.由于公司经营不善而导致的破产风险",
+     "D.由于利率下降而导致的再投资风险"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "系统风险又被称为市场风险或不可分散风险，是影响所有资产的、不能通过资产组合而消除的风险。这部分风险是由那些影响整个市场的风险因素所引起的。非系统风险，是指发生于个别公司的特有事件造成的风险。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2018",
+    "title": "若两项证券资产收益率的相关系数为0.5，则下列说法正确的是( )。",
+    "options": [
+     "A.两项资产的收益率之间不存在相关性",
+     "B.无法判断两项资产的收益率是否存在相关性",
+     "C.两项资产的组合可以分散一部分非系统性风险",
+     "D.两项资产的组合可以分散一部分系统性风险"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "若两项证券资产收益率的相关系数为0.5，具有风险分散化效应，可以分散掉一部分非系统性风险，所以选择C正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2017税务师",
+    "title": "下列关于证券资产组合风险的表述中，正确的有( )。",
+    "options": [
+     "A.证券资产组合中的非系统风险能随着资产种类的增加而逐渐减小",
+     "B.证券资产组合中的系统风险能随着资产种类的增加而不断降低",
+     "C.当资产组合的收益率的相关系数大于零时，组合的风险小于组合中各项资产风险的加权平均数",
+     "D.当资产组合的收益率具有完全负相关关系时，组合风险可以充分地相互抵消",
+     "E.当资产组合的收益率具有完全正相关关系时，组合的风险等于组合中各项资产风险的加权平均数"
+    ],
+    "answer": [
+     0,
+     3,
+     4
+    ],
+    "explain": "系统风险不能随着资产种类的增加而分散，选项B错误；当相关系数小于1大于﹣1时，证券资产组合的风险小于组合中各项资产风险的加权平均数，而不是大于0，选项C错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2017",
+    "title": "下列关于证券投资组合的表述中，正确的有( )。",
+    "options": [
+     "A.两种证券的收益率完全正相关时可以消除风险",
+     "B.投资组合收益率为组合中各单项资产收益率的加权平均数",
+     "C.投资组合风险是各单项资产风险的加权平均数",
+     "D.投资组合能够分散掉的是非系统风险"
+    ],
+    "answer": [
+     1,
+     3
+    ],
+    "explain": "两种证券的收益率完全正相关时不能抵消任何风险，所以选项A错误。证券组合的风险不仅取决于组合内的各证券的风险，还取决于各个证券之间的关系。只有在相关系数为1时，投资组合风险是各单项资产风险的加权平均数，所以选项C错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "关于两种证券组合的风险，下列表述正确的有( )。",
+    "options": [
+     "A.只要两种证券收益率的相关系数不等于1，该证券组合就能够分散部分风险",
+     "B.若两种证券收益率的相关系数为0，该证券组合能够分散部分风险",
+     "C.若两种证券收益率的相关系数为﹣1，该证券组合无法分散风险",
+     "D.若两种证券收益率的相关系数1，该证券组合仅能够分散非系统风险"
+    ],
+    "answer": [
+     0,
+     1
+    ],
+    "explain": "若两种证券收益率的相关系数为1，表明两项资产的收益率具有完全正相关的关系，即它们的收益率变化方向和变化幅度完全相同，该证券组合不能降低任何风险，选项D错误。若两种证券收益率的相关系数为-1，该证券组合能够最大程度地降低风险，选项C错误。若两种证券收益率的相关系数小于1且大于-1，该证券组合能够分散风险，但不能完全消除风险，选项A、B正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2019",
+    "title": "关于系统风险和非系统风险，下列表述错误的是( )。",
+    "options": [
+     "A.证券市场的系统风险不能通过证券组合予以消除",
+     "B.若证券组合中各证券收益率之间负相关，则该组合能分散非系统风险",
+     "C.在资本资产定价模型中，β系数衡量的是投资组合的非系统风险",
+     "D.某公司新产品开发失败的风险属于非系统风险"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "在资本资产定价模型中，计算风险收益率时只考虑了系统风险，没有考虑非系统风险，这是因为非系统风险可以通过资产组合消除，β系数可以用来衡量资产的系统风险，选项C错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2025",
+    "title": "现有证券X和证券Y组成的投资组合，下列情况中，该组合风险低于两种证券风险加权平均值的有( )。",
+    "options": [
+     "A.X和Y证券收益率的相关系数为1",
+     "B.X和Y证券收益率的相关系数为-1",
+     "C.X和Y证券收益率的相关系数为-0.3",
+     "D.X和Y证券收益率的相关系数为0"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "若两种证券收益率的相关系数为1，表明它们的收益率变化方向和变化幅度完全相同，该证券组合不能分散任何风险，该组合风险等于两种证券风险加权平均值，选项A不当选。只有在相关系数 小于1 的情况下，两种证券构成的组合才能分散风险，该组合风险低于两种证券风险加权平均值。选项B、C、D当选。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "甲投资组合由证券X和证券Y组成，X占40%，Y占60%。下列说法中正确的有( )。",
+    "options": [
+     "A.甲的预期收益率＝X的预期收益率×40%＋Y的预期收益率×60%",
+     "B.甲预期收益率的标准差＝X预期收益率的标准差×40%＋Y预期收益率的标准差×60%",
+     "C.甲预期收益率的标准差率＝X预期收益率的标准差率×40%＋Y预期收益率的标准差率×60%",
+     "D.甲的β系数＝X的β系数×40%＋Y的β系数×60%"
+    ],
+    "answer": [
+     0,
+     3
+    ],
+    "explain": "投资组合理论认为，若干种证券组成的投资组合，其收益是这些证券收益的加权平均数，但是其风险不是这些证券风险的加权平均风险，投资组合能降低风险，因此选项A正确，选项B错误；标准差率是标准差与期望值的比，因此选项C错误；投资组合的系数等于被组合各证券β系数值的加权平均数，因此选项D正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2024",
+    "title": "甲证券的预期收益率为12%，收益率的标准差为10%，乙证券的预期收益率为20%，收益率的标准差为15%，甲、乙证券收益率相关系数为0.2，关于甲、乙证券组成的投资组合，下列表述正确的有（  ）。",
+    "options": [
+     "A.组合的预期收益率不高于20%",
+     "B.组合预期收益率标准差可能为0",
+     "C.组合的预期收益率不低于12%",
+     "D.组合预期收益率标准差不超过15%"
+    ],
+    "answer": [
+     0,
+     2,
+     3
+    ],
+    "explain": "证券资产组合的预期收益率是组成证券资产组合的各种资产收益率的加权平均数，因此组合的预期收益率最高为20%，最低为12%，选项A、C正确。只有相关系数为﹣1，组合预期收益率标准差可能为0，本题相关系数为0.2，因此选项B错误，选项D正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2022CPA",
+    "title": "甲投资组合由证券A和证券B各占50%构成，证券A的期望收益率为10%，标准差为12%，β系数为1.3，证券B的期望收益率为14%，标准差为16%，β系数为1.1。证券A和证券B的相关系数为0，则下列说法中，正确的有( )。",
+    "options": [
+     "A.投资组合的期望报酬率为12%",
+     "B.投资组合的β系数为1.2",
+     "C.投资组合的标准差为14%",
+     "D.投资组合的标准差率为1.17"
+    ],
+    "answer": [
+     0,
+     1
+    ],
+    "explain": "投资组合的期望报酬率＝10%×50%＋14%×50%＝12%，选项A正确，投资组合的β系数＝1.3×50%＋1.1×50%＝1.2，选项B正确；投资组合的标准差＝[(50%×12%)^2+(50%×16%)^2)]^(1/2)＝10%，选项C错误；投资组合标准差率＝10%÷12%＝0.83，选项D错误。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2025",
+    "title": "基于资本资产定价模型，若某企业的股票预期收益率大于必要收益率，则该公司股票被高估。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "若股票的预期收益率大于必要收益率，说明当前股价低于其按必要报酬率计算的内在价值，股票被低估。或者想成如果高估，就是按市场上更高的价格买入，预期收益率会会更低，小于必要收益率。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "当某上市公司的β系数大于0时，下列关于该公司风险与收益表述中，正确的是( )。",
+    "options": [
+     "A.系统风险高于市场组合风险",
+     "B.资产收益率与市场平均收益率呈同向变化",
+     "C.该公司的系统风险大于非系统性风险",
+     "D.资产收益率变动幅度大于市场平均收益率变动幅度"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "某一资产β值的大小反映了该资产收益率波动与整个市场报酬率波动之间的相关性和程度。β＞0，说明该上市公司的资产收益率与市场平均收益率呈同向变化，所以选项B正确。如果资产收益率变动幅度大于市场平均收益率变动幅度，即该资产所含的系统风险大于市场组合的系统风险，则β必须大于1，所以选项A、D错误。根据β值不能判断系统性和非系统性风险的大小，选项C错误。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2024/2025",
+    "title": "在证券资产组合中，如果不存在收益率完全正相关的资产，通过增加组合中的资产种类，可以使资产组合的风险逐渐降低。（  ）",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "如果不存在收益率完全正相关的资产，通过增加组合中的资产种类，可以降低甚至消除非系统风险，从而使组合风险逐渐降低。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2018",
+    "title": "关于资本资产定价模型，下列说法正确的有( )。",
+    "options": [
+     "A.该模型反映资产的必要收益率而不是实际收益率",
+     "B.该模型中的资本资产主要指的是债券资产",
+     "C.该模型解释了风险收益率的决定因素和度量方法",
+     "D.该模型反映了系统性风险对资产必要收益率的影响"
+    ],
+    "answer": [
+     0,
+     2,
+     3
+    ],
+    "explain": "资产资产定价模型反映资产的必要收益率而不是实际收益率，所以A正确，该模型中的资本资产主要指的是股票资产，所以B错误，该模型解释了风险收益率的决定因素和度量方法，反映了系统性风险对资产必要收益率的影响，所以CD正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列关于资本资产定价原理的说法中，正确的有( )。",
+    "options": [
+     "A.投资者的必要收益率与β值线性相关",
+     "B.在其他条件相同时，经营杠杆较高的公司β值较大",
+     "C.在其他条件相同时，财务杠杆较高的公司β值较大",
+     "D.若投资组合的β值等于1，表明该组合没有市场风险"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "从资本资产定价模型的公式可以看出，投资者的必要收益率与β值线性相关，所以选项A正确。在其他条件相同时，经营杠杆、财务杠杆较大，说明公司风险越大，随市场风险的波动越大，β值越大，所以选项B、C正确。若投资组合的β值等于1，表明该组合的系统风险与整个市场组合的风险相同，所以选项D错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "某上市公司2022年的β系数为1.24，短期国债利率为3.5%。市场组合的收益率为8%，对投资者投资该公司股票的必要收益率是( )。",
+    "options": [
+     "A.5.58%",
+     "B.9.08%",
+     "C.13.52%",
+     "D.17.76%"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "必要收益率＝3.5%＋1.24×(8%－3.5%)＝9.08%\n*"
+   },
+   {
+    "type": "single",
+    "year": "2025",
+    "title": "已知无风险收益率为4%，甲股票的必要收益率为18%，β系数为2，若乙股票的必要收益率为8.2%，则乙股票的β系数为（ ）。",
+    "options": [
+     "A.0.6",
+     "B.0.91",
+     "C.1.17",
+     "D.0.38"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "根据资本资产定价模型，由甲股票数据可知:18% = 4% + 2 × 市场风险溢酬，故市场风险溢酬= 7%。由乙股票数据可知:8.2% = 4% + β乙 × 7%，故β乙 =（8.2%-4%）÷ 7% = 0.6。选项A当选。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2021、2024",
+    "title": "根据资本资产定价模型，如果A证券的系统性风险是B证券的2倍，则A证券的必要收益率也是B证券的2倍。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "某资产的必要收益率＝无风险收益率＋β系数×(平均风险的必要收益率－无风险收益率)。如果A证券的系统性风险是B证券的2倍，则A证券的风险收益率是B证券风险收益率的2倍。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2019",
+    "title": "有甲、乙两种证券，甲证券的必要收益率为10%，乙证券要求的风险收益率是甲证券的1.5倍，如果无风险收益率为4%，则根据资本资产定价模型，乙证券的必要收益率为( )。",
+    "options": [
+     "A.12%",
+     "B.16%",
+     "C.15%",
+     "D.13%"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "根据资本资产定价模型：甲证券的必要收益率＝4%＋甲证券的风险收益率＝10%，得出：甲证券的风险收益率＝6%，则乙证券的必要收益率＝4%＋6%×1.5＝13%。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2020",
+    "title": "某资产的必要收益率为R，β系数为1.5，市场收益率为10%，假设无风险收益率和系数不变，如果市场收益率为15%，则资产收益率为( )。",
+    "options": [
+     "A.R＋7.5%",
+     "B.R＋12.5%",
+     "C.R＋10%",
+     "D.R＋5%"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "根据资本资产定价模型：由于无风险收益率和系数不变，并且β系数为1.5，所以，市场收益率提高5%之后，该资产的必要收益率提高1.5×5%＝7.5%，故选项A正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "已知甲公司股票贝塔系数为1.1，期望报酬率为10.7%；乙公司股票的贝塔系数为0.6，期望报酬率为7.2%。假设市场对这些证券不存在高估或低估的情况，则下列结果正确的有( )。",
+    "options": [
+     "A.市场组合的必要报酬率为10%",
+     "B.市场组合的必要报酬率为7%",
+     "C.无风险报酬率为3%",
+     "D.无风险报酬率为4%"
+    ],
+    "answer": [
+     0,
+     2
+    ],
+    "explain": "由：10.7%＝Rf＋1.1×(Rm－Rf) 7.2%＝Rf＋0.6×(Rm－Rf)解得：Rf＝3%，Rm＝10%。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2024",
+    "title": "在其他条件不变的情况下，关于资本资产定价模型，下列表述正确的有（  ）。",
+    "options": [
+     "A.资本资产定价模型中的市场风险溢酬等于市场组合收益率",
+     "B.资产的β系数是该资产的系统性风险系数",
+     "C.市场整体对风险越厌恶，市场风险溢酬越大",
+     "D.市场的抗风险能力越强，市场风险溢酬越大"
+    ],
+    "answer": [
+     1,
+     2
+    ],
+    "explain": "资本资产定价模型中的市场风险溢酬＝市场组合收益率-无风险收益率，选项A错误；β系数是用来衡量系统性风险大小的，称为系统性风险系数，选项Ｂ正确；市场整体对风险越厌恶，市场风险溢酬越大，市场的抗风险能力越强，市场风险溢酬越小，选项Ｃ正确、选项D错误。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "",
+    "title": "风险管理的二重性原则要求，当风险损失不能避免时，尽量减少损失至最小化；风险损失可能发生可能不发生时，设法降低风险发生的可能性；风险预示着机会时，化风险为增加企业价值的机会。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "无\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下面关于风险管理的二重性原则表述正确的有( )。",
+    "options": [
+     "A.损失最小化管理是指当风险损失不能避免时，尽量减少损失至最小化",
+     "B.不确定性管理是指风险损失可能发生或可能不发生时，设法降低风险发生的可能",
+     "C.绩效最优化管理是指风险预示着机会时，化风险为增进企业价值的机会",
+     "D.风险二重性原则是指风险与机会共存"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "企业全面风险管理的商业使命在于：损失最小化管理、不确定性管理和绩效最优化管理。当风险损失不能避免时，尽量减少损失至最小化(选项A)；风险损失可能发生可能不发生时，设法降低风险发生的可能性(选项B)；风险预示着机会时，化风险为增加企业价值的机会(选项C)。从内容可见，风险二重性原则是指风险与机会共存。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "下列各种风险应对措施中，属于风险转换的是( )。",
+    "options": [
+     "A.退出竞争激烈的市场",
+     "B.多元化投资",
+     "C.为了扩大销售，放宽信用政策",
+     "D.对采购环节进行合规性检查"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "选项A属于风险规避，选项B属于风险对冲。选项D属于风险控制。选项C为了扩大销售，放宽信用政策，销售不畅的风险转换为可能形成坏账的风险。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2018修改",
+    "title": "某公司购买一批贵金属材料，为避免资产被盗而造成的损失，向财产保险公司进行了投保，则该公司采取的风险对策是( )。",
+    "options": [
+     "A.风险规避",
+     "B.风险承担",
+     "C.风险转移",
+     "D.风险对冲"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "转移风险是通过合同将风险转移到第三方，如购买保险、采取合营方式实现风险共担、业务外包等。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2020修改",
+    "title": "企业计提资产减值准备，从风险对策上看属于( )。",
+    "options": [
+     "A.风险承担",
+     "B.风险转换",
+     "C.风险对冲",
+     "D.风险补偿"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "风险补偿是指企业对风险可能造成的损失采取适当的措施进行补偿，形式包括财务补偿、人力补偿、物资补偿。常见的财务补偿包括企业自身的风险准备金或应急资本等。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "下列各种风险管理策略中，属于风险控制的是( )。",
+    "options": [
+     "A.业务外包",
+     "B.多元化投资实现多种经营",
+     "C.进行财务合规检查",
+     "D.紧缩信用政策"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "风险控制是指控制风险事件发生的动因、环境、条件等，来达到减轻风险事件发生时的损失或降低风险事件发生概率的目的。风险控制对象一般是可控风险，包括多数运营风险、如质量、安全和环境风险以及法律风险中的合规性风险。选项A业务外包属于风险转移；选项B多元化投资实现多种经营属于风险对冲；选项D紧缩信用政策会减少应收账款，减少坏账的发生，但是不利于销售，属于风险转换。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2019",
+    "title": "在一定期间及特定的业务量范围内，关于成本与业务量之间的关系，下列说法正确的有( )。",
+    "options": [
+     "A.固定成本总额随业务量的增加而增加",
+     "B.单位固定成本随业务量的增加而降低",
+     "C.变动成本总额随业务量的增加而增加",
+     "D.单位变动成本随业务量的增加而降低"
+    ],
+    "answer": [
+     1,
+     2
+    ],
+    "explain": "固定成本的基本特征是：固定成本总额不因业务量的变动而变动，但单位固定成本(单位业务量负担的固定成本)会与业务量的增减呈反向变动。变动成本的基本特征是：变动成本总额因业务量的变动而成正比例变动，但单位变动成本(单位业务量负担的变动成本)不变。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2024/2025",
+    "title": "根据成本性态，在相关范围内，单位固定成本随着业务量的变动成反比例变动。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "在相关业务量范围内，固定成本总额不变，单位固定成本随着业务量的变动成反比例变动。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2024",
+    "title": "下列各项中，一般属于酌量性固定成本的有( )。",
+    "options": [
+     "A.新产品研发费",
+     "B.广告费",
+     "C.职工培训费",
+     "D.设备折旧费"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "酌量性固定成本是指管理当局的短期经营决策行动能改变其数额的固定成本。例如：广告费、职工培训费、新产品研究开发费用。选项D属于约束性固定成本。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "下列各项成本费用中，属于酌量性固定成本的是( )。",
+    "options": [
+     "A.广告费",
+     "B.运输车辆保险费",
+     "C.生产部门管理人员工资",
+     "D.行政部门耗用的水电费"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "酌量性固定成本指的是可以通过管理决策行动而改变数额的固定成本，包括科研开发费、广告费、职工培训费等，所以选项A是答案，选项BCD属于约束性固定成本。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2017",
+    "title": "下列各项中，属于变动成本的有( )。",
+    "options": [
+     "A.新产品的研究开发费用",
+     "B.按产量法计提的固定资产折旧",
+     "C.按销售收入一定百分比支付的技术转让费",
+     "D.随产品销售的包装物成本"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "变动成本是指在特定的业务量范围内，其总额会随业务量的变动而成正比例变动的成本。如按销售收入的一定百分比支付的销售佣金、技术转让费等。因此选项B、C、D正确；而新产品的研究开发费用属于固定成本，选项A错误。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "下列各项中，属于酌量性变动成本的是( )。",
+    "options": [
+     "A.直接材料",
+     "B.按销售收入的一定百分比支付的销售佣金",
+     "C.管理人员基本工资",
+     "D.房屋租金"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "技术性变动成本也称约束性变动成本，是由技术或设计关系所决定的变动成本，只要生产就必然会发生，例如原材料，选项A不当选；酌量性变动成本是指通过管理当局的决策行动可以改变的变动成本，例如按销售收入的一定百分比支付的销售佣金、新产品研制费、技术转让费等，选项B当选；约束性固定成本是指管理当局的短期经营决策行动不能改变其具体数额的固定成本，包括房屋租金、固定的设备折旧、管理人员的基本工资、车辆交强险等，选项C、D不当选。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2021",
+    "title": "基于成本性态，下列各项中属于技术性变动成本的是( )。",
+    "options": [
+     "A.按销量支付的专利使用费",
+     "B.加班加点工资",
+     "C.产品销售佣金",
+     "D.产品耗用的主要零部件"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "技术性变动成本也称约束性变动成本，是指由技术或设计关系所决定的变动成本。如生产一台汽车需要耗用一台引擎、一个底盘和若干轮胎等，这种成本只要生产就必然会发生，如果不生产，则不会发生。选项A、C属于酌量性变动成本。B属于混合成本。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2022CPA",
+    "title": "甲公司空调维修合同规定：每年上门维修不超过5次时，维修费用总计3 000元；超过5次时，在此基础上超出次数按每次1 000元付费。根据成本性态分析，该项维修费用属于( )。",
+    "options": [
+     "A.半变动成本",
+     "B.阶梯式成本",
+     "C.半固定成本",
+     "D.延期变动成本"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "延期变动成本在一定的业务量范围内有一个固定不变的基数，当业务量增长超出了这个范围，与业务量增长成正比例变动，因此选项D正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024",
+    "title": "某公司招聘一名员工做直播带货，每月底薪6 000元，每销售一件产品给予2元提成。根据成本性态，该员工的薪酬属于（  ）。",
+    "options": [
+     "A.延期变动成本",
+     "B.递增曲线变动成本",
+     "C.半变动成本",
+     "D.半固定成本"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "半变动成本的特征是当业务量为0时，成本有个非0的初始基数，当业务量发生时，成本以该基数为起点，随业务量成正比例增长。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "电信运营商推出“手机10元保号，可免费接听电话和接收短信，主叫国内通话每分钟0.2元”套餐业务，若选用该套餐，则消费者每月手机费属于( )。",
+    "options": [
+     "A.半变动成本",
+     "B.固定成本",
+     "C.阶梯式成本",
+     "D.延期变动成本"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "半变动成本是指在初始成本的基础上随业务量正比例增长的成本。10元视为初始成本，之后随话务量增加呈正比例增加，所以选项A正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2025",
+    "title": "甲公司的销售人员每月固定薪资为8000元，当每月销售量超过1000件之后，每销售1件提成2元，则销售人员的工资属于（ ）。",
+    "options": [
+     "A.曲线成本",
+     "B.半固定成本",
+     "C.半变动成本",
+     "D.延期变动成本"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "延期变动成本在一定的业务量范围内（1000件）有个固定不变的基数（8000元），当业务量增长超出了这个范围（超过1000件），它就与业务量的增长呈正比例变动（每销售1件提成2元）。本题表述符合延期变动成本定义，故选项D当选。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "下列关于混合成本性态分析的说法中，错误的是( )。",
+    "options": [
+     "A.半变动成本可分解为固定成本和变动成本",
+     "B.延期变动成本在一定业务量范围内为固定成本，超过该业务量可分解为固定成本和变动成本",
+     "C.阶梯式成本在一定业务量范围内为固定成本，当业务量超过一定限度，成本跳跃到新的水平时，以新的成本作为固定成本",
+     "D.为简化数据处理，在相关范围内曲线成本可以近似看成半变动成本"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "延期变动成本在一定业务量范围内为固定成本，超过特定业务量则成为变动成本，所以选项B错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "基于成本性态分析，对于企业推出的新产品所发生的混合成本，不适宜采用的混合成本分解方法有(  )。",
+    "options": [
+     "A.高低点法",
+     "B.合同确认法",
+     "C.回归直线法",
+     "D.工业工程法"
+    ],
+    "answer": [
+     0,
+     2
+    ],
+    "explain": "高低点法和回归直线法，都属于历史成本分析的方法，它们仅限于有历史成本资料数据的情况，而新产品并不具有足够的历史数据，选项A、C当选。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "A公司机器设备的维修费为半变动成本，机器最低运行100小时的维修费为250元，最高运行150小时的维修费为300元。如果机器运行时间为80小时，维修费为( )元。",
+    "options": [
+     "A.200",
+     "B.220",
+     "C.230",
+     "D.250"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "根据250＝a＋100×b，300＝a＋150×b，解得a＝150，b＝1，所以，机器运行时间为80小时，维修费＝150＋80×1＝230(元)。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2023",
+    "title": "固定成本分为约束性固定成本和酌量性固定成本，对于这两种类型固定成本，下列表述正确的有（ ）。",
+    "options": [
+     "A.加强约束性固定成本管理的基本途径在于合理运用现有的生产能力",
+     "B.约束性固定成本是受到企业严格预算约束而不能轻易改变的成本",
+     "C.降低酌量性固定成本的基本途径在于提高生产能力的利用效率",
+     "D.酌量性固定成本是指管理当局短期经营决策行为能够改变的成本"
+    ],
+    "answer": [
+     0,
+     1,
+     3
+    ],
+    "explain": "降低约束性固定成本的基本途径在于提高生产能力的利用效率。要想降低酌量性固定成本，基本途径在于厉行节约、精打细算，编制出积极可行的费用预算并严格执行，防止浪费和过度投资等。选项C错误。\n保存报告\n收起答题解析\n问卷星提供技术支持\n举报\n抽奖规则"
+   }
+  ]
+ },
+ "ch3": {
+  "name": "第三章 预算管理",
+  "questions": [
+   {
+    "type": "judge",
+    "year": "2022",
+    "title": "在企业预算体系中，产品成本预算是编制销售预算及生产预算的基础。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "销售预算是整个预算的编制起点，生产预算根据销售预算编制。在生产预算的基础上进一步编制直接材料预算、直接人工预算和制造费用预算，进而编制产品成本预算，所以销售预算、生产预算是产品成本预算的编制基础，所以本题表述错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列各项中，属于经营预算内容的有( )。",
+    "options": [
+     "A.销售预算",
+     "B.采购预算",
+     "C.生产预算",
+     "D.资金预算"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "经营预算是指与企业日常业务直接相关的一系列预算，包括销售预算、生产预算、采购预算、费用预算、人力资源预算等。选项D属于财务预算。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "在企业编制的下列预算中，属于财务预算的有( )。",
+    "options": [
+     "A.制造费用预算",
+     "B.资本支出预算",
+     "C.预计资产负债表",
+     "D.预计利润表"
+    ],
+    "answer": [
+     2,
+     3
+    ],
+    "explain": "财务预算是指与企业资金收支、财务状况或经营成果等有关的预算，包括资金预算、预计利润表、预计资产负债表等。选项A属于经营预算，选项B属于专门决策预算。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2020",
+    "title": "下列各项中，属于专门决策预算的是( )。",
+    "options": [
+     "A.预计利润表",
+     "B.产品成本预算",
+     "C.资本支出预算",
+     "D.预计资产负债表"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "专门决策预算是指企业重大的或不经常发生的、需要根据特定决策编制的预算，包括投融资决策预算等，所以选项C正确。选项A、D属于财务预算，选项B属于经营预算。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2022",
+    "title": "下列各项中，属于总预算内容的有( )。",
+    "options": [
+     "A.管理费用预算",
+     "B.预计利润表",
+     "C.生产预算",
+     "D.资金预算"
+    ],
+    "answer": [
+     1,
+     3
+    ],
+    "explain": "财务预算是指与企业资金收支、财务状况或经营成果等有关的预算，包括资金预算、预计资产负债表、预计利润表等。财务预算作为全面预算体系的最后环节，它是从价值方面总括地反映企业经营预算与专门决策预算的结果，故也称为总预算。选项B、D当选。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列关于财务预算的表述中，正确的有( )。",
+    "options": [
+     "A.财务预算多为长期预算",
+     "B.财务预算又被称作总预算",
+     "C.财务预算是全面预算体系的最后环节",
+     "D.财务预算主要包括资金预算和预计财务报表"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "一般情况下，企业的经营预算和财务预算多为1年期的短期预算，所以选项A错误；财务预算主要包括资金预算和预计财务报表，它是全面预算的最后环节，是总括反映企业经营预算和专门决策预算的结果，亦称总预算。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2021",
+    "title": "在全面预算体系中，企业应当首先编制财务预算，在此基础上编制经营预算与专门决策预算。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "财务预算作为全面预算体系的最后环节，它是从价值方面总括地反映企业经营预算与专门决策预算的结果，故亦称为总预算。因此，应当首先编制经营预算与专门决策预算，最后再编制财务预算。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "下列各项中，综合性较强的预算是( )。",
+    "options": [
+     "A.销售预算",
+     "B.直接材料预算",
+     "C.资金预算",
+     "D.资本支出预算"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "财务预算是全面预算体系的最后环节，是总预算，所以综合性较强。资金预算属于财务预算，因此本题的正确答案为选项C。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "下列各项中，不属于增量预算基本假定的是( )。",
+    "options": [
+     "A.未来预算期和费用变动是在现有费用的基础上调整的结果",
+     "B.预算费用标准必须进行调整",
+     "C.原有的各项开支都是合理的",
+     "D.现有的业务活动为企业必需"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "增量预算假定企业现有各项业务的开支水平是合理的，因此，不对成本和费用进行调整。所以选项B不正确\n*"
+   },
+   {
+    "type": "single",
+    "year": "2020",
+    "title": "相对于增量预算，下列关于零基预算的表述中错误的是( )。",
+    "options": [
+     "A.预算编制成本相对较高",
+     "B.预算编制工作量相对较少",
+     "C.以零为起点编制预算",
+     "D.不受历史期不合理因素的影响"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "零基预算法的优点表现在：(1)以零为起点编制预算，不受历史期经济活动中的不合理因素影响，能够灵活应对内外环境的变化，预算编制更贴近预算期企业经济活动需要；(2)有助于增加预算编制透明度，有利于进行预算控制。缺点主要体现在：(1)预算编制工作量较大、成本较高；(2)预算编制的准确性受企业管理水平和相关数据标准准确性影响较大。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2021CPA",
+    "title": "下列关于零基预算法的说法中，正确的有( )。",
+    "options": [
+     "A.零基预算法的主要缺点是编制工作量大",
+     "B.零基预算法假设原有各项业务及金额都合理",
+     "C.不经常发生的预算项目适合用零基预算法编制",
+     "D.不受前期费用项目和费用水平的制约是零基预算法的优点之一"
+    ],
+    "answer": [
+     0,
+     2,
+     3
+    ],
+    "explain": "应用零基预算法编制费用预算的优点是不受前期费用项目和费用水平的制约，能够调动各部门降低费用的积极性，但其缺点是编制工作量大。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2014CPA",
+    "title": "与增量预算编制方法相比，零基预算编制方法的优点有( )。",
+    "options": [
+     "A.可以重新审视现有业务的合理性",
+     "B.可以避免前期不合理费用项目的干扰",
+     "C.可以调动各部门降低费用的积极性",
+     "D.编制工作量小"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "应用零基预算法编制费用预算的优点是不受前期费用项目和费用水平的制约，能够调动各部门降低费用的积极性，但其缺点是编制工作量大。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2012",
+    "title": "下列各项费用预算项目中，最适宜采用零基预算编制方法的是( )。",
+    "options": [
+     "A.人工费",
+     "B.培训费",
+     "C.材料费",
+     "D.折旧费"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "零基预算法适用于企业各项预算的编制，特别是不经常发生的预算项目或预算编制基础变化较大的预算项目。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2022",
+    "title": "预算编制方法按其业务量基础的数量特征不同，可以分为( )。",
+    "options": [
+     "A.定期预算法与滚动预算法",
+     "B.增量预算法与零基预算法",
+     "C.固定预算法与弹性预算法",
+     "D.增量预算法与定期预算法"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "编制预算的方法按其业务量基础的数量特征不同，可分为固定预算法和弹性预算法。选项C当选。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2019",
+    "title": "某企业当年实际销售费用6 000万元，占销售额的30%，企业预计下年销售额增加5 000万元，于是就将下年销售费用预算简单地确定为7 500(6 000＋5000×30%)万元。从中可以看出，该企业采用的预算编制方法为( )。",
+    "options": [
+     "A.弹性预算法",
+     "B.零基预算法",
+     "C.滚动预算法",
+     "D.增量预算法"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "增量预算法，是指以历史期经济活动及其预算为基础，结合预算期经济活动及其相关影响因素的变动情况，通过调整历史期经济活动项目及金额形成预算的预算编制方法。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "弹性预算的编制方法有公式法和列表法两种。相对于列表法，下列属于公式法特点的有( )。",
+    "options": [
+     "A.无须以成本性态分析为前提",
+     "B.评价和考核实际成本时往往需要使用插值法计算实际业务量的预算成本",
+     "C.可在一定范围内计算任何业务量的预算成本",
+     "D.阶梯成本和曲线成本必须用数学方法修正为直线"
+    ],
+    "answer": [
+     2,
+     3
+    ],
+    "explain": "弹性预算的编制必须以成本性态分析为前提，公式法在一定范围内可计算任何业务量的预算成本，并且阶梯成本和曲线成本只能用数学方法修正为直线，才能应用公式法，所以A错误，C、D正确。列表法往往需要使用插值法来计算“实际业务量的预算成本”，所以B错误。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2017",
+    "title": "编制弹性预算时，以手工操作为主的车间，可以选用人工工时作为业务量的计量单位。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "编制弹性预算，要选用一个最能代表生产经营活动水平的业务量计量单位。例如，以手工操作为主的车间，就应选用人工工时；制造单一产品或零件的部门，可以选用实物数量；修理部门可以选用直接修理工时等。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "用列表法编制的弹性预算，主要特点有( )。",
+    "options": [
+     "A.不管实际业务量多少，不必经过计算即可找到与实际业务量相近的预算成本，控制成本比较方便",
+     "B.混合成本中的阶梯成本和曲线成本可按其性态直接在预算中反映",
+     "C.评价和考核实际成本时往往需要使用内插法计算实际业务量的预算成本",
+     "D.不以成本性态分析为前提"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "弹性预算的编制应以成本性态分析为前提，无论是公式法还是列表法，都应以成本性态分析为前提。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2022、2021",
+    "title": "某公司采用弹性预算法编制制造费用预算，制造费用与工时密切相关，若业务量为500工时，制造费用预算为18 000元，若业务量为300工时，制造费用预算为15 000元，则下列说法中，正确的有( )。",
+    "options": [
+     "A.若业务量为0工时，则制造费为0元",
+     "B.若业务量为320工时，则制造费用为15 300元",
+     "C.制造费用中固定部分为10 500元",
+     "D.单位变动制造费用预算为15元/工时"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "解析：运用高低点法分解混合成本：18000＝F＋v×500 15000＝F＋v×300解出：固定成本F＝10500(元) 单位变动成本v＝15(元)得出制造费用模型为：y＝10500＋15x 当业务量为0时，制造费用＝10 500元；当业务量为320时，制造费用＝10500＋15×320＝15 300元。所以选项B、C、D正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "使用公式法编制财务预算时，固定制造费用为1 000元，如果业务量为100%时，变动制造费用为3 000元；如果业务量为120%，则总制造费用为( )元。",
+    "options": [
+     "A.3 000",
+     "B.4 000",
+     "C.4 600",
+     "D.3 600"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "制造费用总额＝1000＋3000×120%＝4 600(万元)，故选项C正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2020",
+    "title": "某公司按弹性预算法编制销售费用预算。已知预计业务量为5万小时，单位变动销售费用为1.5元/小时，固定销售费用总额为30万元，则按预计业务量的80%编制的销售费用预算总额为( )万元。",
+    "options": [
+     "A.30",
+     "B.7.5",
+     "C.36",
+     "D.37.5"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "销售费用预算总额＝30＋1.5×5×80%＝36(万元)。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2021",
+    "title": "某公司采用弹性预算法编制修理费预算，该修理费为混合成本，业务量为100件时，费用预算为5 000元，业务量为200件时，费用预算为7 000元，则当业务量为180件时，修理费预算为( )。",
+    "options": [
+     "A.6300",
+     "B.7200",
+     "C.6600",
+     "D.9000"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "利用内插法(插值法)：(180-100)/(200-100)＝(x-5000)/(7000-5000) 得出：x＝6600(元)。或者：运用高低点法分解混合成本 解出：固定成本F＝3000(元) 单位变动成本v＝20(元)当生产量为180件时：生产费用＝3000＋180×20＝6600(元)\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "某公司的修理费用为混合成本，公司按弹性预算法编制混合成本预算，当业务量为基准量的100%时，修理费用是30 400万元，当业务量为基准量的60%时，修理费用是23 200万元，则当业务量为基准量的85%时，预计修理费用为( )万元。",
+    "options": [
+     "A.27 700",
+     "B.22 780",
+     "C.28 652",
+     "D.30 020"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "利用插值法，(85%－60%)/(100%－60%)＝(X－23200)/(30400－23200)，解得：X＝27 700(万元)。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024CPA",
+    "title": "某贸易公司的物流费用为混合成本，公司按弹性预算法编制物流费用预算，当物流运输量为基准量的80%、100%、110%、120%时，对应的物流费用分别为896万元、920万元、932万元、944万元。当物流运输量为基准量的107%时，预计物流费用为（  ）万元。",
+    "options": [
+     "A.929.4",
+     "B.927.4",
+     "C.930.4",
+     "D.928.4"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "利用内插法（插值法）：(107%−100%)/(110%−100%)＝(𝑥−920)/(932−920)\n\n得出：𝑥＝928.4（元）\n\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列说法中正确的是( )。",
+    "options": [
+     "A.零基预算法编制预算的准确性很大程度上取决于成本性态分析的可靠性",
+     "B.理论上，弹性预算法适用于编制全面预算中所有与业务量有关的预算",
+     "C.公式法的可比性和适应性强，编制工作量相对较小",
+     "D.应用列表法首先要在确定的业务量范围内，划分出若干个不同水平"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "弹性预算法要编制各种不同业务量下的预算，所以编制预算的准确性很大程度上取决于成本性态分析的可靠性。零基预算法更多强调的是预算编制的基础，所以选项A说法错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "与传统定期预算方法相比，下列属于滚动预算方法特点的有( )。",
+    "options": [
+     "A.预算期可以保持固定长度",
+     "B.过高的滚动频率会增加管理层的不稳定感，导致预算执行者无所适从",
+     "C.预算期和会计期间相对应，便于将实际数与预算数进行比较",
+     "D.可以动态反映市场、建立跨期综合平衡，强化预算的决策与控制职能"
+    ],
+    "answer": [
+     0,
+     1,
+     3
+    ],
+    "explain": "滚动预算可以分为中期滚动预算和短期滚动预算。短期滚动预算通常使预算期始终保持12个月。定期预算能够使预算期间与会计期间相对应，便于将实际数与预算数进行对比，选项C错误。滚动预算的优点：实现动态反映市场、建立跨期综合平衡，从而有效指导企业运营，强化预算的决策与控制职能。缺点：(1)预算滚动频率越高，预算工作量越大；(2)过高的滚动频率会增加管理层的不稳定感，导致预算执行者无所适从。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2009",
+    "title": "与传统定期预算方法相比，属于滚动预算方法缺点的是( )。",
+    "options": [
+     "A.预算工作量大",
+     "B.透明度低",
+     "C.及时性差",
+     "D.连续性弱"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "滚动预算的优点是：通过持续滚动预算编制，逐期滚动预算管理，实现动态反映市场、建立跨期综合平衡，从而有效指导企业运营，强化预算的决策与控制职能。所以预算连续性好，透明度高，预算编制及时。缺点是：(1)预算滚动频率越高，预算工作量越大；(2)过高的滚动频率会增加管理层的不稳定感，导致预算执行者无所适从。所以选项A正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2021CPA",
+    "title": "下列关于全面预算编制方法的说法中，正确的有( )。",
+    "options": [
+     "A.弹性预算法是在成本性态分析的基础上，按照预算期内相关业务量水平编制",
+     "B.滚动预算法将预算期间逐期连续向后滚动推移，使预算期间保持一定的时期跨度",
+     "C.零基预算法编制预算时，不受前期费用水平的制约",
+     "D.在定期预算法下，预算期间与会计期间在时间上一致"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "以上说法均正确\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2023",
+    "title": "在滚动预算法下，如果预算编制周期为1年，并采取逐月滚动方式，则预算期将逐月缩短。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "如果预算编制周期为1年，逐月滚动预算使预算期始终保持12个月，每过1个月，立即在期末增列1个月的预算，逐期往后滚动，因而在任何一个时期都使预算保持为12个月的时间长度。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2020",
+    "title": "某企业各季度销售收入有70%于本季度收到现金，30%于下季度收到现金。已知2019年年末应收账款余额为600万元，2020年第一季度预计销售收入1500万元，则2020年第一季度预计现金收入为( )万元。",
+    "options": [
+     "A.1650",
+     "B.2100",
+     "C.1050",
+     "D.1230"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "2020年第一季度预计现金收入＝600＋1500×70%＝1650(万元)。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2022CPA",
+    "title": "甲公司正在编制2023年各季度销售预算。销售货款当季度收回70%，下季度收回25%，下下季度收回5%。2023年初应收账款余额3 000万元，其中，2022年第三季度的销售形成的应收账款为600万元，第四季度销售形成的应收账款为2400万元。2023年第一季度预计销售收入6 000万元。2023年第一季度预计现金收入是( )万元。",
+    "options": [
+     "A.6 600",
+     "B.6 800",
+     "C.5 400",
+     "D.7 200"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "2022年第四季度的销售收入＝2400/(1－70%)＝8000(万元)，2023年第一季度预计现金收入＝600＋8000×25%＋6000×70%＝6 800(万元)。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "已知A公司在预算期间，销售当季度收回货款60%，下季度收回货款30%，再下一季度收回货款10%，预算年度期初应收账款金额为28万元，其中包括上年第三季度销售形成的应收账款4万元，第四季度销售形成的应收账款24万元，则下列说法正确的有( )。",
+    "options": [
+     "A.上年第四季度的销售额为60万元",
+     "B.上年第三季度的销售额为40万元",
+     "C.上年第三季度销售形成的应收账款4万元在预计年度第一季度可以全部收回",
+     "D.第一季度收回的期初应收账款为24万元"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "本季度销售没有收回的40%计入下季度初的应收账款中。因此，上年第四季度的销售额的40%为24万元，即上年第四季度的销售额为24/40%＝60(万元)，其中的30%在第一季度收回(即第一季度收回60×30%＝18万元)，10%在第二季度收回(即第二季度收回60×10%＝6万元)。上年第三季度的销售额到预计年度第一季度期初时，还有10%未收回(数额为4万元)，因此，上年第三季度的销售额为4/10%＝40(万元所以，第一季度收回的期初应收账款＝18＋4＝22(万元)。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2020",
+    "title": "企业每季度预计期末产成品存货为下一季度预计销售量的10%，已知第二季度预计销售量为2000件，第三季度预计销售量为2200件，则第二季度产成品预计产量为( )件。",
+    "options": [
+     "A.2020",
+     "B.2000",
+     "C.2200",
+     "D.2220"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "第二季度期初产成品存货＝2000×10%＝200(件)，第二季度期末产成品存货＝2200×10%＝220(件)，第二季度产成品预计产量＝220＋2000－200＝2020(件)。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2015CPA",
+    "title": "在编制生产预算时，计算某种产品预计生产量应考虑的因素包括( )。",
+    "options": [
+     "A.预计材料采购量",
+     "B.预计产品销售量",
+     "C.预计期初产品存货量",
+     "D.预计期末产品存货量"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "某种产品预计生产量＝预计销售量＋预计期末产品存货量－预计期初产品存货量，可见预计生产量不需考虑材料采购量。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "某企业2017年度预计生产某产品1 000件，单位产品耗用材料15千克，该材料期初存量为1 000千克，预计期末存量为3 000千克，则全年预计采购量为( )千克。",
+    "options": [
+     "A.18 000",
+     "B.16 000",
+     "C.15 000",
+     "D.17 000"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "预计采购量＝生产需用量＋期末存量－期初存量＝1000×15＋3000－1000＝17 000(千克)。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "某批发企业销售甲商品，第三季度各月预计的销售量分别为1 000件、1 200件和1 100件，企业计划每月月末商品存货量为下月预计销售量的20%。下列各项预计中，正确的有( )。",
+    "options": [
+     "A.8月份期初存货为240件",
+     "B.8月份采购量为1180件",
+     "C.8月份期末存货为220件",
+     "D.第三季度采购量为3 300件"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "8月份期初存货实际上就是7月份的期末存货，即8月份预计销售量的20%，即1200×20%＝240(件)，选项A正确；8月份采购量＝1200+1100×20%-240＝1180(件)，选项B正确；8月份期末存货＝1100×20%＝220(件)，选项C正确；因为无法预计第三季度末产品存量，所以无法计算第三季度的采购量，选项D错误。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024",
+    "title": "预计7月份和8月份的生产需用量分别为500吨和600吨，各月月末原材料存量为下个月预计生产需用量的10%，该企业7月份原材料的预计采购量为（  ）吨。",
+    "options": [
+     "A.450",
+     "B.490",
+     "C.510",
+     "D.560"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "7月份原材料预计采购量＝500＋600×10%－50＝510(吨)。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2021CPA",
+    "title": "甲公司正在编制2022年度预算。在直接材料预算中，第三、第四季度直接材料的预计生产需用量分别为1.5吨和2吨，价格100万元/吨。每季度末材料存量为下季度生产需用量的10%，年末材料留存0.5吨，则2022年第四季度采购金额为( )万元。",
+    "options": [
+     "A.170",
+     "B.180",
+     "C.230",
+     "D.250"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "第四季度采购金额＝(2＋0.5－2×10%)×100＝230(万元)。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2020CPA",
+    "title": "甲公司正在编制资金预算，预计采购货款第一季度5 000元，第二季度8 000元，第三季度9 000元，第四季度10 000元。采购货款的60%在本季度内付清，另外40%在下季度付清。假设年初应付账款2 000元，预计全年现金支出是( )元。",
+    "options": [
+     "A.28 000",
+     "B.34 000",
+     "C.32 000",
+     "D.30 000"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "预计全年现金支出＝2000＋5000＋8000＋9000＋10000×60%＝30 000(元)\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2020CPA",
+    "title": "企业在编制直接材料预算时，需要估计各季度材料采购的现金支出额，影响该金额的因素有( )。",
+    "options": [
+     "A.材料采购单价",
+     "B.预计材料库存量",
+     "C.供货商提供的信用政策",
+     "D.预计产量"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "预计材料采购金额＝预计材料采购量×材料采购单价，其中：预计材料采购量＝(预计生产需用量＋预计期末材料存量)一预计期初材料存量，预计生产需用量＝预计产量×单位产品材料耗用量。供货商提供的信用政策影响当期付款的比例，所以答案是ABCD。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2022",
+    "title": "下列各项中，通常以生产预算为基础编制的预算有( )。",
+    "options": [
+     "A.变动制造费用预算",
+     "B.直接人工预算",
+     "C.销售预算",
+     "D.直接材料预算"
+    ],
+    "answer": [
+     0,
+     1,
+     3
+    ],
+    "explain": "直接材料预算、直接人工预算、变动制造费用预算都是以生产预算为基础编制，选项ABD当选。销售预算是整个预算的编制起点，其他预算的编制都是以销售预算作为基础。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2022",
+    "title": "下列各项预算中，不以生产预算作为编制基础的是( )。",
+    "options": [
+     "A.直接人工预算",
+     "B.直接材料预算",
+     "C.销售费用预算",
+     "D.变动制造费用预算"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "销售费用预算以销售预算为基础，根据费用计划编制，选项C当选；直接人工预算、直接材料预算、变动制造费用预算均以生产预算为基础编制。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2023",
+    "title": "在编制直接材料预算时，下列各项中，与计算本期预计材料采购量无关的是（ ）。",
+    "options": [
+     "A.上期生产需用量",
+     "B.本期期初材料存量",
+     "C.本期期末材料存量",
+     "D.本期生产需用量"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "本期预计材料采购量=本期生产需用量+本期期末材料存量-本期期初材料存量，所以上期生产需用量与本期预计材料采购量的计算无关，因此选项A符合题意。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2019",
+    "title": "某公司2019年第四季度预算生产量为100万件，单位变动制造费用为3元/件，固定制造费用总额为10万元(含折旧费2万元)，除折旧费外，其余均为付现费用。则2019年第四季度制造费用的现金支出预算为( )万元。",
+    "options": [
+     "A.292",
+     "B.308",
+     "C.312",
+     "D.288"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "2019年第四季度制造费用的现金支出＝100×3＋(10－2)＝308(万元)。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2022",
+    "title": "在企业预算体系中，产品成本预算是编制销售及管理费用预算的基础。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "销售费用预算以销售预算为基础。管理费用多属于固定成本，一般是以过去的实际开支为基础，按预算期的可预见变化来调整。本题表述错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2019",
+    "title": "在全面预算体系中，编制产品成本预算的依据有( )。",
+    "options": [
+     "A.制造费用预算",
+     "B.生产预算",
+     "C.直接人工预算",
+     "D.直接材料预算"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "产品成本预算，是销售预算、生产预算(选项B)、直接材料预算(选项D)、直接人工预算(选项C)、制造费用预算(选项A)的汇总。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "",
+    "title": "专门决策预算主要反映项目投资与筹资计划，是编制资金预算和预计资产负债表的依据之一。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "专门决策预算的要点是准确反映项目资金投资支出与筹资计划，它同时也是编制资金预算和预计资产负债表的依据。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2025",
+    "title": "甲公司计划购置生产线，所需资金为13 000万元，准备采用长期融资，为此编制的预算属于（ ）。",
+    "options": [
+     "A.经营预算",
+     "B.生产预算",
+     "C.资金预算",
+     "D.专门决策预算"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "专门决策预算主要是长期投资预算(又称资本支出预算)，通常是指与项目投资决策相关的专门预算，它往往涉及长期建设项目的资金投放与筹集，并经常跨越多个年度。长期融资13000万元，应编制专门决策预算。选项D当选。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2016CPA",
+    "title": "下列营业预算中，通常需要预计现金支出的有( )。",
+    "options": [
+     "A.生产预算",
+     "B.销售费用预算",
+     "C.制造费用预算",
+     "D.直接材料预算"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "生产预算只涉及实物量指标，是不含价值量指标的预算。因此选项A错误；销售费用预算、制造费用预算、直接材料预算都涉及价值量指标，需要预计现金支出。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2021",
+    "title": "企业编制预算时，下列各项中，属于资金预算编制依据的有( )。",
+    "options": [
+     "A.制造费用预算",
+     "B.直接材料预算",
+     "C.销售预算",
+     "D.专门决策预算"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "资金预算是以经营预算和专门决策预算为依据编制的，专门决策预算反映预算期内预计现金收入与现金支出，以及为满足理想现金余额而进行筹资或归还借款等的预算。选项A、B、C属于经营预算且都涉及现金收支，因此四个选项都是资金预算的编制依据。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列各项预算中，需要以产品成本预算作为编制依据的有( )。",
+    "options": [
+     "A.资金预算",
+     "B.利润表预算",
+     "C.资产负债表预算",
+     "D.资本支出预算"
+    ],
+    "answer": [
+     1,
+     2
+    ],
+    "explain": "利润表预算中的销售成本金额、资产负债表预算中的期末产成品存货金额来自于产品成本预算。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2024",
+    "title": "下列各项预算中，需要预计现金支出的有（  ）。",
+    "options": [
+     "A.销售预算",
+     "B.生产预算",
+     "C.直接材料预算",
+     "D.制造费用预算"
+    ],
+    "answer": [
+     2,
+     3
+    ],
+    "explain": "销售预算只有现金收入，不需要预计现金支出。在生产预算中，只涉及实物量指标，不涉及价值量指标。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列关于全面预算中的利润表预算编制的说法中，正确的有( )。",
+    "options": [
+     "A.“销售收入”项目的数据，来自销售预算",
+     "B.“销售成本”项目的数据，来自生产预算",
+     "C.“销售及管理费用”项目的数据，来自销售及管理费用预算",
+     "D.“所得税费用”项目的数据，通常是根据利润表预算中的“利润”项目金额和本企业适用的法定所得税税率计算出来的"
+    ],
+    "answer": [
+     0,
+     2
+    ],
+    "explain": "“销售成本”项目的数据，来自产品成本预算，选项B错误；“所得税费用”项目是在利润规划时估计的，并已经列入资金预算。它通常不是根据“利润总额”和“所得税率”计算出来的，因为有诸多的纳税调整事项存在，此外如果根据“利润总额”和“所得税税率”重新计算所得税，会陷入数据循环，所以选项D错误。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2019",
+    "title": "制造业企业在编制利润表预算时，“销售成本”项目数据的来源是( )。",
+    "options": [
+     "A.产品成本预算",
+     "B.生产预算",
+     "C.销售预算",
+     "D.直接材料预算"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "在利润表预算的编制中，“销售成本”项目的数据来自产品成本预算。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2021",
+    "title": "在企业的全面预算体系中，下列项目属于预计利润表编制内容的有( )。",
+    "options": [
+     "A.所得税费用",
+     "B.毛利",
+     "C.未分配利润",
+     "D.利息"
+    ],
+    "answer": [
+     0,
+     1,
+     3
+    ],
+    "explain": "预计利润表编制内容包括销售收入、销售成本、毛利、销售及管理费用、利息、利润总额、所得税费用、净利润等。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2022",
+    "title": "关于预计资产负债表的编制，下列说法错误的是( )。",
+    "options": [
+     "A.预计资产负债表的编制需以计划期开始日的资产负债表为基础",
+     "B.预计资产负债表编制时需用到计划期预计利润表信息",
+     "C.预计资产负债表综合反映企业在计划期的预计经营成果",
+     "D.预计资产负债表是编制全面预算的终点"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "预计资产负债表用来反映企业在计划期期末预计的财务状况，编制时需用到计划期预计利润表信息。预计利润表用来综合反映企业在计划期的预计经营成果。选项C当选。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2019",
+    "title": "关于资产负债表预算，下列表述正确的是( )。",
+    "options": [
+     "A.资本支出的预算结果不会影响到资产负债表预算的编制",
+     "B.编制资产负债表的目的在于了解企业预算期的经营成果",
+     "C.利润表预算编制应当先于资产负债表预算编制而成",
+     "D.资产负债表预算是资金预算编制的起点和基础"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "预计资产负债表的编制以计划期开始日的资产负债表为基础，结合计划期间各项经营预算、专门决策预算、资金预算和预计利润表进行编制，选项A错误；编制预计资产负债表的目的，在于判断预算反映的财务状况的稳定性和流动性，选项B错误；预计资产负债表是编制全面预算的终点，选项C正确、选项D错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2017",
+    "title": "下列各项中，能够成为预计资产负债表中存货项目金额来源的有( )。",
+    "options": [
+     "A.销售费用预算",
+     "B.直接人工预算",
+     "C.直接材料预算",
+     "D.产品成本预算"
+    ],
+    "answer": [
+     2,
+     3
+    ],
+    "explain": "存货包括产成品存货和原材料存货。产成品存货成本来源于产品成本预算，原材料存货成本来源于直接材料预算。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "预算管理应刚性与柔性相结合，强调预算对经营管理的刚性约束，又可根据内外环境的重大变化调整预算，并针对例外事项进行特殊处理，体现了预算管理的( )。",
+    "options": [
+     "A.例外管理原则",
+     "B.融合性原则",
+     "C.平衡管理原则",
+     "D.权变性原则"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "权变性原则，是指预算管理应刚性与柔性相结合，强调预算对经营管理的刚性约束，又可根据内外环境的重大变化调整预算，并针对例外事项进行特殊处理。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "",
+    "title": "预算管理应以财务为先导、以业务为协同，将预算管理嵌入企业经营管理活动的各个领域、层次、环节。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "融合性原则，是指预算管理应以业务为先导、以财务为协同，将预算管理嵌入企业经营管理活动的各个领域、层次、环节。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "以下有关预算工作组织的表述正确的有( )。",
+    "options": [
+     "A.预算管理委员会对企业预算的管理工作负总责",
+     "B.财务管理部门负责企业预算的跟踪管理，监督预算的执行情况",
+     "C.预算管理委员会审批公司预算管理制度、政策",
+     "D.财务管理部门对各部门预算执行结果承担责任"
+    ],
+    "answer": [
+     1,
+     2
+    ],
+    "explain": "企业董事会或类似机构应当对企业预算的管理工作负总责，所以选项A错误；各职能部门的主要负责人对本部门预算执行结果承担责任，所以选项D错误。7\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2010",
+    "title": "企业财务管理部门负责企业预算的编制、执行、分析和考核等工作，并对预算执行结果承担直接责任。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "企业所属基层单位是企业预算的基本单位，在企业财务管理部门的指导下，负责本单位现金流量、经营成果和各项成本费用预算的编制、控制、分析工作，接受企业的检查、考核。其主要负责人对本单位财务预算的执行结果承担责任。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2013",
+    "title": "下列各项中，对企业预算管理工作负总责的组织是( )。",
+    "options": [
+     "A.财务部",
+     "B.董事会",
+     "C.监事会",
+     "D.股东会"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "企业董事会或类似机构应当对企业预算的管理工作负总责。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "",
+    "title": "企业正式下达执行的预算，执行部门一般不能调整。但是，市场环境、政策法规等发生重大变化，将导致预算执行结果产生重大偏差时，可经逐级审批后调整。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "年度预算经批准后，原则上不作调整。企业应在制度中严格明确预算调整的条件、主体、权限和程序等事宜，当内外战略环境发生重大变化或突发重大事件等，导致预算编制的基本假设发生重大变化时，可进行预算调整。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2012",
+    "title": "企业财务管理部门应当利用报表监控预算执行情况，及时提供预算执行进度、执行差异等信息。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "企业财务管理部门负责企业预算的跟踪管理，监督预算的执行情况，分析预算与实际执行的差异及原因，提出改进管理的意见与建议。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2023",
+    "title": "下列各项预算中，属于产品成本预算编制基础的有（ ）。",
+    "options": [
+     "A.生产预算",
+     "B.销售费用预算",
+     "C.资金预算",
+     "D.销售预算"
+    ],
+    "answer": [
+     0,
+     3
+    ],
+    "explain": "产品成本预算是销售预算、生产预算、直接材料预算、直接人工预算、制造费用预算的汇总。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2016",
+    "title": "在预算执行过程中，可能导致预算调整的情形有( )。",
+    "options": [
+     "A.原材料价格大幅度上涨",
+     "B.公司进行重大资产重组",
+     "C.主要产品市场需求大幅下降",
+     "D.营改增导致公司税负大幅下降"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "企业正式下达的预算，一般不予调整。预算执行单位在执行中由于市场环境、经营条件、政策法规等发生重大变化，致使预算的编制基础不成立，或者将导致执行结果产生重大偏差的，可以调整预算。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2025CPA（难）",
+    "title": "甲公司每季销售收入中，本季收回现金60%，下季收回40%。预计2025年每季销售产品2.5万件，单价80元，第四季度材料采购支出150万元，职工薪酬支付80万元，其他费用支付30万元，无其他现金收支业务，若各季末保留最低现金余额20万元，下列关于第四季度现金预算的说法中正确的有（ ）。",
+    "options": [
+     "A.第四季度现金短缺20万元",
+     "B.第四季度现金收入200万元",
+     "C.第四季度现金支出260万元",
+     "D.第四季度需要筹集资金60万元"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "第四季度现金收入=2.5×80×（40%＋60%）=200（万元），可供使用现金=期初现金余额＋现金收入=20＋200=220（万元），现金支出=150＋80＋30=260（万元），现金多余或不足=可供使用现金－现金支出=220－260=﹣40（万元），即现金短缺40万元，需要筹措资金=40＋20=60（万元）。\n保存报告\n收起答题解析\n问卷星提供技术支持\n举报\n抽奖规则"
+   }
+  ]
+ },
+ "ch4": {
+  "name": "第四章 筹资管理（上）",
+  "questions": [
+   {
+    "type": "single",
+    "year": "2015、2017、2024",
+    "title": "当一些债务即将到期时，企业虽然有足够的偿债能力，但为了保持现有的资本结构，仍然举新债还旧债。这种筹资的动机是( )。",
+    "options": [
+     "A.扩张性筹资动机",
+     "B.支付性筹资动机",
+     "C.调整性筹资动机",
+     "D.创立性筹资动机"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "调整性筹资动机，是指企业因调整资本结构而产生的筹资动机。当一些债务即将到期，企业虽然有足够的偿债能力，但为了保持现有的资本结构，仍然举借新债以偿还旧债，选项C正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列各种筹资动机中，属于支付性筹资动机的有( )。",
+    "options": [
+     "A.举借长期债务来偿还短期债务",
+     "B.银行借款的提前偿还",
+     "C.原材料购买的大额支付",
+     "D.股东股利的发放"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "支付性筹资动机是指企业为满足经营业务活动的正常波动所形成的支付需要(季节性、临时性的交易支付需要)而产生的筹资动机，如原材料购买的大额支付、员工工资的集中发放、银行借款的提前偿还、股东股利的发放等；偿还到期债务，举借长期债务来偿还短期债务属于调整性筹资动机，所以A错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2021改动",
+    "title": "下列各项中，属于直接筹资方式的有( )。",
+    "options": [
+     "A.发行公司债券",
+     "B.银行借款",
+     "C.租赁",
+     "D.发行股票"
+    ],
+    "answer": [
+     0,
+     3
+    ],
+    "explain": "直接筹资，是企业通过与投资者签订协议或发行股票、债券等方式直接从社会取得资金。因此选项A、D正确。银行借款和租赁属于间接筹资。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2022",
+    "title": "下列各项中，属于间接筹资方式的有( )。",
+    "options": [
+     "A.发行股票",
+     "B.杠杆租赁",
+     "C.发行债券",
+     "D.银行借款"
+    ],
+    "answer": [
+     1,
+     3
+    ],
+    "explain": "发行股票、发行债券属于直接筹资，选项A、C不当选。间接筹资指企业借助银行和非银行金融机构而筹集资金，包括银行借款、租赁等，选项B、D当选。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列说法中，正确的有( )。",
+    "options": [
+     "A.间接筹资手续复杂、筹资费用高",
+     "B.间接筹资主要形成债务资金",
+     "C.直接筹资筹资领域广阔，有利于提高企业知名度与资信度",
+     "D.直接筹资筹资效率高，容易受金融政策的制约和影响"
+    ],
+    "answer": [
+     1,
+     2
+    ],
+    "explain": "直接筹资是直接与资金供应者协商融通资金的一种筹资活动。包括吸收直接投资、发行股票、发行债券等。特点：(1)可以筹集股权资金或债务资金；(2)手续复杂、筹资费用高；(3)筹资领域广阔，有利于提高企业知名度与资信度。间接筹资是借助银行和非银行金融机构而筹集资金，包括银行借款、租赁等。特点：(1)主要形成债务资金；(2)手续简便，筹资效率高，筹资费用较低；(3)容易受金融政策的制约和影响。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2019",
+    "title": "关于直接筹资和间接筹资，下列表述错误的是( )。",
+    "options": [
+     "A.直接筹资仅可以筹集股权资金",
+     "B.直接筹资的筹资费用较高",
+     "C.发行股票属于直接筹资",
+     "D.租赁属于间接筹资"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "直接筹资方式既可以筹集股权资金，也可以筹集债务资金，选项A表述错误；相对来说，直接筹资的筹资手续比较复杂，筹资费用较高，选项B表述正确；直接筹资方式主要有发行股票、发行债券、吸收直接投资等，选项C表述正确；间接筹资的基本方式是银行借款，此外还有租赁等方式，选项D表述正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2020",
+    "title": "下列筹资方式中，属于债务筹资方式的有( )。",
+    "options": [
+     "A.发行债券",
+     "B.留存收益",
+     "C.商业信用",
+     "D.银行借款"
+    ],
+    "answer": [
+     0,
+     2,
+     3
+    ],
+    "explain": "债务筹资是企业通过向银行借款、发行债券、利用商业信用、租赁等方式从债权人那里取得资金。选项B属于股权筹资方式。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2024",
+    "title": "下列各项中，既属于直接筹资，又属于债务筹资的方式有（  ）。",
+    "options": [
+     "A.发行企业债券",
+     "B.杠杆租赁",
+     "C.取得商业信用",
+     "D.向商业银行借款"
+    ],
+    "answer": [
+     0,
+     2
+    ],
+    "explain": "直接筹资是企业直接与资金供应者协商融通资金的筹资活动。不需要通过金融机构来筹措资金，属于企业直接从社会取得资金的方式。选项A、C正确。间接筹资是企业借助于银行和非银行金融机构而筹集资金，筹资方式有银行借款和租赁等。选项B、D 错误。\n\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2020",
+    "title": "公司发行的永续债由于没有明确的到期日或期限非常长，因此在实质上属于股权资本。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "永续债实质是一种介于债权和股权之间的融资工具。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2021改动",
+    "title": "下列筹资方式中，由企业之间商品或劳务交易活动形成的，能够作为企业短期资金经常性来源的是( )。",
+    "options": [
+     "A.租赁",
+     "B.留存收益",
+     "C.短期借款",
+     "D.商业信用"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "商业信用是指企业在商品或劳务交易中，以延期付款或预收货款方式进行购销活动而形成的借贷关系，是企业之间的直接信用行为，也是企业短期资金的重要来源。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2021",
+    "title": "下列各项中，不属于担保贷款的是( )。",
+    "options": [
+     "A.质押贷款",
+     "B.信用贷款",
+     "C.保证贷款",
+     "D.抵押贷款"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "按照贷款条件，分为信用贷款和担保贷款。担保贷款是指由借款人或第三方依法提供担保而获得的贷款，包括保证贷款、抵押贷款和质押贷款三种基本类型。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2022",
+    "title": "企业可以将某些资产作为质押品向商业银行申请质押贷款，下列各项中，不可以作为质押品的是( )。",
+    "options": [
+     "A.依法可以转让的股票",
+     "B.依法可以转让的商标专用权",
+     "C.依法可以转让的厂房",
+     "D.依法可以转让的债券"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "作为贷款担保的质押品，可以是汇票、支票、债券、存款单、提单等信用凭证，可以是依法可转让的股份、股票等有价证券，也可以是依法可转让的商标专用权、专利权、著作权中的财产权等。不动产不能用于质押,但可以用作抵押，选项C当选。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024",
+    "title": "某企业取得银行贷款时，将其持有的其他公司债券作为贷款担保移交给银行，银行贷款类型是（  ）。",
+    "options": [
+     "A.质押贷款",
+     "B.信用贷款",
+     "C.保证贷款",
+     "D.抵押贷款"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "质押是指债务人或第三方将其动产或财产权利移交给债权人占有，将该动产或财产权利作为债权的担保。本题将债券移交给银行，故将其动产或财产权利移交给债权人占有，属于质押贷款。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2022",
+    "title": "对于长期借款合同，债权人通常会附加各种保护性条款。以下属于一般性保护条款的是( )。",
+    "options": [
+     "A.限制公司增加举债规模",
+     "B.不准贴现应收票据或出售应收账款",
+     "C.不准将资产用作其他承诺的担保或抵押",
+     "D.借款用途不得改变"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "一般性保护条款主要包括：保持企业资产的流动性、限制企业非经营性支出、限制企业资本支出规模、限制公司再举债规模(选项A当选)、限制公司的长期投资。选项B、C属于例行性保护条款，选项D属于特殊性保护条款。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2022",
+    "title": "关于公司债券的提前偿还条款，下列表述正确的是( )。",
+    "options": [
+     "A.提前偿还条款降低了公司筹资的灵活性",
+     "B.提前偿还所支付的价格通常随着到期日的临近而上升",
+     "C.提前偿还所支付的价格通常低于债券面值",
+     "D.当预测利率下降时，公司可提前赎回债券而后以较低利率发行新债券"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "带有提前偿还条款的债券增加了公司筹资的灵活性，选项A不当选。提前偿还所支付的价格随到期日的临近而逐渐下降，选项B不当选。提前偿还所支付的价格通常要高于债券的面值，选项C不当选。当预测利率下降时，公司可提前赎回债券而后以较低利率发行新债券 ；当资金有结余时，也可提前赎回债券，选项D当选。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2022",
+    "title": "若公司发行债券的契约中设有提前赎回条款，则下列表述正确的有( )。",
+    "options": [
+     "A.当预测利率下降时，公司可提前赎回债券，然后以较低的利率发行新债券",
+     "B.提前赎回条款降低了公司筹资的弹性",
+     "C.提前赎回条款会增加公司的还款压力",
+     "D.当公司资金有结余时，可以提前赎回债券，以减轻利息负担"
+    ],
+    "answer": [
+     0,
+     3
+    ],
+    "explain": "具有提前偿还条款的债券可使公司筹资具有较大弹性。当预测利率下降时，可提前赎回债券，而后以较低的利率来发行新债券；当公司资金有结余时，可以提前赎回债券，以减轻利息负担。所以，提前赎回条款会减轻公司的还款压力。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2018改动",
+    "title": "在确定租赁的租金时，一般需要考虑的因素有( )。",
+    "options": [
+     "A.租赁公司办理租赁业务所发生的费用",
+     "B.租赁期满后租赁资产的预计残值",
+     "C.租赁公司购买租赁资产所垫付资金的利息",
+     "D.租赁资产价值"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "租赁的租金取决于以下几项因素：设备原价及预计残值、利息、租赁手续费和利润。因此ABCD都是答案。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2023",
+    "title": "关于租赁筹资方式，表述错误的是（ ）。",
+    "options": [
+     "A.与银行借款相比，租赁筹资成本较高",
+     "B.是一种债务筹资行为",
+     "C.不会给企业带来财务杠杆效应",
+     "D.是将融资与融物相结合的一种特定筹资方式"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "租赁筹资资本成本负担较高，因为相比于银行借款、发行债券，利息较高，且租金总额通常要比设备价值高出30%，选项A不当选。租赁筹资属于债务筹资，会给企业带来财务杠杆效应，选项B不当选、选项C当选。租赁筹资是融资与融物相结合:借物还钱，并以分期支付租金的方式来体现，选项D不当选。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "在确定租赁的租金时，一般需要考虑的因素有( )。",
+    "options": [
+     "A.租赁公司办理租赁业务所发生的业务费用和必要的利润",
+     "B.租赁期满后租赁资产的预计残值",
+     "C.租赁公司购买租赁资产所垫付资金的利息",
+     "D.承租公司的未来设备维护费"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "租赁租金的多少，取决于以下几项因素：设备原价及预计残值、利息、租赁手续费(指租赁公司承办租赁设备所发生的业务费用和必要的利润)。承租公司的未来设备维护费通常在租赁业务中都是自行负担，不形成租赁的租金。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2021",
+    "title": "某公司购买设备并出租，设备价款为1000万元，该公司出资200万元余款通过设备抵押贷款解决，并用租金偿还贷款。该租赁方式为( )。",
+    "options": [
+     "A.售后回租",
+     "B.杠杆租赁",
+     "C.直接租赁",
+     "D.经营租赁"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "杠杆租赁是指涉及承租人、出租人和资金出借人三方的租赁业务。一般来说，当所涉及的资产价值昂贵时，出租方自己只投入部分资金，通常为资产价值的20%~40%，其余资金则通过将该资产抵押担保的方式，向第三方(通常为银行)申请贷款解决。然后，出租人将购进的设备出租给承租方，用收取的租金偿还贷款，该资产的所有权属于出租方。出租人既是债权人也是债务人，既要收取租金又要支付债务。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2022",
+    "title": "某企业年初从租赁公司租入一套设备，价值40万元，租期5年，租赁期满时预计残值为5万元，归租赁公司所有。租金每年末等额支付，年利率8% ，租赁年手续费率为2%.有关货币时间价值系数如下：(P/F，8%，5)＝ 0.6806；(P/F，10%，5)＝0.6209；(P/A，8%，5)＝3.9927；(P/A，10%，5)＝3.7906。则每年的租金为( )。",
+    "options": [
+     "A.10.55万元",
+     "B.10.02万元",
+     "C.9.17万元",
+     "D.9.73万元"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "计算租金应使用的折现率＝8%＋2%＝10%。该企业每年租金＝[40－5×(P/F，10%，5)]/( P/A ，10%，5)＝(40－5×0.6209)/3.7906＝9.73(万元)，选项D正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2021",
+    "title": "某企业向租赁公司租入一套设备，价值200万元，租期10年。租赁期满时预计残值10万元，归租赁公司所有。年利率7%，年租赁手续费率2%。租金在每年年初支付一次，对于年租金的计算，正确的表达式为( )。",
+    "options": [
+     "A.[200－10×(P/F，9%，10)]/[(P/A，9%，10)×(1＋9%)]",
+     "B.[200－10×(P/F，7%，10)]/(P/A，7%，10)",
+     "C.[200－10×(P/F，7%，10)]/[(P/A，7%，10)×(1+7%)]",
+     "D.[200－10×(P/F，9%，10)]/(P/A，9%，10)"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "由于租金在每年年初支付，所以属于预付年金，租费率＝7%＋2%＝9%。年租金＝[200－10×(P/F，9%，10)]/[(P/A，9%，10)×(1＋9%)]。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2016税务师",
+    "title": "与其他融资方式相比，下列属于租赁筹资方式特点的有( )。",
+    "options": [
+     "A.能延长资金融通的期限",
+     "B.筹资的限制条件较多",
+     "C.财务风险小",
+     "D.资本成本负担较低",
+     "E.无需大量资金就能迅速获得资产"
+    ],
+    "answer": [
+     0,
+     2,
+     4
+    ],
+    "explain": "租赁的筹资特点：(1)无须大量资金就能迅速获得资产；(2)财务风险小；(3)筹资的限制条件较少；(4)租赁能延长资金融通的期限；(5)资本成本负担较高。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2021",
+    "title": "下列各项中，能够作为吸收直接投资出资方式的有( )。",
+    "options": [
+     "A.土地使用权",
+     "B.非专利技术",
+     "C.特许经营权",
+     "D.商誉"
+    ],
+    "answer": [
+     0,
+     1
+    ],
+    "explain": "吸收直接投资的出资方式有以货币资产出资、以实物资产出资、以土地使用权出资、以知识产权出资、以特定产权出资。非专利技术属于以知识产权出资，所以本题答案为选项AB。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2017",
+    "title": "企业吸收直接投资有时能够直接获得所需的设备和技术，及时形成生产能力。（ ）",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "解析：吸收直接投资不仅可以取得一部分货币资金，而且能够直接获得所需的先进设备和技术，尽快形成生产经营能力。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2025",
+    "title": "下列选项中，属于吸收直接投资的特点的是（ ）。",
+    "options": [
+     "A.便于产权交易",
+     "B.不改变股权结构",
+     "C.资本成本较低",
+     "D.有助于快速形成生产力"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "吸收直接投资的筹资特点主要有:（1）能够尽快形成生产能力，选项 D 当选;（2）便于进行信息沟通;（3）资本成本较高;（4）公司控制权集中，不利于公司治理;（5）不便于进行产权交易。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列权利中，属于普通股股东权利的是( )。",
+    "options": [
+     "A.公司管理权",
+     "B.分享盈余权",
+     "C.优先认股权",
+     "D.优先分配剩余财产权"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "普通股股东的权利包括公司管理权，收益分享权。股份转让权，优先认股权和剩余财产要求权。优先分配剩余财产权是优先股的权利，非普通股的权利，所以选项D错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2022",
+    "title": "相对于普通股而言，优先股的优先权包含的内容有( )。",
+    "options": [
+     "A.股利分配优先权",
+     "B.配股优先权",
+     "C.剩余财产分配优先权",
+     "D.表决优先权"
+    ],
+    "answer": [
+     0,
+     2
+    ],
+    "explain": "优先股，是公司发行的相对于普通股具有一定优先权的股票。其优先权利主要表现在股利分配优先权和分取剩余财产优先权上。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2021",
+    "title": "如果公司增发普通股，则公司的优先股股东具有优先于普通股股东认购新股的权利。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "公司原有普通股股东拥有优先认购本公司增发股票的优先认股权。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2016",
+    "title": "与配股相比，定向增发的优势是( )。",
+    "options": [
+     "A.有利于社会公众参与",
+     "B.有利于保持原有的股权结构",
+     "C.有利于促进股权的流通转让",
+     "D.有利于引入战略投资者和机构投资者"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "配股是指上市公司向原有股东配售股票的再融资方式，定向增发的对象可以是老股东，也可以是战略投资者或机构投资者，所以，与配股相比，定向增发的优势是有利于引入战略投资者和机构投资者。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2020",
+    "title": "下列筹资方式中，更有利于上市公司引入战略投资者的是( )。",
+    "options": [
+     "A.发行债券",
+     "B.配股",
+     "C.公开增发股票",
+     "D.定向增发股票"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "上市公司定向增发的优势之一是有利于引入战略投资者和机构投资者。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "上市公司引入战略投资者的主要作用有( )。",
+    "options": [
+     "A.优化股权结构",
+     "B.提升公司形象",
+     "C.提高资本市场认同度",
+     "D.提高公司资源整合能力"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "通过定向增发引入战略投资者的作用包括：(1)提升公司形象，提高资本市场认同度。(2)优化股权结构，健全公司法人治理。(3)提高公司资源整合能力，增强公司的核心竞争力。(4)达到阶段性的融资目标，加快实现公司上市融资的进程。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2021",
+    "title": "下列各项中，属于公司股票上市目的的有( )。",
+    "options": [
+     "A.促进股权流通和转让",
+     "B.巩固公司的控制权",
+     "C.拓宽筹资渠道",
+     "D.降低信息披露成本"
+    ],
+    "answer": [
+     0,
+     2
+    ],
+    "explain": "公司股票上市的目的是多方面的，主要包括：(1)便于筹措新资金；(2)促进股权流通和转让；(3)便于确定公司价值。选项A、C正确。股票上市后，公司将负担较高的信息披露成本，也可能会分散公司的控制权，造成管理上的困难。选项B、D错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2020",
+    "title": "关于留存收益筹资的特点，下列表述正确的有( )。",
+    "options": [
+     "A.不发生筹资费用",
+     "B.没有资本成本",
+     "C.筹资数额相对有限",
+     "D.不分散公司的控制权"
+    ],
+    "answer": [
+     0,
+     2,
+     3
+    ],
+    "explain": "利用留存收益的筹资特点：(1)不用发生筹资费用；(2)维持公司的控制权分布；(3)筹资数额有限。选项A、C、D正确。使用留存收益同样存在资本成本。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2024",
+    "title": "相对于发行普通股，利用留存收益筹资增加的权益资本不会改变公司的股权结构，也不会稀释原有的股东控制权。（  ）",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "利用留存收益筹资，不用对外发行新股或吸收新投资者，由此增加的权益资本不会改变公司的股权结构，不会稀释原有股东的控制权。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2015",
+    "title": "下列各项中，属于盈余公积金用途的有( )。",
+    "options": [
+     "A.弥补亏损",
+     "B.转增股本",
+     "C.扩大经营",
+     "D.分配股利"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "盈余公积金主要用于企业未来的经营发展，经投资者审议后也可以用于转增股本(实收资本))和弥补公司经营亏损， 所以选项ABC正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2018",
+    "title": "下列各项中，不属于债务筹资优点的是( )。",
+    "options": [
+     "A.资本成本较低",
+     "B.筹资弹性较大",
+     "C.筹资速度较快",
+     "D.可形成企业稳定的资本基础"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "债务筹资的优点包括：(1)筹资速度较快；(2)筹资弹性较大；(3)资本成本较低；(4)可以利用财务杠杆；(5)稳定公司的控制权。债务筹资的缺点：(1)不能形成企业稳定的资本基础；(2)财务风险较大；(3)筹资数额有限。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2021",
+    "title": "与债务筹资相比，股权筹资的特点有( )。",
+    "options": [
+     "A.信息披露成本高",
+     "B.资本成本大",
+     "C.财务风险较小",
+     "D.控制权变更可能影响企业长期稳定发展"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "股权筹资的优点：股权筹资是企业稳定的资本基础，是企业良好的信誉基础、财务风险较小。缺点：资本成本负担较重；控制权变更可能影响企业长期稳定发展；信息沟通与披露成本较大。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2020",
+    "title": "与债务筹资相比，股权筹资的优点有( )。",
+    "options": [
+     "A.股权筹资是企业稳定的资本基础",
+     "B.股权筹资构成企业的信誉基础",
+     "C.股权筹资的财务风险比较小",
+     "D.股权筹资的资本成本比较低"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "股权筹资的优点有：(1)股权筹资是企业稳定的资本基础；(2)股权筹资是企业良好的信誉基础；(3)股权筹资的财务风险较小。故选项A、B、C正确。股权筹资的缺点有：(1)资本成本负担较重；(2)控制权变更可能影响企业长期稳定发展；(3)信息沟通与披露成本较大。故选项D错误。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2022",
+    "title": "与债券筹资相比，股权筹资的信息沟通与披露成本较大。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "股权筹资的缺点是资本成本较高、控制权变更可能影响企业长期稳定发展、信息沟通与披露成本较大。本题表述正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2020",
+    "title": "相对于普通股筹资，属于银行借款筹资特点的有( )。",
+    "options": [
+     "A.财务风险低",
+     "B.不分散公司控制权",
+     "C.可以利用财务杠杆",
+     "D.筹资速度快"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "银行借款属于债务筹资，所以财务风险高，但可以利用财务杠杆，选项A错误、选项C正确。银行借款筹资不会增加普通股股数，所以不分散公司控制权，选项B正确。银行借款的程序相对简单，所花时间较短，公司可以迅速获得所需资金，选项D正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2021",
+    "title": "与普通股筹资相比，下列各项中，属于银行借款筹资优点的有( )",
+    "options": [
+     "A.公司的财务风险较低",
+     "B.可以发挥财务杠杆作用",
+     "C.资本成本较低",
+     "D.筹资弹性较大"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "银行借款的筹资特点：筹资速度快、资本成本较低、筹资弹性较大、限制条款多、筹资数额有限。与普通股筹资相比，银行借款要还本付息，所以财务风险较大，选项A错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2022",
+    "title": "与银行借款相比，公司发行债券筹资的特点有( )。",
+    "options": [
+     "A.一次性筹资数额较大",
+     "B.资本成本较低",
+     "C.降低了公司财务杠杆水平",
+     "D.筹集资金的使用具有相对的自主性"
+    ],
+    "answer": [
+     0,
+     3
+    ],
+    "explain": "发行公司债券的筹资特点：一次性筹资数额大；筹资使用限制少；资本成本较高；提高公司社会声誉。与股票筹资相比,公司发行债券筹资可以利用财务杠杆。选项A、D当选。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2018",
+    "title": "与发行股票筹资相比，租赁筹资的特点有( )。",
+    "options": [
+     "A.财务风险较小",
+     "B.筹资限制条件较少",
+     "C.资本成本较低",
+     "D.形成生产能力较快"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "企业运用发行股票筹资，受到相当多的资格条件的限制，因此与发行股票相比，租赁筹资的限制条件少，选项B是答案；租赁是债务筹资，资本成本要低于普通股，选项C是答案；租赁无需大量资金就能迅速获得资产，可以尽快形成生产能力，选项D是答案；租赁筹资属于债务筹资，所以，财务风险大于发行股票筹资，选项A不是答案。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "与发行公司债券相比，吸收直接投资的优点是( )。",
+    "options": [
+     "A.资本成本较高",
+     "B.产权流动性较强",
+     "C.能够提升企业市场形象",
+     "D.易于尽快形成生产能力"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "吸收直接投资的筹资特点：(1)能够尽快形成生产能力；(2)便于进行信息沟通；(3)资本成本较高(股权的资本成本通常大于债务的资本成本、缺点非优点)；(4)公司控制权集中，不利于公司治理；(5)不便于进行产权交易。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2015",
+    "title": "下列各项中，与留存收益筹资方式相比，属于吸收直接投资特点是( )。",
+    "options": [
+     "A.资本成本较低",
+     "B.筹资速度较快",
+     "C.筹资规模有限",
+     "D.形成生产能力较快"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "吸收直接投资的筹资特点：(1)能够尽快形成生产能力(选项D正确)；(2)便于进行信息沟通；(3)资本成本较高(吸收直接投资的资本成本高于留存收益筹资方式的资本成本、选项A错误)；(4)公司控制权集中，不利于公司治理；(5)不便于进行产权交易。相对于吸收投直接投资筹资方式，利用留存收益，无需向外筹资，属于内部资金直接使用，筹资速度更快，但是筹资规模有限。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "与发行股票筹资相比，吸收直接投资的优点是( )。",
+    "options": [
+     "A.易于进行产权交易",
+     "B.资本成本较低",
+     "C.有利于提高公司声誉",
+     "D.筹资费用较低"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "吸收直接投资不利于进行产权交易，选项A错误；相对于股票筹资来说，吸收直接投资的资本成本较高，选项B错误；发行股票筹资的优点是能增强公司的社会声誉，选项C错误；吸收直接投资筹资费用较低，选项D正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2021",
+    "title": "与银行借款相比，公开发行股票筹资的特点有( )。",
+    "options": [
+     "A.资本成本较低",
+     "B.增强公司的社会声誉",
+     "C.不受金融监管政策约束",
+     "D.信息披露成本较高"
+    ],
+    "answer": [
+     1,
+     3
+    ],
+    "explain": "与银行借款相比，发行股票筹资的资本成本较高。选项A错误。公开发行股票有利于提高公司的知名度，扩大其影响力，但公开发行股票审批手续复杂严格，是要受到金融监管政策约束的，选项C错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2022、2025",
+    "title": "与发行普通股筹资相比，下列各项中，属于留存收益筹资特点的有( )。",
+    "options": [
+     "A.股东权益总额不变",
+     "B.筹资金额相对有限",
+     "C.分散公司的控制权",
+     "D.资本成本相对较低"
+    ],
+    "answer": [
+     0,
+     1,
+     3
+    ],
+    "explain": "与发行普通股筹资相比,留存收益筹资具有不会发生筹资费用，资本成本相对较低，仅仅依靠内部积累，所以筹资数额有限，股东权益总额不变，维持公司的控制权结构，选项ABD当选。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2016",
+    "title": "因为公司债务必须付息，而普通股不一定支付股利，所以普通股资本成本小于债务资本成本。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "由于股票投资的风险较大，收益具有不确定性，投资者要求的收益率较高，此外，债务利息可以抵税，而股利不能抵税，所以普通股资本成本大于债务资本成本。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2022",
+    "title": "优先股股东在股东大会上没有表决权,但在重大经营管理决策上与普通股股东具有同样的权利。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "优先股的股东一般没有选举权和被选举权，对公司的重大经营管理决策也无表决权。仅在股东大会表决与优先股股东自身利益直接相关的特定事项时，具有有限表决权。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列关于优先股特征的表述中，正确的是( )。",
+    "options": [
+     "A.优先股股东对所有重大事项均无表决权",
+     "B.优先股筹资有利于调整股权资本的内部结构",
+     "C.优先股的清偿顺序先于普通股而次于债权人",
+     "D.优先股既可以采用固定股息率，也可以采用浮动股息率"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "优先股股东一般没有选举和被选举权，对股份公司的重大经营事项无表决权。仅在股东大会表决与优先股股东自身利益直接相关的特定事项时，具有有限表决权，所以选项A错误。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2017",
+    "title": "下列关于优先股筹资的表述中，不正确的是( )。",
+    "options": [
+     "A.优先股筹资有利于调整股权资本的内部结构",
+     "B.优先股筹资兼有债务筹资和股权筹资的某些性质",
+     "C.优先股筹资不利于保障普通股的控制权",
+     "D.优先股筹资会给公司带来一定的财务压力"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "优先股属于混合投资，其筹资特点兼有债务筹资和股权筹资性质(选项B不当选)。优先股的特点：(1)有利于丰富资本市场的投资结构；(2)有利于股份公司股权资本结构的调整(选项A不当选)；(3)有利于保障普通股收益和控制权(选项C当选)；(5)有利于降低公司财务风险，可能给股份公司带来一定的财务压力(选项D不当选)。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2022",
+    "title": "关于债券和优先股的共同特点，下列表述正确的有( )。",
+    "options": [
+     "A.优先股股息和债券利息都属于公司的法定债务",
+     "B.在分配剩余财产时，优先股股东和债权的清偿顺序都先于普通股股东",
+     "C.优先股股息和债券利息都会产生所得税抵减效应",
+     "D.都不会影响普通股股东对公司的控制权"
+    ],
+    "answer": [
+     1,
+     3
+    ],
+    "explain": "优先股股息不属于公司的法定债务,当公司财务状况恶化、经营成果不佳,企业可以不支付优先股股息，从而相对避免企业的财务负担(选项A不当选)。优先股股息是用税后利润支付，不能抵减企业所得税，而债务利息可以税前扣除(选项C不当选)。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2023",
+    "title": "下列各项中，不属于普通股股东拥有的权利是（ ）。",
+    "options": [
+     "A.优先认股权",
+     "B.优先分配收益权",
+     "C.股份转让权",
+     "D.剩余财产要求权"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "普通股股东的权利:(1)公司管理权;(2)收益分享权;(3)股份转让权;(4)优先认股权;(5)剩余财产要求权，选顶ACD不当选， 股东权益是剩余权益， 因此在分配收益时， 普通股股东是最后参与分配的，因此普通股股东没有分配收益优先权，选项B正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024",
+    "title": "关于参与优先股和非参与优先股，下列表述正确的是（  ）。",
+    "options": [
+     "A.非参与优先股股东同普通股股东一起参与剩余财产清偿分配",
+     "B.非参与优先股股东同普通股股东一起参与重大事项的表决",
+     "C.参与优先股股东同普通股股东一起参与公司经营决策",
+     "D.参与优先股股东有权同普通股股东一起参与剩余税后利润分配"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "持有人只能获取一定股息但不能参加公司额外分红的优先股，称为非参与优先股。持有人除可按规定的股息率优先获得股息外，还可与普通股股东分享公司的剩余收益的优先股，称为参与优先股，选项D正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2025",
+    "title": "优先股股东相比于普通股股东所具有的优先权利包括（ ）。",
+    "options": [
+     "A.对公司事务有优先表决权",
+     "B.对公司剩余财产有优先分配权",
+     "C.对公司利润有优先分配权",
+     "D.对公司增发的股票有优先认购权"
+    ],
+    "answer": [
+     1,
+     2
+    ],
+    "explain": "优先股的优先权利主要表现在股利分配优先权和分取剩余财产优先权上。选项B、C当选。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2019",
+    "title": "与普通股筹资相比，下列属于优先股筹资优点的是( )。",
+    "options": [
+     "A.有利于降低公司财务风险",
+     "B.优先股股息可以抵减所得税",
+     "C.有利于保障普通股股东的控制权",
+     "D.有利于减轻公司现金支付的财务压力"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "优先股股东无表决权，因此不影响普通股股东对企业的控制权，也基本上不会稀释原普通股的权益。优先股有财务杠杆作用，与普通股筹资相比风险更大，优先股股息的支付不能税前扣除，不能抵减所得税。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2023",
+    "title": "相对于股权筹资，下列各项中属于债务筹资优点的有（ ）。",
+    "options": [
+     "A.财务风险较小",
+     "B.资本成本较低",
+     "C.可以形成稳定的资本基础",
+     "D.可以利用财务杠杆"
+    ],
+    "answer": [
+     1,
+     3
+    ],
+    "explain": "债务筹资相对于股权筹资的财务风险大，选项A不当选。相对于股权筹资，债务筹资资本成本较低，选项B当选。债务筹资所筹集的资金，是有使用期限的，因此无法形成稳定的资本基础，选项C不当选。债务筹资可以利用财务杠杆，选项D当选。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2022",
+    "title": "认股权证本质上是一种股票期权，公司可通过发行认股权证实现融资和股票期权激励双重功能。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "认股权证本质上是一种股票期权,公司可通过发行认股权证实现融资和股票期权激励双重功能。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024",
+    "title": "关于认股权证，下列说法错误的是（  ）。",
+    "options": [
+     "A.认股权证对于发行人而言是一种融资促进工具",
+     "B.认股权证的持有者无权分享股利收入",
+     "C.认股权证的持有者享有普通股的投票权",
+     "D.认股权证本质为一种股票期权，属于衍生金融工具"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "认股权证本质上是一种股票期权，属于衍生金融工具，具有实现融资和股票期权激励的双重功能。但认股权证本身是一种认购普通股的期权，它没有普通股的红利收入，也没有普通股相应的投票权，选项C错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列各项中，属于认股权证筹资特点的有( )。",
+    "options": [
+     "A.认股权证是一种融资促进工具",
+     "B.认股权证具有普通股相应的投票权",
+     "C.有助于改善上市公司的治理结构",
+     "D.有利于推进上市公司的股权激励机制"
+    ],
+    "answer": [
+     0,
+     2,
+     3
+    ],
+    "explain": "认股权证筹资的特点：(1)认股权证是一种融资促进工具；(2)有助于改善上市公司的治理结构；(3)有利于推进上市公司的股权激励机制。所以，选项A、C、D正确。认股权证没有普通股的红利收入，也没有普通股相应的投票权。所以，选项B错误。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2021",
+    "title": "某公司发行可转债券的面值为100元，转换价格为20元，转股时股票市价为25元。则转换比率为( )。",
+    "options": [
+     "A.5",
+     "B.4",
+     "C.0.8",
+     "D.1.25"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "转换比率＝100/20＝5。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024",
+    "title": "某企业发行的可转换债券的面值为每张100元，目前市场价格为每张95元，每张债券可以转换为10股股票，则该债券的转换价格为（  ）。",
+    "options": [
+     "A.100元/股",
+     "B.95元/股",
+     "C.10元/股",
+     "D.9.5元/股"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "转换比率＝债券面值/转换价格＝100/转换价格＝10，转换价格＝100/10＝10(元/股)。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2022",
+    "title": "对于可转换债券的投资者而言，有助于降低持券风险的条款是( )。",
+    "options": [
+     "A.强制性转换条款",
+     "B.回售条款",
+     "C.赎回条款",
+     "D.限制转让条款"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "回售条款是指债券持有人有权按照事先约定的价格将债券卖回给发债公司的条件规定。回售一般发生在公司股票价格在一段时期内连续低于转股价格达到某一幅度时。回售对于投资者而言实际上是一种卖权，有利于降低投资者的持券风险。选项B当选。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2025",
+    "title": "可转换债券在面值确定的情况下，转换价格和转换比率成反比例关系。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "转换比率是指每一张可转换债券在既定的转换价格下能转换为普通股股票的数量。转换比率=债券面值/转换价格，在面值确定的情况下，转换价格和转换比率成反比例关系。\"\n*"
+   },
+   {
+    "type": "single",
+    "year": "2019",
+    "title": "关于可转换债券，下列表述正确的是( )。",
+    "options": [
+     "A.可转换债券的转换权是授予持有者一种买入期权",
+     "B.可转换债券的回售条款有助于可转换债券顺利转换股票",
+     "C.可转换债券的赎回条款有利于降低投资者的持券风险",
+     "D.可转换债券的转换比率为标的股票市值与转换价格之比"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "可转换债券给予了债券持有者未来的选择权，在事先约定的期限内，投资者可以选择将债券转换为普通股票，也可以放弃转换权利，持有至债券到期还本付息。可转换债券实质上是一种未来的买入期权，所以选项A的说法正确；可转换债券的赎回条款最主要的功能是强制债券持有者积极行使转股权，所以选项B的说法错误；可转换债券的回售条款对于投资者而言实际上是一种卖权，有利于降低投资者的持券风险，所以选项C的说法错误；可转换债券的转换比率是债券面值与转换价格之比，所以D的说法错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2021",
+    "title": "公司发行可转换债券，设置赎回条款的主要目的有( )。",
+    "options": [
+     "A.授予债券持有者将债券提前卖给发行人的权利",
+     "B.促使债券持有者积极行使转股权",
+     "C.降低债券持有者的持券风险",
+     "D.避免市场利率下降给发行人带来利率损失"
+    ],
+    "answer": [
+     1,
+     3
+    ],
+    "explain": "设置赎回条款最主要的功能是强制债券持有者积极行使转股权，以及使发债公司避免在市场利率下降后，继续向债券持有者按照较高的票面利率支付利息所蒙受的损失，选项BD是答案；回售条款是授予债券持有者将债券提前卖给发行人的权利，以降低债券持有者的持券风险，选项AC不是答案。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024",
+    "title": "对于公司发行的可转换债券，下列表述正确的是（  ）。",
+    "options": [
+     "A.在债券面值和转换价格确定的前提下转换比率为债券面值与转换价格之商",
+     "B.可转换债券的转换期一定短于债券期限",
+     "C.可转换债券的票面利率一般高于普通债券的票面利率",
+     "D.债券发售时所确定的转换价格一般低于发售日股票的市场价格"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "可转换债券的转换期可以与债券的期限相同，也可以短于债券的期限。选项B 错误。可转换债券的票面利率一般会低于普通债券的票面利率，有时甚至还低于同期银行存款利率。选项C错误。由于可转换债券在未来可以行权转换成股票，在债券发售时，所确定的转换价格一般比发售日股票市场价格高出一定比例(一般高出10%~30%)。选项D错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列可转换债券筹款中，有利于保护债券发行者利益的有( )。",
+    "options": [
+     "A.回售条款",
+     "B.赎回条款",
+     "C.转换比率条款",
+     "D.强制性转换条款"
+    ],
+    "answer": [
+     1,
+     3
+    ],
+    "explain": "赎回条款和强制性转换条款对发行债券的公司有利，回售条款对债券持有人有利。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2023",
+    "title": "混合筹资方式兼有股权筹资和债务筹资性质，下列各项中，属于混合筹资方式的有（ ）。",
+    "options": [
+     "A.发行优先股",
+     "B.商业信用",
+     "C.租赁",
+     "D.发行可转换债券"
+    ],
+    "answer": [
+     0,
+     3
+    ],
+    "explain": "混合筹资是兼具股权与债务性质的筹资，比如可转换债券筹资和优先股筹资，选项AD当选。商业信用筹资和租赁筹资均属于债务筹资，选项BC不当选。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2022",
+    "title": "非公开定向债务融资工具是指具有法人资格的非金融企业，向银行间市场特定机构投资人发行债务融资工具取得资金的一种筹资方式。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "非公开定向债务融资工具(PPN)是指具有法人资格的非金融企业,向银行间市场特定机构投资人发行债务融资工具取得资金的一种筹资方式。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "以下的关于筹资实务创新融资方式的表述中，正确的有( )。",
+    "options": [
+     "A.非公开定向债务融资工具发行价格存在流动性溢价",
+     "B.私募股权投资多采用权益型投资方式",
+     "C.产业基金的投资对象是具有一定规模的上市公司",
+     "D.股权众筹融资方应为小微企业"
+    ],
+    "answer": [
+     0,
+     1,
+     3
+    ],
+    "explain": ""
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "关于中期票据融资，以下说法错误的有( )。",
+    "options": [
+     "A.发行期限在1年以上，一般3～5年，最长5年；",
+     "B.发行采用注册制，一次注册通过后3年内可分次发行；",
+     "C.中期票据发行额度最多可达企业净资产的50％；",
+     "D.发行中期票据，主要依靠企业自身信用，无须担保和抵押"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "中期票据的发行期限在1年以上，一般3～5年，最长可达10年，所以A错误。中期票据发行采用注册制，一次注册通过后两年内可分次发行，所以B错误。企业申请发行中期票据，按规定发行额度最多可达企业净资产的40％，所以C错误。发行中期票据，主要依靠企业自身信用，无须担保和抵押，所以D正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列各项中，属于中期票据融资特点的有( )。",
+    "options": [
+     "A.发行机制灵活",
+     "B.用款方式灵活",
+     "C.融资额度较小",
+     "D.使用期限较长"
+    ],
+    "answer": [
+     0,
+     1,
+     3
+    ],
+    "explain": "中期票据特点包括：(1)发行机制灵活：一次注册通过后两年内可分次发行；(2)用款方式灵活：中期票据可用于中长期流动资金、置换银行借款、项目建设等；(3)融资额度大：发行额度最多可达企业净资产的40％；(4)使用期限长：中期票据的发行期限在1年以上，一般3～5年，最长可达10年，所以选项C错误，ABD正确。\n保存报告\n收起答题解析\n问卷星提供技术支持\n举报\n抽奖规则"
+   }
+  ]
+ },
+ "ch5": {
+  "name": "第五章 筹资管理（下）",
+  "questions": [
+   {
+    "type": "single",
+    "year": "2017",
+    "title": "某公司2016年度资金平均占用额为4 500万元，其中不合理部分占15%，预计2017年销售增长率为20%，资金周转速度不变，采用因素分析法预测的2017年度资金需求量为( )万元。",
+    "options": [
+     "A.4 590",
+     "B.4 500",
+     "C.5 400",
+     "D.3 187.5"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "资金需要量＝(4500－4500×15%)×(1＋20%)＝4590(万元)，因此选项A正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2025",
+    "title": "某公司上年度资金平均占用额为400万元，其中不合理部分为80万元，预计本年销量增长率为3%，资金周转率提高2%。基于因素分析法，计算本年度资金需要量为（ ）万元。",
+    "options": [
+     "A.323.14",
+     "B.304.31",
+     "C.336.19",
+     "D.316.73"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "资金需要量=（基期资金平均占用额－不合理资金占用额）×（1＋预测期销售增长率）÷（1＋预测期资金周转速度增长率）=（400－80）×（1＋3%）÷（1＋2%）=323.14（万元），选项A当选。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024",
+    "title": "某企业采用因素分析法预测资金需要量，当期资金平均占用额为4000万元，其中不合理部分为19%，企业当期销售额为1000万元，预计下一期销售额为800万元，资金周转速度将下降25%，则下一期预计资金需要量为（  ）。",
+    "options": [
+     "A.3 110.4万元",
+     "B.5 184万元",
+     "C.3 456万元",
+     "D.2 073.6万元"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "销售变动率＝(800－1000)/1000＝－20%，下一期预计资金需要量＝4000×(1－19%)×(1－20%)/(1－25%)＝3 456(万元)。\n\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2024",
+    "title": "在使用因素分析法预测资金需要量时，需要考虑的因素有（  ）。",
+    "options": [
+     "A.最低收入期资金占用量",
+     "B.基期资金平均占用额",
+     "C.不合理资金占用额",
+     "D.最高收入期资金占用量"
+    ],
+    "answer": [
+     1,
+     2
+    ],
+    "explain": "因素分析法下资金需要量＝(基期资金平均占用额－不合理资金占用额)×(1＋预测期销售增长率)/(1＋预测期资金周转速度增长率)，选项B、C正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2025",
+    "title": "下列各项中，属于经营性负债项目的是（ ）。",
+    "options": [
+     "A.长期负债",
+     "B.短期融资券",
+     "C.应付票据",
+     "D.短期借款"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "经营性负债项目包括应付票据、应付账款等项目，选项 C 当选;不包括短期借款、短期融资券、长期负债等筹资性负债，选项A、B、D不当选。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2023",
+    "title": "使用销售百分比法预测资金需求时，外部融资需求量等于因销售增长带来的资金需求增加额扣除（ ）。",
+    "options": [
+     "A.预测期未分配利润期末余额",
+     "B.基期未分配利润期末余额",
+     "C.基期利润留存额",
+     "D.预测期利润留存额"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "销售百分比法下，外部融资需求量=资金需求增加额-预测期利润留存额，选项D正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024",
+    "title": "根据销售百分比法，计算预测期外部融资需求时需要扣除利润留存额，该利润留存额的计算公式为（  ）。",
+    "options": [
+     "A.销售变动额×基期销售净利率×基期利润留存率",
+     "B.预测期销售额×预测期销售净利率×预测期利润留存率",
+     "C.销售变动额×预测期销售净利率×预测期利润留存率",
+     "D.基期销售额×基期销售净利率×基期利润留存率"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "预测期外部融资需求时需要扣除利润留存额，扣除的留存收益应该是未来的预计数。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2022",
+    "title": "采用销售百分比法预测资金需求量时，若其他因素不变，非敏感性资产增加，则外部筹资需求量也将相应增加。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "如果非敏感性资产增加，计算外部融资需求量时，应加上增加的非敏感性资产。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "采用销售百分比法预测资金需求量时，下列各项中，属于非敏感性项目的是( )。",
+    "options": [
+     "A.库存现金",
+     "B.存货",
+     "C.长期借款",
+     "D.应付账款"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "经营性资产(敏感性资产)项目包括库存现金、应收账款、存货等项目。经营性负债(敏感性负债)项目包括应付票据、付账款等项目，不包括短期借款、短期融资券、长期负债等筹资性负债(非敏感性负债)。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2016",
+    "title": "根据资金需要量预测的销售百分比法，下列负债项目中，通常会随销售额变动而呈正比例变动的是( )。",
+    "options": [
+     "A.应付票据",
+     "B.长期负债",
+     "C.短期借款",
+     "D.短期融资券"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "在销售百分比法下，假设经营负债与销售额保持一定的比例关系，经营负债包括应付票据、应付账款等项目，不包括短期借款、短期融资券、长期负债等筹资性负债。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2022",
+    "title": "按照资金变动与一定范围内产销量变动之间的依存关系,可以把资金区分为不变资金、变动资金和半变动资金，下列说法正确的有( )。",
+    "options": [
+     "A.原材料的保险储备所占用的资金属于不变资金",
+     "B.与产销量变化不呈同比例变动的辅助材料占用的资金属于半变动资金",
+     "C.直接构成产品实体的原材料所占用的资金属于变动资金",
+     "D.最低储备之外的存货所占用的资金属于半变动资金"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "变动资金是指随产销量的变动而同比例变动的那部分资金。在最低储备以外的现金、存货、应收账款等也具有变动资金的性质，因此最低储备之外的存货所占用的资金属于变动资金，选项错误。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "下列各项中，属于变动资金的是( )。",
+    "options": [
+     "A.辅助材料占用的资金",
+     "B.原材料的保险储备",
+     "C.最低储备以外的现金",
+     "D.固定资产占用的资金"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "辅助材料占用的资金属于半变动资金；原材料的保险储备、固定资产占用的资金属于不变资金；最低储备以外的现金属于变动资金，所以选项C正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2021",
+    "title": "某公司敏感性资产和敏感性负债占销售额的比重分别为50%和10%，并保持稳定不变。2022年销售额为1000万元，预计2023年销售额增长20%，销售净利率为10%，利润留存率为30%。不考虑其他因素，则根据销售百分比法，2023年的外部融资需求为( )。",
+    "options": [
+     "A.80万元",
+     "B.64万元",
+     "C.44万元",
+     "D.74万元"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "2023年销售收入增加＝1000×20%＝200(万元)，敏感性资产增加＝200×50%＝100(万元)，敏感性负债增加＝200×10%＝20(万元)，预计利润留存＝1200×10%×30%＝36(万元)。外部融资需求量＝Δ敏感性资产－Δ敏感性负债－预计利润留存＝100－20－36＝44(万元)。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "维持上年的销售净利率和股利支付率不变的情况下，甲企业上一年的销售收入为1 800万元，经营性资产和经营性负债占销售收入的比率分别是30%和20%，销售净利率为10%，发放股利60万元，企业本年销售收入将达到3 000万元，如果满足销售百分比法的假设条件，则企业在本年需要新增的筹资额是( )万元。",
+    "options": [
+     "A.-60",
+     "B.120",
+     "C.0",
+     "D.800"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "新增的筹资额＝新增的经营性资产－新增的经营性负债＝(3000－1800)×(30%－20%)＝120(万元)，选项B当选。(注意：本题求解的是新增的筹资总额，而不是外部融资额)\n*"
+   },
+   {
+    "type": "single",
+    "year": "2017",
+    "title": "某公司2012年～2016年度销售收入和资金占用的历史数据(单位：万元)分别为(800，18)，(760，19)，(900，20)，(1000，22)，(1100，21)运用高低点法分离资金占用中的不变资金与变动资金时，应采用的两组数据是( )。",
+    "options": [
+     "A.(760，19)和(1000，22)",
+     "B.(800，18)和(1100，21)",
+     "C.(760，19)和(1100，21)",
+     "D.(800，18)和(1000，22)"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "最高点和最低点的选择是以业务量(销售收入)为标准的，所以答案为选项C。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2025",
+    "title": "下列各项中，属于资本成本中筹资费用的有（ ）。",
+    "options": [
+     "A.公司债券的利息",
+     "B.普通股发行费",
+     "C.优先股股利",
+     "D.银行借款手续费"
+    ],
+    "answer": [
+     1,
+     3
+    ],
+    "explain": "资本成本包括筹资费用和用资费用，筹资费用是指企业在资本筹措过程中为获取资本而付出的代价，如向银行支付的借款手续费、发行股票和公司债券而支付的发行费等，选项 B、D 当选;用资费用是指企业在资本使用过程中因占用资本而付出的代价，如向债权人支付的利息，向股东支付的股利等，选项 A、C 不当选。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2023",
+    "title": "资本成本包括筹资费用与用资费用，下列属于用资费用的是（ ）。",
+    "options": [
+     "A.债券发行宣传费",
+     "B.银行借款手续费",
+     "C.股票发行承销费",
+     "D.向股东支付股利"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "用资费用是指企业在资本使用过程中因占用资本而付出的代价，如向银行等债权人支付的利息、租赁的资金利息、股利支出等。所以，选项D属于用资费用。选项ABC属于筹资费用。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2023",
+    "title": "某企业溢价发行优先股，每股面值为100元，溢价率为10%，规定的股息率为8%，筹资费用为发行价的2%。则优先股的资本成本率为（ ）。",
+    "options": [
+     "A.8.16%",
+     "B.8%",
+     "C.7.42%",
+     "D.8.89%"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "优先股发行价格=100×(1＋10%)=110(元)，优先的资本成本率=100×8%/[110×(1-2%)]=7.42%。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2022",
+    "title": "资本成本包括筹资费用和占用费用两个部分,下列各项中属于占用费用的是( )。",
+    "options": [
+     "A.借款手续费",
+     "B.借款利息费",
+     "C.信贷公证费",
+     "D.股票发行费"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "占用费是指企业在资本使用过程中因占用资本而付出的代价，如向银行等债权人支付的利息、租赁的资金利息、股利支出等。选项B当选。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2021",
+    "title": "资本成本一般包括筹资费用和占用费用，下列属于占用费用的有( )。",
+    "options": [
+     "A.向债权人支付的利息",
+     "B.发行股票支付的佣金",
+     "C.发行债券支付的手续费",
+     "D.向股东支付的现金股利"
+    ],
+    "answer": [
+     0,
+     3
+    ],
+    "explain": "占用费用是指企业在资本使用过程中因占用资本而付出的代价，如向银行等债权人支付的利息，向股东支付的股利等。选项B、C属于筹资费用。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2015",
+    "title": "下列各种筹资方式中，企业无须支付资金用资费用的是( )。",
+    "options": [
+     "A.发行债券",
+     "B.发行优先股",
+     "C.发行短期票据",
+     "D.发行认股权证"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "发行债券、发行短期票据需要支付利息费用，发行优先股需要支付优先股股息，这些都会产生资金的用资费用，发行认股权证不需要支付资金的用资费用。因此选项D正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2020",
+    "title": "关于资本成本，下列说法正确的有( )。",
+    "options": [
+     "A.资本成本是衡量资本结构是否合理的重要依据",
+     "B.资本成本一般是投资所应获得收益的最低要求",
+     "C.资本成本是取得资本所有权所付出的代价",
+     "D.资本成本是比较筹资方式、选择筹资方案的依据"
+    ],
+    "answer": [
+     0,
+     1,
+     3
+    ],
+    "explain": "资本成本的作用有：(1)资本成本是比较筹资方式、选择筹资方案的依据；(2)平均资本成本是衡量资本结构是否合理的重要依据；(3)资本成本是评价投资项目可行性的主要标准；(4)资本成本是评价企业整体业绩的重要依据，所以选项A、D正确。资本成本是衡量资本结构优化程度的标准，也是对投资获得经济效益的最低要求，所以选项B正确。对筹资者而言，资本成本表现为取得资本使用权所付出的代价，并非一定是取得资本所有权，也可能是取得债务资金，所以选项C错误。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2019",
+    "title": "下列各项中，通常会引起资本成本上升的情形是( )。",
+    "options": [
+     "A.预期通货膨胀率呈下降趋势",
+     "B.投资者要求的预期收益率下降",
+     "C.证券市场流动性呈恶化趋势",
+     "D.企业总体风险水平得到改善"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "资本市场条件包括资本市场的效率和风险。如果资本市场缺乏效率，证券的市场流动性低，投资者投资风险大，要求的预期收益率髙，那么通过资本市场融通的资本，其成本水平就比较高。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2024",
+    "title": "关于影响资本成本的因素，下列表述错误的有( )。",
+    "options": [
+     "A.如果企业一次性筹资规模较大，资金占用期限较长，其资本成本通常比较低",
+     "B.如果经济过热，通货膨胀水平较高，企业筹资的资本成本通常较高",
+     "C.如果资本市场缺乏效率，企业在资本市场筹资的资本成本通常较低",
+     "D.如果企业整体风险水平较高，企业筹资的资本成本通常较高"
+    ],
+    "answer": [
+     0,
+     2
+    ],
+    "explain": "在一定时期内，国民经济体系中资金供给总量是一定的，资本是一种稀缺资源。因此企业一次性需要筹集的资金规模大、占用资金时限长，资本成本就高。选项A表述错误。如果经济过热，通货膨胀率持续居高不下，投资者投资的风险大，要求的必要报酬率高，筹资的资本成本率就高。选项B表述正确。\n如果资本市场缺乏效率，证券的市场流动性低，投资者投资风险大，要求的必要收益率高，那么通过资本市场融通的资本，其成本水平就比较高。选项C表述错误。\n企业总体风险水平高，投资者要求的必要收益率高，企业筹资的资本成本相应就大。选项D表述正确。\n\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2019",
+    "title": "关于银行借款筹资的资本成本，下列说法错误的有( )。",
+    "options": [
+     "A.银行借款手续费会影响银行借款的资本成本",
+     "B.银行借款的资本成本仅包括银行借款利息支出",
+     "C.银行借款的资本成本率一般等于无风险利率",
+     "D.银行借款的资本成本与还本付息方式无关"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "资本成本包括筹资费和占用费，银行借款手续费属于筹资费，银行借款利息支出属于占用费，所以选项A正确，选项B错误。银行借款的资本成本是存在风险的，因此选项C错误。还本付息方式会影响银行借款的利息费用，从而影响资本成本的计算，选项D错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2020",
+    "title": "下列各项中，影响债券资本成本的有( )",
+    "options": [
+     "A.债券发行费用",
+     "B.债券票面利率",
+     "C.债券发行价格",
+     "D.利息支付频率"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "按照一般模式计算，债券资本成本＝债券筹资总额×债券票面利率×(1－所得税税率)/[债券筹资总额×(1－手续费用率)]，影响债券资本成本的有：债券发行费用(手续费用率)、债券票面利率、债券发行价格(债券筹资总额)，故选项A、B、C正确。如果按照贴现模式计算，则利息支付频率也会影响债券资本成本，故选项D正确。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "",
+    "title": "资本成本率是企业用以确定项目要求达到的投资收益率的最低标准。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "资本成本是衡量资本结构优化程度的标准，也是对投资获得经济效益的最低要求，通常用资本成本率表示。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "某公司取得5年期长期借款200万元，年利率8%，每年付息一次，到期一次还本，筹资费用率为0.5%，企业所得税税率为25%。不考虑货币时间价值，该借款的资本成本率为( )。",
+    "options": [
+     "A.6.03%",
+     "B.7.5%",
+     "C.6.5%",
+     "D.8.5%"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "资本成本率＝8%×(1－25%)/(1－0.5%)＝6.03%。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "某企业发行债券，发行价110元，面值100元，筹资费用率为3%，票面年利率为8%。所得税税率为25%，则债券实际利率为( )。",
+    "options": [
+     "A.8%",
+     "B.6%",
+     "C.5.62%",
+     "D.7.5%"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "实际利率＝100×8%/[110×(1－3%)]＝7.5%，故选项D正确。注意如果本题计算的是资本成本，资本成本＝100×8%×(1－25%)/[110×(1－3%)]＝5.62%。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "某公司普通股目前的股价为10元/股，筹资费率为6%，刚刚支付的每股股利为2元，股利固定增长率2%，则该企业普通股的资本成本为( )。",
+    "options": [
+     "A.23.70%",
+     "B.22.00%",
+     "C.22.40%",
+     "D.23.28%"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "普通股资本成本＝2×(1＋2%)/[10×(1－6%)]×100%＋2%＝23.7%。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2023",
+    "title": "某公司普通股的当前市价为每股50元，发行股票的筹资费用率为1%，本年发放的现金股利为每股0.5元，预计股利增长率8%，根据股利增长模型，该公司的留存收益的资本成本率为( )。",
+    "options": [
+     "A.9.05%",
+     "B.9%",
+     "C.9.08%",
+     "D.9.14%"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "留存收益的资本成本率=0.5×(1+8%)/50+8%=9.08%。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024",
+    "title": "某公司市盈率为15倍，本年每股收益为2元，已发放的现金股利为0.6元(Do)，预计股利增长率为8%。假设资本市场有效，且不考虑其他因素，采用股利增长模型法，该公司留存收益的资本成本率为（ ）。",
+    "options": [
+     "A.12.32%",
+     "B.12%",
+     "C.10.16%",
+     "D.10%"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "股票市价＝15×2＝30(元)，留存收益的资本成本率＝0.6×(1＋8%)/30＋8%＝10.16%。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024",
+    "title": "某公司溢价发行固定股息率优先股，假设不存在筹资费用，股息按年支付且不可税前抵扣，关于该优先股按照一般模式计算的资本成本率与票面股息率的大小，下列表述正确的是（  ）。",
+    "options": [
+     "A.资本成本率大于票面股息率",
+     "B.资本成本率小于票面股息率",
+     "C.无法比较二者的大小",
+     "D.资本成本率等于票面股息率"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "优先股资本成本率＝D/[Ｐ×(1－f)]，由于不存在筹资费用，优先股资本成本率＝D/P＝面值×票面股息率/发行价格，而溢价发行，发行价格大于面值，优先股资本成本率小于票面股息率。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2021、2024",
+    "title": "边际资本成本作为企业进行追加筹资决策的依据，计算筹资组合的边际资本成本，一般应选择目标价值作为权数。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "边际资本成本，是企业进行追加筹资的决策依据。筹资方案组合时，边际资本成本的权数采用目标价值权数。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2025",
+    "title": "如果资本市场缺乏效率，证券的市场流动性低，那么通过资本市场筹集的资本，其资本成本就比较低。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "如果资本市场缺乏效率，证券的市场流动性低，投资者投资风险大，要求的必要收益率高，那么通过资本市场融通的资本，其成本水平就比较高。本题表述错误。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "下列各项中，通常不会导致企业资本成本增加的是( )。",
+    "options": [
+     "A.通货膨胀加剧",
+     "B.投资风险上升",
+     "C.经济持续过热",
+     "D.证券市场流动性增强"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "如果国民经济不景气或者经济过热，通货膨胀持续居高不下，投资者投资风险大，预期收益率高，筹资的资本成本就高，选项A、B、C均会导致企业资本成本增加；证券市场流动性增强，证券变现力增强，证券投资的风险降低，投资者要求的收益率就低，筹资的资本成本就低。所以，选项D正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "某大型联合企业A公司，拟开始进入飞机制造业。A公司目前的资本结构为负债/权益为2/3，进入飞机制造业后仍维持该目标结构。飞机制造业的代表企业是B公司，其资本结构为债务/权益成本为7/10，股东权益的β值为1.2。假定两家公司的所得税税率均为25%。本项目含有负债的股东权益β值是( )。",
+    "options": [
+     "A.0.7869",
+     "B.1.18",
+     "C.1.22",
+     "D.1.83"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "将B公司的𝛽_权益转换为无负债的𝛽_资产(卸载财务杠杆)：𝛽资产＝1.2/[1＋7/10×(1－25%)]＝0.7869，加载财务杠杆得到A公司含有负债的𝛽权益＝0.7869×[1＋2/3×(1－25%)]＝1.18\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "某公司的主营业务是生产和销售制冷设备，目前准备投资汽车项目。在确定项目系统风险时，掌握了以下资料：汽车行业上市公司的β值为1.05，行业平均资产负债率为60%，投资汽车项目后，公司将继续保持目前50%的资产负债率。企业所得税率25%，本项目含有负债的股东权益β值是( )。",
+    "options": [
+     "A.0.86",
+     "B.0.98",
+     "C.1.26",
+     "D.1.31"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "β资产＝1.05÷[1+60/40×(1－25%)]＝0.4941；目标公司的β权益＝0.4941×[1+50/50×(1－25%)]＝0.86，选项A正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列关于β资产和β权益的表述中，正确的有( )。",
+    "options": [
+     "A.对于同一个企业而言，β资产大于β权益",
+     "B.β资产度量的风险只有经营风险，没有财务风险",
+     "C.β权益是含有负债(财务杠杆)的贝塔值",
+     "D.根据β资产确定β权益的过程，通常叫“卸载财务杠杆”"
+    ],
+    "answer": [
+     1,
+     2
+    ],
+    "explain": "由于β权益是含有财务杠杆的贝塔值，β资产是不含有财务杠杆的贝塔值，选项B正确。所以，对于同一个企业而言，β权益大于β资产，即选项A错误。根据β资产确定β权益的过程，通常叫“加载财务杠杆”。根据β权益确定β资产的过程，通常叫“卸载财务杠杆”，选项D错误。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2022",
+    "title": "财务杠杆系数等于普通股收益变动率除以产销量变动率。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "财务杠杆系数＝普通股每股收益变动率/息税前利润变动率，本题表述错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2021CPA",
+    "title": "下列关于经营杠杆的说法中，正确的有( )。",
+    "options": [
+     "A.如果不存在固定经营成本，就不存在经营杠杆效应",
+     "B.经营杠杆的大小由固定经营成本与息税前利润共同决定",
+     "C.其他条件不变，降低单位变动成本可以降低经营杠杆系数",
+     "D.固定经营成本不变的情况下，营业收入越大，经营杠杆效应越大"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "经营杠杆系数＝基期边际贡献/基期息税前利润＝1＋固定经营成本/息税前利润，固定经营成本不变的情况下，营业收入越大，息税前利润越大，经营杠杆效应越小，选项D错误。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2022",
+    "title": "关于企业经营杠杆系数，下列表述正确的有( )。",
+    "options": [
+     "A.只要企业存在固定性经营成本，经营杠杆系数总是大于1",
+     "B.若经营杠杆系数为1，则企业不存在经营风险",
+     "C.经营杠杆系数就是息税前利润对销售量的敏感系数",
+     "D.经营杠杆系数等于息税前利润除以边际贡献"
+    ],
+    "answer": [
+     0,
+     2
+    ],
+    "explain": "若企业经营杠杆系数为1，则企业不存在固定成本，没有经营杠杆，但并不表明不存在经营风险，选项B不当选； 经营杠杆系数等于基期边际贡献除以基期息税前利润，选项D不当选。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列关于杠杆系数的说法中，正确的有( )。",
+    "options": [
+     "A.经营杠杆和财务杠杆都具有放大盈利波动性的作用",
+     "B.如果固定资本成本等于0，则财务杠杆系数为1，即不存在财务杠杆效应",
+     "C.总杠杆既能反映经营风险，又能反映财务风险",
+     "D.经营杠杆放大了息税前利润变化对每股收益变动的影响程度"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "经营杠杆放大了企业产销业务量变化对息税前利润变化的影响程度；财务杠杆放大了息税前利润变化对每股收益变化的影响程度，选项D错误。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2018",
+    "title": "某公司基期息税前利润1000万元，基期利息费用为400万元，假设与财务杠杆相关的其他因素保持不变，则该公司计划期的财务杠杆系数为( )。",
+    "options": [
+     "A.2.5",
+     "B.1.67",
+     "C.1.25",
+     "D.1.88"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "该公司计划期的财务杠杆系数＝基期息税前利润/基期利润总额＝1000/(1000－400)＝1.67。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "A公司2022年边际贡献总额300万元，2022年经营杠杆系数为2.5，2023年经营杠杆系数为3，假设其他条件不变，如果2023年销售收入增长20%，息税前利润预计是( )万元。",
+    "options": [
+     "A.100",
+     "B.150",
+     "C.120",
+     "D.160"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "2023年的经营杠杆系数要根据基期(2022年)的数据来计算，即2023年的经营杠杆系数3＝2022年边际贡献总额300/2022年息税前利润EBIT，所以2022年EBIT＝300/3＝100(万元)，2023年息税前利润增长率＝20%×3＝60%，2023年息税前利润＝100×(1＋60%)＝160(万元)。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2020",
+    "title": "某公司基期有关数据如下：销售额为100万元，变动成本率为60%，固定成本总额为20万元，利息费用为4万元，不考虑其他因素，该公司的总杠杆系数为( )。",
+    "options": [
+     "A.1.25",
+     "B.2",
+     "C.2.5",
+     "D.3.25"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "该公司的总杠杆系数＝100×(1－60%)/[100×(1－60%)－20－4]＝2.5\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "A公司只生产一种产品，产品单价为6元，单位变动成本为4元，产品销量为10万件/年，固定成本为5万元/年，利息支出为3万元/年，优先股股利0.75万元/年，企业所得税税率25%。A公司的财务杠杆为( )。",
+    "options": [
+     "A.1.67",
+     "B.1.25",
+     "C.1.33",
+     "D.1.36"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "A公司的EBIT＝10×(6－4)－5＝15(万元)，财务杠杆＝15/(15-3-0.75/1-25%)＝1.36，如果计算经营杠杆系数：经营杠杆＝10×(6-4)/15＝1.33\n*"
+   },
+   {
+    "type": "single",
+    "year": "2022CPA",
+    "title": "甲公司本年的净利润是5 000万元，利息费用是100万元，则可以判断财务杠杆系数( )。",
+    "options": [
+     "A.等于1",
+     "B.大于1",
+     "C.等于0",
+     "D.小于1"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "财务杠杆系数＝息税前利润/(息税前利润－利息费用)，因为利息费用大于0，所以财务杠杆系数的分子大于分母，财务杠杆系数大于1。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2023",
+    "title": "某公司经营杠杠系数为1.2，财务杠杠系数为1.5，若每股收益预计增长率为9%，则销售收入预计增长率为（ ）。",
+    "options": [
+     "A.5%",
+     "B.6%",
+     "C.7.5%",
+     "D.16.2%"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "总杠杆系数=1.5×1.2=1.8，总杠杆系数=普通股收益变动率/产销业务量变动率，所以销售收入增长率=9%/1.8=5%。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "A公司2024年每股收益1元，2025年经营杠杆系数1.2，财务杠杆系数1.5。假设A公司不进行股票分割，如果2025年每股收益想达到1.9元，根据杠杆效应，其营业收入应比2024年增加( )。",
+    "options": [
+     "A.50%",
+     "B.90%",
+     "C.75%",
+     "D.60%"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "每股收益增长率＝(1.9－1)/1×100%＝90%，总杠杆系数＝1.2×1.5＝1.8，则1.8＝每股收益变动率/产销业务量变动率(或营业收入变动率)，所以，营业收入变动率＝90%/1.8＝50%。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2020",
+    "title": "某公司2019年普通股收益为100万元，2020年息税前利润预计增长20%，假设财务杠杆系数为3，则2020年普通股收益预计为( )万元。",
+    "options": [
+     "A.300",
+     "B.120",
+     "C.100",
+     "D.160"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "财务杠杆系数＝普通股收益变动率/息税前利润变动率，普通股收益增长率＝20%×3＝60%。2020年普通股收益＝100×(1＋60%)＝160(万元)。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2023",
+    "title": "某企业2022年资本总额为150万元，权益资本占60%，负债平均利率为10%，当前息税前利润为14万元，预计2023年息税前利润为16.8万元，则2023年的每股收益增长率为（ ）。",
+    "options": [
+     "A.20%",
+     "B.56%",
+     "C.35%",
+     "D.60%"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "2022年的利息费用=150×(1－60%)×10%=6(万元)。财务杠杆系数=14/(14－6) =1.75。2023年息税前利润增长率=(16.8－14)/14×100%=20%。则2023年每股收益增长率=20%×1.75=35%。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "某公司本年销售额为2 000万元，息税前利润为600万元，利息保障倍数为4(资本化利息为50万元)，变动成本率为60%，优先股股利为75万元，所得税税率为25%，固定经营成本和融资成本不变，则公司下年的总杠杆系数为( )。",
+    "options": [
+     "A.2",
+     "B.1.5",
+     "C.3",
+     "D.5"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "利息费用＋资本化利息＝600/4＝150(万元)，利息费用＝150－50＝100(万元)，DTL＝2000×(1－60%)/[600－100－75/(1－25%)]＝2。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "已知经营杠杆系数为4，每年的固定经营成本为9万元，利息费用为1万元(没有资本化利息)，则利息保障倍数为( )。",
+    "options": [
+     "A.2",
+     "B.2.5",
+     "C.3",
+     "D.4"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "由于经营杠杆系数＝(息税前利润＋9)/息税前利润＝4，所以，息税前利润＝3(万元)，则利息保障倍数＝3/1＝3。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "甲公司当期利息全部费用化，没有优先股，其利息保障倍数为4，则财务杠杆系数为( )。",
+    "options": [
+     "A.1.33",
+     "B.1.75",
+     "C.1.25",
+     "D.1.38"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "根据利息保障倍数＝EBIT÷I＝4，可知EBIT＝4I，由于不存在优先股，财务杠杆系数＝EBIT÷(EBIT－I)＝4II÷(4I－I)＝1.33，选项A当选。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "假设不存在优先股股息且企业净利润大于0的前提下，财务杠杆系数( )。",
+    "options": [
+     "A.最低为1",
+     "B.最高为1",
+     "C.总是大于1",
+     "D.总是小于1"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "由于不存在优先股，财务杠杆系数＝EBIT÷(EBIT－I),如果利息I＝0，则财务杠杆系数＝1，如果利息I≠0，则财务杠杆系数＞1，选项A当选。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "",
+    "title": "如果某公司财务杠杆大于1，表明该公司基期的息税前利润不足以支付当期债息。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "如果某公司财务杠杆大于1，表明该公司基期的息税前利润足以支付当期债息。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2024",
+    "title": "某企业基期息税前利润为3 000万元，经营杠杆系数为1.5，财务杠杆系数为1.2，假设不存在优先股，则基期利息费用为（  ）。",
+    "options": [
+     "A.1 000万元",
+     "B.500万元",
+     "C.1 333.33万元",
+     "D.1 888.89万元"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "财务杠杆系数＝EBIT/(EBIT－利息)，1.2＝3000/(3000－利息），解得：利息＝500(万元)。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2025",
+    "title": "某公司经营杠杆系数为1.6，总杠杆系数为3.2，下列表述正确的有（ ）。",
+    "options": [
+     "A.如果销售量增加10%，息税前利润将增加16%",
+     "B.如果销售量增加10%，每股收益将增加32%",
+     "C.如果销售量增加5%，每股收益将增加10%",
+     "D.如果息税前利润增加20%，每股收益将增加40%"
+    ],
+    "answer": [
+     0,
+     1,
+     3
+    ],
+    "explain": "息税前利润变动率=经营杠杆系数×销售量变动率=1.6×10%=16%，选项A当选;每股收益变动率=总杠杆系数×销售量变动率=3.2×10%=32%，选项B当选;每股收益变动率=3.2×5%=16%，选项C不当选;每股收益变动率=财务杠杆系数×息税前利润变动率=总杠杆系数÷经营杠杆系数×息税前利润变动率=3.2÷1.6×20%=40%，选项D当选。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "",
+    "title": "如果公司存在固定股息优先股，优先股股息越高，财务杠杆系数越大。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "财务杠杆系数＝息税前利润/[息税前利润-利息-优先股股息/(1-所得税税率)]，优先股股息与财务杠杆系数同向变动，所以优先股股息越高，财务杠杆系数越大。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "已知某公司流动资产为500万元，固定资产为600万元，应付账款为200万元，长期借款为400万元，股东权益为500万元，据此可断定该企业( )。",
+    "options": [
+     "A.只存在经营风险",
+     "B.经营风险大于财务风险",
+     "C.经营风险小于财务风险",
+     "D.同时存在经营风险和财务风险"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "企业只要固定经营成本不等于0，必然存在经营风险；由于资本结构中有承担固定性资本成本的债务资本，则企业同时存在经营风险和财务风险。经营风险和财务风险的大小是无法进行比较的。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2025",
+    "title": "某公司经营杠杆系数为1.2，财务杠杆系数为1.5，若要达到普通股收益率增长18%的预期目标，则产销量增长率应达到（ ）。",
+    "options": [
+     "A.32.4%",
+     "B.15%",
+     "C.10%",
+     "D.12%"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "总杠杆系数=经营杠杆系数×财务杠杆系数= 1.2×1.5=1.8，总杠杆系数=普通股收益变动率÷产销量变动率，所以产销量变动率=18%÷1.8=10%，选项C当选。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2022",
+    "title": "下列各项中，影响财务杠杆系数而不影响经营杠杆系数的是( )。",
+    "options": [
+     "A.产销量",
+     "B.固定利息费用",
+     "C.销售单价",
+     "D.固定经营成本"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "息税前利润的形成的四个因素既影响经营杠杆也影响财务杠杆，固定融资成本(固定利息费用、优先股股利)只影响财务杠杆、不影响经营杠杆。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2019",
+    "title": "在息税前利润为正的前提下，下列经营杠杆系数与之保持同向变化的因素有（  ）。",
+    "options": [
+     "A.固定成本",
+     "B.销售价格",
+     "C.销售量",
+     "D.单位变动成本"
+    ],
+    "answer": [
+     0,
+     3
+    ],
+    "explain": "息税前利润＝销售量×(单价－单位变动成本)－固定经营成本，息税前利润变小会导致经营风险加大，经营杠杆系数变大，所以，单位变动成本和固定成本与经营杠杆系数同向变动，销售量和单价与经营杠杆系数反向变动。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2020",
+    "title": "下列各项中，影响经营杠杆的因素有( )。",
+    "options": [
+     "A.债务利息",
+     "B.销售量",
+     "C.所得税",
+     "D.固定性经营成本"
+    ],
+    "answer": [
+     1,
+     3
+    ],
+    "explain": "经营杠杆系数＝基期边际贡献/基期息税前利润＝基期销售量×(单价－单位变动成本)/(基期边际贡献－固定性经营成本)，故选项B、D正确。选项A、C属于影响财务杠杆的因素。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2017",
+    "title": "下列各项中，影响财务杠杆系数的有( )。",
+    "options": [
+     "A.息税前利润",
+     "B.普通股股利",
+     "C.优先股股息",
+     "D.借款利息"
+    ],
+    "answer": [
+     0,
+     2,
+     3
+    ],
+    "explain": "财务杠杆的存在是由于固定融资成本的存在，固定融资成本是指利息和优先股股利。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "当边际贡献超过固定成本后，下列措施有利于降低总杠杆系数，从而降低公司风险的是( )。",
+    "options": [
+     "A.降低产品销售单价",
+     "B.提高资产负债率",
+     "C.节约固定成本支出",
+     "D.减少产品销售量"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "DTL＝M/(EBIT-I-D/(1-T))，降低产品销售单价、减少产品销售量都会使M减少，DTL变大，会增大公司风险，所以A、D错误；提高资产负债率，利息I会增大，DTL变大，公司风险加大，所以B错误；节约固定成本支出，EBIT会增大，DTL变小，降低公司风险。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2017",
+    "title": "一般而言，与发行普通股相比，发行优先股的特点有( )。",
+    "options": [
+     "A.可以增加公司的财务杠杆效应",
+     "B.可以降低公司的财务风险",
+     "C.可以保障普通股股东的控制权",
+     "D.可以降低公司的资本成本"
+    ],
+    "answer": [
+     0,
+     2,
+     3
+    ],
+    "explain": "如果存在优先股，计算财务杠杆系数时要考虑优先股利，所以选项A正确；相对于普通股，优先股利是固定支付的，所以增加了财务风险，选项B不正确；优先股东无表决权，所以保障了普通股股东的控制权，所以选项C正确；普通股的投资风险比优先股的大，所以普通股的资本成本高一些。所以选项D正确。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2020",
+    "title": "关于经营杠杆和财务杠杆，下列表述错误的有( )。",
+    "options": [
+     "A.经营杠杆反映了权益资本收益的波动性",
+     "B.经营杠杆效应使得企业的业务量变动率大于息税前利润变动率",
+     "C.财务杠杆反映了资产收益的波动性",
+     "D.财务杠杆效应使得企业的普通股收益变动率大于息税前利润变动率"
+    ],
+    "answer": [
+     0,
+     1,
+     2
+    ],
+    "explain": "经营杠杆，是指由于固定性经营成本的存在，而使得企业的资产收益(息税前利润)变动率大于业务量变动率的现象。经营杠杆反映了资产收益的波动性，用以评价企业的经营风险。所以选项A、B错误。财务杠杆，是指由于固定性资本成本的存在，而使得企业的普通股收益(或每股收益)变动率大于息税前利润变动率的现象。财务杠杆反映了权益资本收益的波动性，用以评价企业的财务风险。所以选项C错误、选项D正确。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2022",
+    "title": "总杠杆系数反映了经营杠杆和财务杠杆之间的关系,在维持一定的总杠杆系数情形下，经营杠杆系数和财务杠杆系数可以有不同的组合。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "总杠杆系数＝经营杠杆系数×财务杠杆系数，在维持一定的总杠杆系数情形下 ,经营杠杆系数和财务杠杆系数可以有不同的组合。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "在通常情况下，不宜采用较高负债比例的企业发展阶段是( )。",
+    "options": [
+     "A.初创阶段",
+     "B.发展成熟阶段",
+     "C.收缩阶段",
+     "D.破产清算阶段"
+    ],
+    "answer": [
+     0,
+     2,
+     3
+    ],
+    "explain": "一般来说，在企业初创阶段、破产清算阶段、收缩阶段，经营风险大，经营杠杆系数大，此时企业筹资主要依靠权益资本，在较低程度上使用财务杠杆。在企业扩张成熟期，产品市场占有率高，产销业务量大，经营杠杆系数小，此时，企业资本结构中可扩大债务资本，在较高程度上使用财务杠杆。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2015",
+    "title": "下列各项因素中，影响企业资本结构决策的有( )。",
+    "options": [
+     "A.企业的经营状况",
+     "B.企业的信用等级",
+     "C.国家的货币供应量",
+     "D.管理者的风险偏好"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "影响资本结构的因素有：企业经营状况的稳定性和成长率；企业的财务状况和信用等级；企业的资产结构；企业投资人和管理当局的态度；行业特征和企业发展周期；经济环境的税务政策和货币政策，所以选项A、B、C、D都是正确答案。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2022",
+    "title": "经济危机时期，由于企业经营环境恶化、销售下降，企业应当逐步降低债务水平，以减少破产风险。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "经营环境恶化、销售下降意味着企业的经营风险在增加，企业应该降低自己的财务风险，即降低债务水平。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "以下各种资本结构理论中，认为筹资决策无关紧要的是( )。",
+    "options": [
+     "A.无税的MM理论",
+     "B.有税(修正)的MM理论",
+     "C.代理理论",
+     "D.优序融资理论"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "在没有企业所得税的情况下，有负债企业价值＝无负债企业价值，即企业的资本结构与企业价值无关，即无税的MM理论不存在最优资本结构，筹资决策无关紧要。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2020",
+    "title": "下列资本结构理论中，认为资本结构影响企业价值的有( )。",
+    "options": [
+     "A.无税的MM理论",
+     "B.修正的MM理论",
+     "C.代理理论",
+     "D.权衡理论"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "最初的MM理论认为，不考虑企业所得税，有无负债不改变企业的价值。因此企业价值不受资本结构的影响。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2017CPA",
+    "title": "在考虑企业所得税但不考虑个人所得税的情况下，下列关于资本结构有税MM理论的说法中，错误的是( )。",
+    "options": [
+     "A.财务杠杆越大，企业价值越大",
+     "B.财务杠杆越大，企业权益资本成本越高",
+     "C.财务杠杆越大，企业利息抵税现值越大",
+     "D.财务杠杆越大，企业加权平均资本成本越高"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "在考虑企业所得税的条件下，有负债企业的加权平均资本成本随着债务筹资比例的增加而降低。因此，财务杠杆越大，企业加权平均资本成本越低。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2021",
+    "title": "如果公司存在固定股息优先股，优先股股息越高，财务杠杆系数越大。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "财务杠杆系数=息税前利润/[息税前利润-利息-优先股股息/(1-所得税税率)]，优先股股息与财务杠杆系数同向变动，所以优先股股息越高，财务杠杆系数越大。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2023",
+    "title": "在资本结构理论中，下列表述属于权衡理论观点的是( )。",
+    "options": [
+     "A.负债带来的财务困境成本会降低企业价值",
+     "B.有负债企业的价值大于无负债企业的价值",
+     "C.加大债务筹资可以降低股权成本",
+     "D.负债利息的节税效应并不影响企业价值"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "权衡理论认为，有负债企业的价值等于无负债企业价值加上税赋节约现值，再减去财务困境成本的现值，因此财务困境成本会降低企业价值，选项A属于权衡理论观点。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "2022",
+    "title": "关于资本结构理论，下列说法正确的有（ ）。",
+    "options": [
+     "A.修正的MM理论认为，企业价值与企业的资产负债率无关",
+     "B.根据优序融资理论，当企业需要外部筹资时，债务筹资优于股权筹资",
+     "C.根据代理理论，债务筹资可能带来债务代理成本",
+     "D.最初的MM理论认为，有负债企业的股权资本成本随着资产负债率的增大而增大"
+    ],
+    "answer": [
+     1,
+     2,
+     3
+    ],
+    "explain": "修正的MM理论认为，企业价值会随着资产负债率的增加而增加，选项A错误，根据优序融资理论，企业筹资方式的优先顺序依次为:内部筹资、银行借款，发行债券(先普通债券后可转换债券)，最后是发行普通股筹资，选项B正确。根据代理理论，债务筹资可能带来代理成本，即企业接受债权人监督而产生的成本(债务代理成本)，选项C正确。最初的MM理论认为，有负债企业的股权成本随着负债程度的增大而增大，选项D正确。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2021",
+    "title": "下列各项中，属于修正的MM理论观点的是( )。",
+    "options": [
+     "A.企业有无负债均不改变企业价值",
+     "B.企业负债有助于降低两权分离所带来的代理成本",
+     "C.企业可以利用财务杠杆增加企业价值",
+     "D.财务困境成本会降低有负债企业的价值"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "选项A属于最初的MM理论的观点，选项B属于代理理论的观点，选项D属于权衡理论的观点。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "公司在进行资本结构决策分析时，既应当考虑利息抵税效应的影响，也需要考虑财务困境成本的影响。持有这种观点的资本结构理论是( )。",
+    "options": [
+     "A.无税MM理论",
+     "B.修正MM理论",
+     "C.权衡理论",
+     "D.优序融资理论"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "权衡理论认为，有负债企业的价值等于无负债企业价值加上税赋节约现值，再减去财务困境成本的现值，所以本题的答案为选项C。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "根据资本结构的代理理论，下列各项会影响企业价值的有( )。",
+    "options": [
+     "A.债务代理成本",
+     "B.股权代理成本",
+     "C.财务困境成本",
+     "D.债务利息抵税"
+    ],
+    "answer": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "explain": "权衡理论认为，有负债企业的价值等于无负债企业价值加上税赋节约现值，再减去财务困境成本的现值。代理理论在权衡理论的基础上进一步考虑债务的代理成本和股权代理成本。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2021",
+    "title": "基于优序融资理论，在成熟的金融市场中，企业筹资方式的优先顺序依次为内部筹资、股权筹资和债务筹资。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "优序融资理论下，企业的筹资优序模式首先是内部筹资，其次是借款、发行债券、可转换债券，最后是发行新股筹资。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "甲公司设立于2021年12月31日，预计2022年年底投产。假定目前的证券市场属于成熟市场且不考虑财务风险，根据优序融资理论的基本观点，甲公司在确定2022年筹资顺序时，应当优先考虑的筹资方式是( )。",
+    "options": [
+     "A.内部筹资",
+     "B.发行债券",
+     "C.增发普通股票",
+     "D.增发优先股票"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "根据优序融资理论的基本观点，企业的筹资优序模式首选留存收益筹资，然后是债务筹资，将发行新股作为最后的选择。但本题甲公司2021年12月31日才设立，2022年年底才投产，因而还没有内部留存收益的存在，所以2022年无法利用内部筹资，因此，甲公司应选择债务筹资，选项B当选。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2015CPA",
+    "title": "在信息不对称和逆向选择的情况下，根据优序融资理论，选择融资方式的先后顺序应该是( )。",
+    "options": [
+     "A.普通股、可转换债券、优先股、公司债券",
+     "B.普通股、优先股、可转换债券、公司债券",
+     "C.公司债券、可转换债券、优先股、普通股",
+     "D.公司债券、优先股、可转换债券、普通股"
+    ],
+    "answer": [
+     2
+    ],
+    "explain": "优序融资理论认为，在信息不对称和逆向选择的情况下，企业在筹集资本的过程中，遵循着先内源融资后外源融资的基本顺序。在需要外源融资时，按照风险程度的差异，优先考虑债权融资(普通债券)，其次混合融资(可转换债券、优先股)最后再考虑权益融资(普通股)。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2022",
+    "title": "关于双重股权结构，下列说法错误的是( )。",
+    "options": [
+     "A.有助于降低公司被恶意收购的可能性",
+     "B.有利于避免控股股东为自己谋利而损害非控股股东利益的行为",
+     "C.有利于保障企业创始人或管理层对企业的控制权",
+     "D.可能加剧实际经营者的道德风险和逆向选择"
+    ],
+    "answer": [
+     1
+    ],
+    "explain": "双重股权结构的优点：同股不同权制度能避免企业内部股权纷争，保障企业创始人或管理层对企业的控制权(选项C正确)，防止公司被恶意收购(选项A正确)；提高企业运行效率，有利于企业的长期发展。双重股权结构的缺点：容易导致管理中独裁行为的发生；控股股东为自己谋利而损害非控股股东的利益，不利于非控股股东利益的保障(选项B错误)；可能加剧实际经营者的道德风险和逆向选择(选项D正确)。\n*"
+   },
+   {
+    "type": "multi",
+    "year": "",
+    "title": "下列关于双重股权结构的表述中，正确的有( )。",
+    "options": [
+     "A.股票的投票权和分红权相分离",
+     "B.容易导致独裁行为发生",
+     "C.有助于保障非控股股东的利益",
+     "D.有利于保障企业创始人或管理层对企业的控制权"
+    ],
+    "answer": [
+     0,
+     1,
+     3
+    ],
+    "explain": "控股股东为自己谋利而损害非控股股东的利益，不利于非控股股东利益的保障，选项C错误。\n*"
+   },
+   {
+    "type": "judge",
+    "year": "2019",
+    "title": "平均资本成本比较法侧重于从资本投入角度对筹资方案和资本结构进行优化分析。",
+    "options": [
+     "对",
+     "错"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "平均资本成本比较法，是通过计算和比较各种可能的筹资组合方案的平均资本成本，选择平均资本成本最低的方案，即能够降低平均资本成本的资本结构，就是合理的资本结构。这种方法侧重于从资本投入的角度对筹资方案和资本结构进行优化分析。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2016、2022",
+    "title": "下列财务决策方法中,能用于资本结构优化决策,且考虑了风险因素的是( )。",
+    "options": [
+     "A.公司价值分析法",
+     "B.平均资本成本比较法",
+     "C.每股收益分析法",
+     "D.内含收益率法"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "资本结构的优化方法包括每股收益分析法、平均资本成本比较法和公司价值分析法。每股收益分析法、平均资本成本比较法都是从账面价值的角度进行资本结构优化分析,没有考虑市场反应,即没有考虑风险因素。公司价值分析法,是在考虑市场风险的基础上,以公司市场价值为标准,进行资本结构优化。内含收益率法不属于资本结构优化方法，选项A当选。\n*"
+   },
+   {
+    "type": "single",
+    "year": "",
+    "title": "下列关于最佳资本结构的表述中，错误的是( )。",
+    "options": [
+     "A.最佳资本结构在理论上是存在的",
+     "B.资本结构优化的目标是提高企业价值",
+     "C.企业平均资本成本最低时资本结构最佳",
+     "D.企业的最佳资本结构应当长期固定不变"
+    ],
+    "answer": [
+     3
+    ],
+    "explain": "从理论上讲，最佳资本结构是存在的，但是由于内部条件和外部环境的经常性变化，动态的保持最佳资本结构十分困难。\n*"
+   },
+   {
+    "type": "single",
+    "year": "2025",
+    "title": "某公司向银行申请一笔5年期的大额借款，同时增发一定数量的普通股股票，下列说法中正确的是（ ）。",
+    "options": [
+     "A.向银行借款属于间接筹资",
+     "B.增发普通股股票会提高权益乘数",
+     "C.向银行借款会导致财务杠杆下降",
+     "D.增发普通股属于衍生工具筹资"
+    ],
+    "answer": [
+     0
+    ],
+    "explain": "间接筹资是企业通过银行等金融机构以信贷关系间接从社会取得资金，向银行借款属于间接筹资，选项 A 当选;权益乘数= 1÷（1－资产负债率），增发普通股股票会增加股东权益总额和资产总额，在负债总额不变的情况下，会降低资产负债率，进而导致权益乘数下降，选项 B 不当选;向银行借款会增加负债总额，股东权益总额不变，会提高财务杠杆，选项 C 不当选;增发普通股属于股权筹资，选项 D 不当选。\n保存报告\n收起答题解析\n问卷星提供技术支持\n举报\n抽奖规则"
+   }
+  ]
+ }
+};
+const CH_ORDER = Object.keys(ALL);
+let curKey=null, q=[], status=[], sel=[], revealed=[], idx=0, isWrongMode=false;
+const WRONG_KEY='quiz_wrong_v1'; let wrongSet=null;
+const WRONG_STREAK_KEY='quiz_wrong_streak_v1'; let wrongStreak=null;
+
+function show(view){
+  document.getElementById('menu').classList.toggle('hidden', view!=='menu');
+  document.getElementById('quiz').classList.toggle('hidden', view!=='quiz');
+  if(view!=='grid') document.getElementById('grid').classList.add('hidden');
+}
+function saveProgress(){
+  if(!curKey || isWrongMode) return;
+  try{ localStorage.setItem('quiz_'+curKey, JSON.stringify({status:status,sel:sel,revealed:revealed,idx:idx})); }catch(e){}
+}
+function loadProgress(key){
+  status=[]; sel=[]; revealed=[]; idx=0;
+  try{ var s=localStorage.getItem('quiz_'+key); if(s){var o=JSON.parse(s);
+    status=o.status||[]; sel=o.sel||[]; revealed=o.revealed||[]; idx=o.idx||0;} }catch(e){}
+}
+function loadWrongSet(){
+  try{ var s=localStorage.getItem(WRONG_KEY); if(s) return new Set(JSON.parse(s)); }catch(e){}
+  const set=new Set();
+  CH_ORDER.forEach(key=>{
+    try{ var o=JSON.parse(localStorage.getItem('quiz_'+key)||'{}'); var st=o.status||[];
+      st.forEach((x,i)=>{ if(x===2) set.add(key+'#'+i); }); }catch(e){}
+  });
+  saveWrongSet(set); return set;
+}
+function saveWrongSet(set){ try{ localStorage.setItem(WRONG_KEY, JSON.stringify([...set])); }catch(e){} }
+function loadWrongStreak(){ try{ var s=localStorage.getItem(WRONG_STREAK_KEY); if(s) return JSON.parse(s); }catch(e){} return {}; }
+function saveWrongStreak(){ try{ localStorage.setItem(WRONG_STREAK_KEY, JSON.stringify(wrongStreak||{})); }catch(e){} }
+function showMenu(){ curKey=null; isWrongMode=false; document.getElementById('grid').classList.add('hidden'); renderMenu(); show('menu'); }
+
+function renderMenu(){
+  const box=document.getElementById('chapterList'); box.innerHTML='';
+  if(wrongSet===null) wrongSet=loadWrongSet();
+  const wc=wrongSet.size;
+  const we=document.createElement('div'); we.className='chapter ch-wrong';
+  we.innerHTML='<div class="ch-main" onclick="openWrong()">'+
+    '<div class="ch-name">错题库<span class="badge">'+wc+' 题</span></div>'+
+    '<div class="ch-meta">'+(wc?('共 '+wc+' 道错题待巩固 · 答对自动移除'):'尚无错题，答题后自动收录')+'</div>'+
+    '<div class="ch-bar"><i style="width:'+(wc?100:0)+'%"></i></div></div>'+
+    (wc?'<button class="go" onclick="event.stopPropagation();openWrong()">去练</button>':'');
+  box.appendChild(we);
+  CH_ORDER.forEach(key=>{
+    const ch=ALL[key]; const n=ch.questions.length;
+    let st=[]; try{ var s=localStorage.getItem('quiz_'+key); if(s) st=(JSON.parse(s).status)||[]; }catch(e){}
+    let ok=0,bad=0; st.forEach(x=>{ if(x===1)ok++; else if(x===2)bad++; });
+    const done=ok+bad; const pct=n?Math.round(done/n*100):0;
+    const div=document.createElement('div'); div.className='chapter';
+    div.innerHTML='<div class="ch-main" onclick="openChapter(\''+key+'\')">'+
+      '<div class="ch-name">'+ch.name+'</div>'+
+      '<div class="ch-meta">共 '+n+' 题 · 已答 '+done+' · 对 '+ok+' / 错 '+bad+'</div>'+
+      '<div class="ch-bar"><i style="width:'+pct+'%"></i></div></div>'+
+      '<button class="ch-reset" onclick="event.stopPropagation();resetChapter(\''+key+'\')">重置</button>';
+    box.appendChild(div);
+  });
+}
+function openChapter(key){
+  curKey=key; isWrongMode=false; q=ALL[key].questions; loadProgress(key);
+  if(status.length!==q.length){ status=new Array(q.length).fill(0); sel=new Array(q.length).fill(null); revealed=new Array(q.length).fill(false); idx=0; }
+  if(idx>=q.length) idx=q.length-1; if(idx<0) idx=0;
+  document.getElementById('chTitle').textContent=ALL[key].name;
+  show('quiz'); render();
+}
+function writeBack(key,i,val,selVal){
+  let o=null;
+  try{ var s=localStorage.getItem('quiz_'+key); if(s) o=JSON.parse(s); }catch(e){}
+  const n=ALL[key].questions.length;
+  if(!o||typeof o!=='object') o={status:[],sel:[],revealed:[],idx:0};
+  if(!o.status||o.status.length!==n) o.status=new Array(n).fill(0);
+  if(!o.sel||o.sel.length!==n) o.sel=new Array(n).fill(null);
+  if(!o.revealed||o.revealed.length!==n) o.revealed=new Array(n).fill(false);
+  o.status[i]=val; o.sel[i]=selVal; o.revealed[i]=true;
+  try{ localStorage.setItem('quiz_'+key, JSON.stringify(o)); }catch(e){}
+}
+function openWrong(){
+  if(wrongSet===null) wrongSet=loadWrongSet();
+  const items=[];
+  CH_ORDER.forEach(key=>{
+    ALL[key].questions.forEach((item,i)=>{
+      if(wrongSet.has(key+'#'+i)){ const c=Object.assign({},item); c._key=key; c._idx=i; items.push(c); }
+    });
+  });
+  if(!items.length){ toast('还没有错题，去练习吧！'); return; }
+  isWrongMode=true; curKey='__wrong__';
+  q=items; status=new Array(q.length).fill(0); sel=new Array(q.length).fill(null); revealed=new Array(q.length).fill(false); idx=0;
+  if(idx>=q.length) idx=q.length-1;
+  document.getElementById('chTitle').textContent='错题库';
+  show('quiz'); render();
+}
+function resetChapter(key){
+  try{ localStorage.removeItem('quiz_'+key); }catch(e){}
+  if(wrongSet){ [...wrongSet].forEach(id=>{ if(id.indexOf(key+'#')===0) wrongSet.delete(id); }); saveWrongSet(wrongSet); }
+  if(wrongStreak){ Object.keys(wrongStreak).forEach(id=>{ if(id.indexOf(key+'#')===0) delete wrongStreak[id]; }); saveWrongStreak(); }
+  if(curKey===key){ status=new Array(q.length).fill(0); sel=new Array(q.length).fill(null); revealed=new Array(q.length).fill(false); idx=0; render(); }
+  renderMenu(); toast('已重置');
+}
+function typeLabel(t){ return t==='multi'?'多选':(t==='judge'?'判断':'单选'); }
+function esc(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function render(){
+  if(!q.length) return;
+  const item=q[idx]; const card=document.getElementById('card');
+  let h='';
+  const yr=item.year?'<span class="yr">'+esc(item.year)+'</span>':'';
+  h+='<div class="qno"><span class="idx">第 '+(idx+1)+' 题 / '+q.length+'</span><span class="typ">'+typeLabel(item.type)+'</span>'+yr+'</div>';
+  h+='<div class="qtitle">'+esc(item.title)+'</div>';
+  h+='<div class="opts">';
+  item.options.forEach((opt,oi)=>{
+    let cls='opt';
+    if(revealed[idx]){
+      const isA=item.answer.indexOf(oi)>=0, isS=(sel[idx]||[]).indexOf(oi)>=0;
+      if(isA) cls+=' correct'; else if(isS) cls+=' wrong'; else cls+=' dim';
+    } else if((sel[idx]||[]).indexOf(oi)>=0){ cls+=' sel'; }
+    const lm=String(opt).match(/^[A-Za-z][.、]\s*(.*)$/);
+    const letter=String.fromCharCode(65+oi);
+    const otext=lm?lm[1]:opt;
+    h+='<div class="'+cls+'" '+(revealed[idx]?'':'onclick="pick('+oi+')"')+'><span class="lab">'+letter+'</span><span class="otext">'+esc(otext)+'</span></div>';
+  });
+  h+='</div>';
+  if(item.type==='multi' && !revealed[idx]) h+='<button class="confirm" onclick="confirmMulti()">确认作答</button>';
+  if(revealed[idx]){
+    const ok=status[idx]===1;
+    const ans=item.answer.map(i=>String.fromCharCode(65+i)).join('、');
+    h+='<div class="result '+(ok?'r-ok':'r-bad')+'">'+(ok?'✓ 回答正确':'✗ 回答错误')+'　正确答案：'+ans+'</div>';
+    h+='<div class="explain"><b>解析：</b>'+esc(item.explain)+'</div>';
+    h+='<button class="retry" onclick="retry()">重做本题</button>';
+  }
+  card.innerHTML=h;
+  document.getElementById('pos').textContent=(idx+1)+'/'+q.length;
+  updateStat();
+}
+function pick(oi){
+  if(revealed[idx]) return;
+  const item=q[idx];
+  if(item.type==='single'||item.type==='judge'){ sel[idx]=[oi]; check(); }
+  else { if(!sel[idx]) sel[idx]=[]; const p=sel[idx].indexOf(oi); if(p>=0) sel[idx].splice(p,1); else sel[idx].push(oi); render(); }
+}
+function confirmMulti(){ if(revealed[idx]) return; if(!sel[idx]||sel[idx].length===0){ toast('请至少选择一个选项'); return; } check(); }
+function check(){
+  const a=q[idx].answer.slice().sort().join(','), u=(sel[idx]||[]).slice().sort().join(',');
+  const correct=(a===u);
+  revealed[idx]=true; status[idx]=correct?1:2;
+  const id=(isWrongMode? q[idx]._key+'#'+q[idx]._idx : curKey+'#'+idx);
+  if(wrongSet===null) wrongSet=loadWrongSet();
+  if(wrongStreak===null) wrongStreak=loadWrongStreak();
+  // apply the "two consecutive correct answers to clear" rule
+  if(correct){
+    const n=(wrongStreak[id]||0)+1;
+    if(n>=2){ wrongSet.delete(id); delete wrongStreak[id]; toast('连续答对两次，已从错题库移除'); }
+    else { wrongStreak[id]=n; toast('答对！再答对一次即可移除（'+n+'/2）'); }
+  } else {
+    wrongSet.add(id); delete wrongStreak[id]; toast('答错了，需连续答对两次才能移除');
+  }
+  if(isWrongMode) writeBack(q[idx]._key, q[idx]._idx, status[idx], sel[idx]);
+  else saveProgress();
+  saveWrongSet(wrongSet); saveWrongStreak();
+  render(); updateStat();
+}
+function retry(){ if(!revealed[idx]) return; revealed[idx]=false; status[idx]=0; sel[idx]=null; render(); }
+function updateStat(){
+  let ok=0,bad=0; status.forEach(x=>{ if(x===1)ok++; else if(x===2)bad++; });
+  const left=q.length-ok-bad;
+  document.getElementById('cOk').textContent=ok;
+  document.getElementById('cBad').textContent=bad;
+  document.getElementById('cLeft').textContent=left;
+  document.getElementById('barFill').style.width=(q.length?Math.round((ok+bad)/q.length*100):0)+'%';
+}
+function next(){ if(idx<q.length-1){ idx++; render(); saveProgress(); } else toast('已经是最后一题'); }
+function prev(){ if(idx>0){ idx--; render(); saveProgress(); } else toast('已经是第一题'); }
+
+function openGrid(){
+  if(!q.length) return;
+  document.getElementById('gridTitle').textContent=(curKey==='__wrong__'?'错题库':ALL[curKey].name)+' · 点击跳题';
+  const cells=document.getElementById('gridCells'); cells.innerHTML='';
+  q.forEach((item,i)=>{
+    let cls='cell '+(i===idx?'cur':status[i]===1?'ok':status[i]===2?'bad':'un');
+    const d=document.createElement('div'); d.className=cls; d.textContent=i+1;
+    d.onclick=()=>{ idx=i; closeGrid(); render(); saveProgress(); };
+    cells.appendChild(d);
+  });
+  document.getElementById('grid').classList.remove('hidden');
+}
+function closeGrid(){ document.getElementById('grid').classList.add('hidden'); }
+
+let toastTimer=null;
+function toast(msg){ let t=document.getElementById('toast'); if(!t){ t=document.createElement('div'); t.id='toast'; document.body.appendChild(t);} t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),1400); }
+
+let sx=0,sy=0;
+const cw=document.getElementById('cardWrap');
+cw.addEventListener('touchstart',e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; },{passive:true});
+cw.addEventListener('touchend',e=>{ const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy; if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)){ if(dx<0) next(); else prev(); } },{passive:true});
+
+wrongSet=loadWrongSet();
+wrongStreak=loadWrongStreak();
+renderMenu();
+</script>
+</body>
+</html>
