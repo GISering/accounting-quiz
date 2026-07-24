@@ -6260,11 +6260,11 @@ let syncBusy=false, syncTimer=null;
 function syncStatus(t){ const e=document.getElementById('syncStat'); if(e) e.textContent=t; }
 function snapshotLocal(){
   const data={};
-  for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.indexOf('quiz_')===0 && k!=='quiz_user') data[k]=localStorage.getItem(k); }
+  for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.indexOf('quiz_')===0 && k!=='quiz_user' && k!=='quiz_gist_token') data[k]=localStorage.getItem(k); }
   return JSON.stringify({v:1,ts:Date.now(),data:data});
 }
 function restoreLocal(json){
-  try{ const o=JSON.parse(json); if(o&&o.data){ Object.keys(o.data).forEach(k=>{ try{ localStorage.setItem(k,o.data[k]); }catch(e){} }); return true; } }catch(e){}
+  try{ const o=JSON.parse(json); if(o&&o.data){ Object.keys(o.data).forEach(k=>{ if(k==='quiz_user'||k==='quiz_gist_token') return; try{ localStorage.setItem(k,o.data[k]); }catch(e){} }); return true; } }catch(e){}
   return false;
 }
 function syncPull(){
