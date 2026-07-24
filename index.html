@@ -21,6 +21,9 @@
   .topbar{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line);
     padding:env(safe-area-inset-top) 10px env(safe-area-inset-top);min-height:48px;display:flex;align-items:center;gap:8px;}
   .topbar h1{font-size:18px;margin:0;font-weight:700;flex:1;text-align:center;}
+  .syncbtn{background:linear-gradient(135deg,#f0c869,#d9a524);color:#fff;border:none;border-radius:10px;padding:6px 12px;font-size:13px;font-weight:700;white-space:nowrap;}
+  .userchip{background:#eef3ff;color:#2f6fed;border:1px solid #d6e2ff;border-radius:999px;padding:3px 11px;font-size:12px;font-weight:700;white-space:nowrap;max-width:48vw;overflow:hidden;text-overflow:ellipsis;}
+  .foot #syncStat{color:var(--brand);}
   .back{width:32px;height:32px;background:#f2f3f5;border:none;border-radius:10px;font-size:18px;line-height:1;color:var(--ink);display:flex;align-items:center;justify-content:center;padding:0;}
   .topbar.quizbar{gap:8px;}
   .quizbar .prog{flex:1;min-width:0;display:flex;align-items:center;height:32px;}
@@ -57,17 +60,34 @@
   .ch-wrong .ch-bar i{display:block;height:100%;background:linear-gradient(90deg,#ff9a6b,var(--bad));border-radius:5px;}
   .ch-wrong .go{background:var(--bad);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;
     padding:0 14px;align-self:center;}
+  .ch-fav{display:flex;align-items:stretch;gap:10px;background:linear-gradient(135deg,#ffffff,#fff8e6);
+    border:1.5px solid #ffe2a8;border-radius:14px;padding:14px;margin-bottom:12px;
+    box-shadow:0 1px 4px rgba(214,156,26,.10);}
+  .ch-fav .ch-main{flex:1;min-width:0;}
+  .ch-fav .ch-name{font-size:17px;font-weight:800;margin-bottom:4px;color:#c8920e;display:flex;align-items:center;}
+  .ch-fav .ch-name .badge{font-size:12px;font-weight:800;color:#fff;background:#d9a524;border-radius:8px;
+    padding:1px 9px;margin-left:8px;}
+  .ch-fav .ch-meta{font-size:13px;color:var(--sub);margin-bottom:8px;}
+  .ch-fav .ch-bar{height:7px;background:#fff0cf;border-radius:5px;overflow:hidden;}
+  .ch-fav .ch-bar i{display:block;height:100%;background:linear-gradient(90deg,#f0c869,#d9a524);border-radius:5px;}
+  .ch-fav .go{background:#d9a524;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;
+    padding:0 14px;align-self:center;}
   .foot{text-align:center;color:var(--sub);font-size:12px;padding:12px;}
 
   /* MENU */
   /* QUIZ */
   #cardWrap{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:18px 16px 96px;}
   #card{min-height:60%;}
-  .qno{font-size:16px;color:var(--ink);margin-bottom:10px;font-weight:700;display:flex;align-items:center;gap:8px;}
+  .qno{font-size:16px;color:var(--ink);margin-bottom:10px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .qno .typ{background:#eef2ff;color:var(--brand);border-radius:8px;padding:3px 10px;margin-left:0;font-weight:800;font-size:14px;}
   .qno .yr{background:#fff4e6;color:#d98a00;border-radius:8px;padding:3px 10px;margin-left:0;font-weight:700;font-size:14px;}
   .qno .idx{color:var(--ink);font-weight:800;font-size:18px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:4px 12px;}
   .qtitle{font-size:18px;font-weight:600;line-height:1.55;margin-bottom:16px;}
+  .qn-left{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap;}
+  .favbtn{background:#fff;border:1px solid var(--line);color:#d9a400;border-radius:10px;font-size:20px;line-height:1;width:42px;height:42px;flex:none;display:flex;align-items:center;justify-content:center;}
+  .favbtn.on{background:#fff7e0;color:#e0a200;border-color:#f0d28a;}
+  .remove{margin-top:12px;background:var(--bad-bg);color:var(--bad);border:1px solid #f3c5bb;border-radius:10px;padding:9px 16px;font-size:14px;font-weight:600;width:100%;}
+  .unfav{margin-top:10px;background:#fff;border:1px solid var(--line);color:var(--sub);border-radius:10px;padding:8px 14px;font-size:14px;width:100%;}
   .opts{display:flex;flex-direction:column;gap:11px;}
   .opt{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;font-size:16px;
     transition:.12s;word-break:break-word;}
@@ -104,6 +124,15 @@
   .sheet-hd{display:flex;justify-content:space-between;align-items:center;padding:16px 18px 10px;font-size:16px;font-weight:700;}
   .sheet-hd button{background:#f2f3f5;border:none;border-radius:10px;padding:7px 14px;font-size:14px;color:var(--sub);}
   .legend{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:0 18px 12px;font-size:12px;color:var(--sub);}
+  .login-sheet{max-width:560px;margin:0 auto;align-self:flex-end;width:100%;padding-bottom:env(safe-area-inset-bottom);}
+  .login-title{padding:22px 18px 4px;font-size:19px;font-weight:800;text-align:center;}
+  .login-sub{padding:0 18px 14px;font-size:13px;color:var(--sub);text-align:center;}
+  .login-users{display:flex;gap:12px;padding:4px 18px 16px;}
+  .ubtn{flex:1;background:linear-gradient(135deg,#eef3ff,#dce7ff);color:#2f6fed;border:1px solid #cfe0ff;border-radius:14px;padding:16px 0;font-size:17px;font-weight:800;}
+  .ubtn.small{flex:none;padding:12px 18px;font-size:14px;}
+  .login-other{display:flex;gap:10px;padding:0 18px 22px;}
+  .login-other input{flex:1;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px;outline:none;}
+  .login-other input:focus{border-color:#2f6fed;}
   .legend i{width:13px;height:13px;border-radius:4px;display:inline-block;vertical-align:-2px;margin-right:2px;}
   .g-un{background:var(--un);border:1px solid var(--line);} .g-ok{background:var(--ok);} .g-bad{background:var(--bad);} .g-cur{background:#fff;border:2px solid var(--brand);}
   #gridCells{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;padding:4px 16px 22px;overflow:auto;}
@@ -122,9 +151,9 @@
 <body>
 <div id="app">
   <section id="menu" class="view">
-    <header class="topbar"><h1>会计中级 · 五章答题</h1></header>
+    <header class="topbar"><h1>会计中级 · 五章答题</h1><span id="userChip" class="userchip" onclick="switchUser()" title="点击切换账号"></span><button class="syncbtn" onclick="manualSync()">☁ 上云</button></header>
     <div id="chapterList"></div>
-    <footer class="foot">小地图定位题号 · 颜色区分答题状态</footer>
+    <footer class="foot">小地图定位题号 · 颜色区分答题状态 · <span id="syncStat">进度自动上云</span></footer>
   </section>
 
   <section id="quiz" class="view hidden">
@@ -155,6 +184,21 @@
         <i class="g-un"></i>未答 <i class="g-ok"></i>答对 <i class="g-bad"></i>答错 <i class="g-cur"></i>当前
       </div>
       <div id="gridCells"></div>
+    </div>
+  </section>
+
+  <section id="login" class="overlay">
+    <div class="sheet login-sheet">
+      <div class="login-title">请选择账号</div>
+      <div class="login-sub">本应用仅供 jiaqu / syy 两人使用，首次打开需选择，之后自动记住</div>
+      <div class="login-users">
+        <button class="ubtn" onclick="pickUser('jiaqu')">jiaqu</button>
+        <button class="ubtn" onclick="pickUser('syy')">syy</button>
+      </div>
+      <div class="login-other">
+        <input id="loginInput" placeholder="或输入其他用户名" onkeydown="if(event.key==='Enter')confirmInput()" />
+        <button class="ubtn small" onclick="confirmInput()">确定</button>
+      </div>
     </div>
   </section>
 </div>
@@ -6160,9 +6204,12 @@ const ALL = {
  }
 };
 const CH_ORDER = Object.keys(ALL);
-let curKey=null, q=[], status=[], sel=[], revealed=[], idx=0, isWrongMode=false;
+let curKey=null, q=[], status=[], sel=[], revealed=[], idx=0, isWrongMode=false, isFavMode=false;
 const WRONG_KEY='quiz_wrong_v1'; let wrongSet=null;
 const WRONG_STREAK_KEY='quiz_wrong_streak_v1'; let wrongStreak=null;
+const FAV_KEY='quiz_fav_v1'; let favSet=null;
+function loadFavSet(){ try{ var s=localStorage.getItem(FAV_KEY); if(s) return new Set(JSON.parse(s)); }catch(e){} return new Set(); }
+function saveFavSet(set){ try{ localStorage.setItem(FAV_KEY, JSON.stringify([...set])); }catch(e){} scheduleSync(); }
 
 function show(view){
   document.getElementById('menu').classList.toggle('hidden', view!=='menu');
@@ -6172,6 +6219,7 @@ function show(view){
 function saveProgress(){
   if(!curKey || isWrongMode) return;
   try{ localStorage.setItem('quiz_'+curKey, JSON.stringify({status:status,sel:sel,revealed:revealed,idx:idx})); }catch(e){}
+  scheduleSync();
 }
 function loadProgress(key){
   status=[]; sel=[]; revealed=[]; idx=0;
@@ -6187,10 +6235,53 @@ function loadWrongSet(){
   });
   saveWrongSet(set); return set;
 }
-function saveWrongSet(set){ try{ localStorage.setItem(WRONG_KEY, JSON.stringify([...set])); }catch(e){} }
+function saveWrongSet(set){ try{ localStorage.setItem(WRONG_KEY, JSON.stringify([...set])); }catch(e){} scheduleSync(); }
 function loadWrongStreak(){ try{ var s=localStorage.getItem(WRONG_STREAK_KEY); if(s) return JSON.parse(s); }catch(e){} return {}; }
-function saveWrongStreak(){ try{ localStorage.setItem(WRONG_STREAK_KEY, JSON.stringify(wrongStreak||{})); }catch(e){} }
-function showMenu(){ curKey=null; isWrongMode=false; document.getElementById('grid').classList.add('hidden'); renderMenu(); show('menu'); }
+function saveWrongStreak(){ try{ localStorage.setItem(WRONG_STREAK_KEY, JSON.stringify(wrongStreak||{})); }catch(e){} scheduleSync(); }
+
+/* ===== 上云（路线2：GitHub Gist 存储进度，无后端）===== */
+const SYNC_PAT="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";
+const GIST_ID="1d7936e91501ec557739f0ddfbe32735";
+function gistFileName(){ return "progress_"+(curUser||"guest")+".json"; }
+let syncBusy=false, syncTimer=null;
+function syncStatus(t){ const e=document.getElementById('syncStat'); if(e) e.textContent=t; }
+function snapshotLocal(){
+  const data={};
+  for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.indexOf('quiz_')===0 && k!=='quiz_user') data[k]=localStorage.getItem(k); }
+  return JSON.stringify({v:1,ts:Date.now(),data:data});
+}
+function restoreLocal(json){
+  try{ const o=JSON.parse(json); if(o&&o.data){ Object.keys(o.data).forEach(k=>{ try{ localStorage.setItem(k,o.data[k]); }catch(e){} }); return true; } }catch(e){}
+  return false;
+}
+function syncPull(){
+  fetch("https://api.github.com/gists/"+GIST_ID,{headers:{'Authorization':'token '+SYNC_PAT},cache:'no-store'})
+    .then(r=>r.ok?r.json():null).then(j=>{
+      if(j&&j.files){
+        const f=j.files[gistFileName()];
+        const txt=f?f.content:null;
+        if(txt&&restoreLocal(txt)){
+          wrongSet=loadWrongSet(); wrongStreak=loadWrongStreak(); favSet=loadFavSet();
+          if(curKey) loadProgress(curKey);
+          renderMenu(); syncStatus('已恢复云端进度');
+        }
+      }
+    }).catch(()=>{});
+}
+function syncPush(){
+  if(syncBusy) return; syncBusy=true; syncStatus('上云中…');
+  const body={files:{}}; body.files[gistFileName()]={content:snapshotLocal()};
+  fetch("https://api.github.com/gists/"+GIST_ID,{method:'PATCH',headers:{'Authorization':'token '+SYNC_PAT,'Content-Type':'application/json'},body:JSON.stringify(body)})
+    .then(r=>{
+      if(r.ok){ syncStatus('已上云'); }
+      else { return r.text().then(t=>{ console.warn('gist push fail',r.status,t); syncStatus('上云失败'); }); }
+    })
+    .catch(()=>{ syncStatus('上云失败'); })
+    .finally(()=>{ syncBusy=false; });
+}
+function scheduleSync(){ if(syncTimer) clearTimeout(syncTimer); syncTimer=setTimeout(syncPush,1000); }
+function manualSync(){ syncStatus('正在上云…'); syncPush(); }
+function showMenu(){ curKey=null; isWrongMode=false; isFavMode=false; document.getElementById('grid').classList.add('hidden'); renderMenu(); show('menu'); }
 
 function renderMenu(){
   const box=document.getElementById('chapterList'); box.innerHTML='';
@@ -6199,10 +6290,19 @@ function renderMenu(){
   const we=document.createElement('div'); we.className='chapter ch-wrong';
   we.innerHTML='<div class="ch-main" onclick="openWrong()">'+
     '<div class="ch-name">错题库<span class="badge">'+wc+' 题</span></div>'+
-    '<div class="ch-meta">'+(wc?('共 '+wc+' 道错题待巩固 · 答对自动移除'):'尚无错题，答题后自动收录')+'</div>'+
+    '<div class="ch-meta">'+(wc?('共 '+wc+' 道错题待巩固 · 可手动移除'):'尚无错题，答题后自动收录')+'</div>'+
     '<div class="ch-bar"><i style="width:'+(wc?100:0)+'%"></i></div></div>'+
     (wc?'<button class="go" onclick="event.stopPropagation();openWrong()">去练</button>':'');
   box.appendChild(we);
+  if(favSet===null) favSet=loadFavSet();
+  const fc=favSet.size;
+  const fe=document.createElement('div'); fe.className='chapter ch-fav';
+  fe.innerHTML='<div class="ch-main" onclick="openFav()">'+
+    '<div class="ch-name">收藏夹<span class="badge">'+fc+' 题</span></div>'+
+    '<div class="ch-meta">'+(fc?('共 '+fc+' 道收藏题 · 点击进入练习'):'答题时点亮☆即可收藏')+'</div>'+
+    '<div class="ch-bar"><i style="width:'+(fc?100:0)+'%"></i></div></div>'+
+    (fc?'<button class="go" onclick="event.stopPropagation();openFav()">去练</button>':'');
+  box.appendChild(fe);
   CH_ORDER.forEach(key=>{
     const ch=ALL[key]; const n=ch.questions.length;
     let st=[]; try{ var s=localStorage.getItem('quiz_'+key); if(s) st=(JSON.parse(s).status)||[]; }catch(e){}
@@ -6244,13 +6344,30 @@ function openWrong(){
     });
   });
   if(!items.length){ toast('还没有错题，去练习吧！'); return; }
-  isWrongMode=true; curKey='__wrong__';
+  isWrongMode=true; isFavMode=false; curKey='__wrong__';
   q=items; status=new Array(q.length).fill(0); sel=new Array(q.length).fill(null); revealed=new Array(q.length).fill(false); idx=0;
   if(idx>=q.length) idx=q.length-1;
   document.getElementById('chTitle').textContent='错题库';
   show('quiz'); render();
 }
+function openFav(){
+  if(favSet===null) favSet=loadFavSet();
+  const items=[];
+  CH_ORDER.forEach(key=>{
+    ALL[key].questions.forEach((item,i)=>{
+      if(favSet.has(key+'#'+i)){ const c=Object.assign({},item); c._key=key; c._idx=i; items.push(c); }
+    });
+  });
+  if(!items.length){ toast('还没有收藏，答题时点亮☆即可收藏'); return; }
+  isWrongMode=false; isFavMode=true; curKey='__fav__';
+  q=items; status=new Array(q.length).fill(0); sel=new Array(q.length).fill(null); revealed=new Array(q.length).fill(false); idx=0;
+  if(idx>=q.length) idx=q.length-1;
+  document.getElementById('chTitle').textContent='收藏夹';
+  show('quiz'); render();
+}
 function resetChapter(key){
+  const nm=(ALL[key]&&ALL[key].name)?ALL[key].name:'本章';
+  if(!confirm('确定要重置「'+nm+'」的答题进度吗？\n（该题的错题记录会一并清除，收藏夹不受影响）')) return;
   try{ localStorage.removeItem('quiz_'+key); }catch(e){}
   if(wrongSet){ [...wrongSet].forEach(id=>{ if(id.indexOf(key+'#')===0) wrongSet.delete(id); }); saveWrongSet(wrongSet); }
   if(wrongStreak){ Object.keys(wrongStreak).forEach(id=>{ if(id.indexOf(key+'#')===0) delete wrongStreak[id]; }); saveWrongStreak(); }
@@ -6262,10 +6379,13 @@ function esc(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 
 function render(){
   if(!q.length) return;
+  if(favSet===null) favSet=loadFavSet();
   const item=q[idx]; const card=document.getElementById('card');
   let h='';
   const yr=item.year?'<span class="yr">'+esc(item.year)+'</span>':'';
-  h+='<div class="qno"><span class="idx">第 '+(idx+1)+' 题 / '+q.length+'</span><span class="typ">'+typeLabel(item.type)+'</span>'+yr+'</div>';
+  const favOn=(favSet&&favSet.has(curId()));
+  h+='<div class="qno"><div class="qn-left"><span class="idx">第 '+(idx+1)+' 题 / '+q.length+'</span><span class="typ">'+typeLabel(item.type)+'</span>'+yr+'</div>'+
+      '<button class="favbtn'+(favOn?' on':'')+'" onclick="toggleFav()">'+(favOn?'★':'☆')+'</button></div>';
   h+='<div class="qtitle">'+esc(item.title)+'</div>';
   h+='<div class="opts">';
   item.options.forEach((opt,oi)=>{
@@ -6280,6 +6400,8 @@ function render(){
     h+='<div class="'+cls+'" '+(revealed[idx]?'':'onclick="pick('+oi+')"')+'><span class="lab">'+letter+'</span><span class="otext">'+esc(otext)+'</span></div>';
   });
   h+='</div>';
+  if(isWrongMode) h+='<button class="remove" onclick="removeWrong()">从错题库移除</button>';
+  else if(isFavMode) h+='<button class="unfav" onclick="toggleFav()">取消收藏</button>';
   if(item.type==='multi' && !revealed[idx]) h+='<button class="confirm" onclick="confirmMulti()">确认作答</button>';
   if(revealed[idx]){
     const ok=status[idx]===1;
@@ -6303,23 +6425,31 @@ function check(){
   const a=q[idx].answer.slice().sort().join(','), u=(sel[idx]||[]).slice().sort().join(',');
   const correct=(a===u);
   revealed[idx]=true; status[idx]=correct?1:2;
-  const id=(isWrongMode? q[idx]._key+'#'+q[idx]._idx : curKey+'#'+idx);
+  const id=curId();
   if(wrongSet===null) wrongSet=loadWrongSet();
-  if(wrongStreak===null) wrongStreak=loadWrongStreak();
-  // apply the "two consecutive correct answers to clear" rule
-  if(correct){
-    const n=(wrongStreak[id]||0)+1;
-    if(n>=2){ wrongSet.delete(id); delete wrongStreak[id]; if(isWrongMode) toast('连续答对两次，已从错题库移除'); }
-    else { wrongStreak[id]=n; if(isWrongMode) toast('答对！再答对一次即可移除（'+n+'/2）'); }
-  } else {
-    wrongSet.add(id); delete wrongStreak[id]; if(isWrongMode) toast('答错了，需连续答对两次才能移除');
-  }
+  if(!correct){ wrongSet.add(id); }   // 仅答错时收录，不再自动移除
   if(isWrongMode) writeBack(q[idx]._key, q[idx]._idx, status[idx], sel[idx]);
   else saveProgress();
-  saveWrongSet(wrongSet); saveWrongStreak();
+  saveWrongSet(wrongSet);
   render(); updateStat();
 }
 function retry(){ if(!revealed[idx]) return; revealed[idx]=false; status[idx]=0; sel[idx]=null; render(); }
+function curId(){ return (isWrongMode||isFavMode)? (q[idx]._key+'#'+q[idx]._idx) : (curKey+'#'+idx); }
+function toggleFav(){
+  if(favSet===null) favSet=loadFavSet();
+  const id=curId();
+  if(favSet.has(id)) favSet.delete(id); else favSet.add(id);
+  saveFavSet(favSet); render();
+}
+function removeWrong(){
+  const id=q[idx]._key+'#'+q[idx]._idx;
+  if(wrongSet===null) wrongSet=loadWrongSet();
+  wrongSet.delete(id); saveWrongSet(wrongSet);
+  q.splice(idx,1); status.splice(idx,1); sel.splice(idx,1); revealed.splice(idx,1);
+  if(!q.length){ toast('错题库已清空'); showMenu(); return; }
+  if(idx>=q.length) idx=q.length-1;
+  render(); updateStat();
+}
 function updateStat(){
   let ok=0,bad=0; status.forEach(x=>{ if(x===1)ok++; else if(x===2)bad++; });
   const left=q.length-ok-bad;
@@ -6332,7 +6462,7 @@ function prev(){ if(idx>0){ idx--; render(); saveProgress(); } else toast('已�
 
 function openGrid(){
   if(!q.length) return;
-  document.getElementById('gridTitle').textContent=(curKey==='__wrong__'?'错题库':ALL[curKey].name)+' · 点击跳题';
+  document.getElementById('gridTitle').textContent=((curKey==='__wrong__'?'错题库':(curKey==='__fav__'?'收藏夹':ALL[curKey].name)))+' · 点击跳题';
   const cells=document.getElementById('gridCells'); cells.innerHTML='';
   q.forEach((item,i)=>{
     let cls='cell '+(i===idx?'cur':status[i]===1?'ok':status[i]===2?'bad':'un');
@@ -6352,9 +6482,28 @@ const cw=document.getElementById('cardWrap');
 cw.addEventListener('touchstart',e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; },{passive:true});
 cw.addEventListener('touchend',e=>{ const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy; if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)){ if(dx<0) next(); else prev(); } },{passive:true});
 
-wrongSet=loadWrongSet();
-wrongStreak=loadWrongStreak();
-renderMenu();
+const BUILTIN_USERS=['jiaqu','syy'];
+let curUser=null;
+function getUser(){ const u=localStorage.getItem('quiz_user'); return u?u:''; }
+function setUser(u){ localStorage.setItem('quiz_user',u); curUser=u; updateUserChip(); }
+function updateUserChip(){ const c=document.getElementById('userChip'); if(c) c.textContent=curUser||''; }
+function showLogin(){ const b=document.getElementById('login'); if(b){ b.classList.remove('hidden'); } }
+function hideLogin(){ const b=document.getElementById('login'); if(b){ b.classList.add('hidden'); const i=document.getElementById('loginInput'); if(i) i.value=''; } }
+function pickUser(u){ if(!u) return; setUser(u); hideLogin(); startSession(); }
+function confirmInput(){ const i=document.getElementById('loginInput'); const v=(i&&i.value||'').trim(); if(v) pickUser(v); }
+function switchUser(){ showLogin(); }
+function startSession(){
+  wrongSet=loadWrongSet(); wrongStreak=loadWrongStreak(); favSet=loadFavSet();
+  updateUserChip();
+  renderMenu();
+  syncPull();
+}
+function boot(){
+  curUser=getUser();
+  if(curUser){ hideLogin(); startSession(); }
+  else { showLogin(); }
+}
+boot();
 </script>
 </body>
 </html>
