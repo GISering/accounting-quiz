@@ -6282,11 +6282,25 @@ function syncStatus(t){ const e=document.getElementById('syncStat'); if(e) e.tex
 function snapshotLocal(){
   const data={};
   for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.indexOf('quiz_')===0 && k!=='quiz_user' && k!=='quiz_gist_token') data[k]=localStorage.getItem(k); }
-  return JSON.stringify({v:1,ts:Date.now(),data:data});
+  return JSON.stringify({v:1,ts:Date.now(),account:curUser||'',data:data});
 }
 function restoreLocal(json){
   try{ const o=JSON.parse(json); if(o&&o.data){ Object.keys(o.data).forEach(k=>{ if(k==='quiz_user'||k==='quiz_gist_token') return; try{ localStorage.setItem(k,o.data[k]); }catch(e){} }); return true; } }catch(e){}
   return false;
+}
+// 本机没有记住账号时，从云端各账号文件里找回最近使用的账号（account 字段）
+function recoverAccountFromGist(cb){
+  fetch("https://api.github.com/gists/"+GIST_ID,{headers:syncHeaders(),cache:'no-store'})
+    .then(r=>r.ok?r.json():null).then(j=>{
+      if(!j||!j.files){ cb(null); return; }
+      let best=null, bestTs=0;
+      BUILTIN_USERS.forEach(u=>{
+        const f=j.files['progress_'+u+'.json'];
+        if(f&&f.content){ try{ const o=JSON.parse(f.content); const acc=o.account, ts=o.ts||0;
+          if(acc && BUILTIN_USERS.indexOf(acc)>=0 && ts>bestTs){ best=acc; bestTs=ts; } }catch(e){} }
+      });
+      cb(best);
+    }).catch(()=>cb(null));
 }
 function syncPull(){
   fetch("https://api.github.com/gists/"+GIST_ID,{headers:syncHeaders(),cache:'no-store'})
@@ -6317,7 +6331,7 @@ function syncPush(showHint){
 }
 function scheduleSync(){ if(syncTimer) clearTimeout(syncTimer); syncTimer=setTimeout(syncPush,1000); }
 function manualSync(){ syncStatus('正在上云…'); syncPush(true); }
-function showTokenPanel(allowClose){ const b=document.getElementById('tokenPanel'); if(b){ const x=document.getElementById('tokenClose'); if(x) x.style.display=(allowClose||curUser)?'':'none'; b.classList.remove('hidden'); const i=document.getElementById('tokenInput'); if(i) i.focus(); } }
+function showTokenPanel(allowClose){ const b=document.getElementById('tokenPanel'); if(b){ const x=document.getElementById('tokenClose'); if(x) x.style.display=(allowClose||curUser)?'':'none'; b.classList.remove('hidden'); const i=document.getElementById('tokenInput'); if(i){ const saved=gistToken(); i.value=saved||''; i.focus(); if(saved) i.select(); } } }
 function hideTokenPanel(){ const b=document.getElementById('tokenPanel'); if(b){ b.classList.add('hidden'); const i=document.getElementById('tokenInput'); if(i) i.value=''; } }
 function setGistToken(){ showTokenPanel(true); }
 function saveToken(){
@@ -6325,8 +6339,13 @@ function saveToken(){
   if(!t){ syncStatus('请先粘贴 token'); return; }
   try{ localStorage.setItem('quiz_gist_token', t); }catch(e){}
   hideTokenPanel();
-  if(curUser){ syncStatus('token 已保存，正在上云…'); syncPush(true); }
-  else if(!getUser()){ showLogin(); }
+  if(curUser){ startSession(); }
+  else if(!getUser()){
+    recoverAccountFromGist(function(acc){
+      if(acc){ setUser(acc); startSession(); }
+      else { showLogin(); }
+    });
+  }
   else { startSession(); }
 }
 function showMenu(){ curKey=null; isWrongMode=false; isFavMode=false; document.getElementById('grid').classList.add('hidden'); renderMenu(); show('menu'); }
@@ -6550,7 +6569,11 @@ function startSession(){
 function boot(){
   curUser=getUser();
   if(!gistToken()){ showTokenPanel(false); }
-  else if(!curUser){ showLogin(); }
+  else if(!curUser){
+    recoverAccountFromGist(function(acc){
+      if(acc){ setUser(acc); startSession(); } else { showLogin(); }
+    });
+  }
   else { startSession(); }
 }
 boot();
