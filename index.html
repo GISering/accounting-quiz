@@ -212,7 +212,7 @@
       <div class="login-sub">token 只保存在本机，不会上传。需要 <b>gist</b> 权限的 GitHub 私人令牌（PAT）。</div>
       <div class="login-other" style="flex-direction:column;align-items:stretch;gap:10px;">
         <input id="tokenInput" type="text" inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="粘贴 ghP_ 开头的 token" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:14px;" onkeydown="if(event.key==='Enter')saveToken()" />
-        <button class="ubtn" onclick="saveToken()">保存并上云</button>
+        <button class="ubtn" onclick="saveToken()">保存</button>
       </div>
       <div style="text-align:center;padding:8px 0 2px;font-size:12px;color:var(--sub);">不知道怎么生成？点右上角账号胶囊下方说明或联系 jiaqu。</div>
     </div>
@@ -6556,7 +6556,7 @@ function setUser(u){ localStorage.setItem('quiz_user',u); curUser=u; updateUserC
 function updateUserChip(){ const c=document.getElementById('userChip'); if(c) c.textContent=curUser||''; }
 function showLogin(allowClose){ const b=document.getElementById('login'); if(b){ const x=document.getElementById('loginClose'); if(x) x.style.display=(allowClose||curUser)?'':'none'; b.classList.remove('hidden'); } }
 function hideLogin(){ const b=document.getElementById('login'); if(b){ b.classList.add('hidden'); const i=document.getElementById('loginInput'); if(i) i.value=''; } }
-function pickUser(u){ if(!u) return; setUser(u); hideLogin(); startSession(); }
+function pickUser(u){ if(!u) return; setUser(u); setHashAccount(u); hideLogin(); startSession(); scheduleSync(); }
 function confirmInput(){ const i=document.getElementById('loginInput'); const v=(i&&i.value||'').trim(); if(v) pickUser(v); }
 function switchUser(){ showLogin(true); }
 function startSession(){
@@ -6566,12 +6566,16 @@ function startSession(){
   renderMenu();
   syncPull();
 }
+function accountFromHash(){ return (location.hash||'').replace(/^#/,'').trim(); }
+function setHashAccount(u){ try{ history.replaceState(null,'','#'+u); }catch(e){ try{ location.hash=u; }catch(_){} } }
 function boot(){
+  hideLogin();
   curUser=getUser();
+  if(!curUser){ const h=accountFromHash(); if(h){ curUser=h; setUser(curUser); } }
   if(!gistToken()){ showTokenPanel(false); }
   else if(!curUser){
     recoverAccountFromGist(function(acc){
-      if(acc){ setUser(acc); startSession(); } else { showLogin(); }
+      if(acc){ setUser(acc); setHashAccount(acc); startSession(); } else { showLogin(); }
     });
   }
   else { startSession(); }
