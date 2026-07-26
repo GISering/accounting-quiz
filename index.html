@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>会计中级 · 五章答题</title>
+<title>会计中级 · 财管</title>
 <style>
   :root{
     --bg:#f2f3f5; --card:#ffffff; --ink:#1f2329; --sub:#8a8f99;
@@ -42,9 +42,15 @@
   #chapterList{padding:14px;overflow:auto;flex:1;}
   .chapter{display:flex;align-items:stretch;gap:10px;background:var(--card);border-radius:14px;
     padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .ch-duo{display:flex;align-items:stretch;gap:10px;margin-bottom:12px;}
+  .ch-duo>.chapter{margin-bottom:0;flex:1 1 0;min-width:0;}
+  .ch-side{display:flex;flex-direction:column;gap:10px;flex:1 1 0;min-width:0;}
+  .ch-side>.chapter{margin-bottom:0;flex:1 1 0;min-width:0;}
   .ch-main{flex:1;min-width:0;}
   .ch-name{font-size:17px;font-weight:700;margin-bottom:4px;}
   .ch-meta{font-size:13px;color:var(--sub);margin-bottom:8px;}
+  .ch-exam{display:inline-block;font-size:13px;color:#e8590c;font-weight:700;margin-top:8px;background:#fff4ec;border:1px solid #ffd8b8;border-radius:8px;padding:3px 9px;}
+  .ch-exam b{font-size:16px;color:#d9480f;}
   .ch-bar{height:7px;background:#eef0f3;border-radius:5px;overflow:hidden;}
   .ch-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),#5b8bff);border-radius:5px;}
   .ch-reset{background:#fff;border:1px solid var(--line);color:var(--sub);border-radius:10px;
@@ -53,7 +59,7 @@
     border:1.5px solid #bfe3c8;border-radius:14px;padding:14px;margin-bottom:12px;
     box-shadow:0 1px 4px rgba(31,157,85,.08);}
   .ch-wrong .ch-main{flex:1;min-width:0;}
-  .ch-wrong .ch-name{font-size:17px;font-weight:800;margin-bottom:4px;color:#1f9d55;display:flex;align-items:center;}
+  .ch-wrong .ch-name{font-size:17px;font-weight:800;margin-bottom:4px;color:#1f9d55;display:flex;align-items:center;white-space:nowrap;}
   .ch-wrong .ch-name .badge{font-size:12px;font-weight:800;color:#fff;background:#1f9d55;border-radius:8px;
     padding:1px 9px;margin-left:8px;}
   .ch-wrong .ch-meta{font-size:13px;color:var(--sub);margin-bottom:8px;}
@@ -65,10 +71,19 @@
     border:1.5px solid #ffe2a8;border-radius:14px;padding:14px;margin-bottom:12px;
     box-shadow:0 1px 4px rgba(214,156,26,.10);}
   .ch-fav .ch-main{flex:1;min-width:0;}
-  .ch-fav .ch-name{font-size:17px;font-weight:800;margin-bottom:4px;color:#c8920e;display:flex;align-items:center;}
+  .ch-fav .ch-name{font-size:17px;font-weight:800;margin-bottom:4px;color:#c8920e;display:flex;align-items:center;white-space:nowrap;}
   .ch-fav .ch-name .badge{font-size:12px;font-weight:800;color:#fff;background:#d9a524;border-radius:8px;
     padding:1px 9px;margin-left:8px;}
   .ch-fav .ch-meta{font-size:13px;color:var(--sub);margin-bottom:8px;}
+  /* 手机窄屏：保持左右两列（左每日成就一行、右错题库+收藏夹两行），仅缩小内边距与字号以容纳 */
+  @media (max-width:560px){
+    .ch-duo{gap:8px;}
+    .ch-side{gap:8px;}
+    .chapter{padding:11px;}
+    .ch-name{font-size:15px;}
+    .ch-meta{font-size:11px;margin-bottom:4px;}
+    .ch-achv .ch-meta{font-size:11px;}
+  }
   .ch-fav .ch-bar{height:7px;background:#fff0cf;border-radius:5px;overflow:hidden;}
   .ch-fav .ch-bar i{display:block;height:100%;background:linear-gradient(90deg,#f0c869,#d9a524);border-radius:5px;}
   .ch-fav .go{background:#d9a524;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;
@@ -195,7 +210,7 @@
 <body>
 <div id="app">
   <section id="menu" class="view">
-    <header class="topbar"><h1>会计中级 · 五章答题</h1><span id="userChip" class="userchip" onclick="switchUser()" title="点击切换账号"></span><button class="gearbtn" onclick="setGistToken()" title="设置 gist token">⚙</button><button class="syncbtn" onclick="manualSync()">☁ 上云</button></header>
+    <header class="topbar"><h1>会计中级 · 财管</h1><span id="userChip" class="userchip" onclick="switchUser()" title="点击切换账号"></span><button class="gearbtn" onclick="setGistToken()" title="设置 gist token">⚙</button><button class="syncbtn" onclick="manualSync()">☁ 上云</button></header>
     <div id="chapterList"></div>
     <footer class="foot">最近上云：<span id="lastSync">—</span> · <span id="syncStat">进度自动上云</span></footer>
   </section>
@@ -6974,35 +6989,36 @@ function renderMenu(){
   const box=document.getElementById('chapterList'); box.innerHTML='';
   if(wrongSet===null) wrongSet=loadWrongSet();
   const wc=wrongSet.size;
-  const we=document.createElement('div'); we.className='chapter ch-wrong';
-  we.innerHTML='<div class="ch-main" onclick="openWrong()">'+
-    '<div class="ch-name">错题库<span class="badge">'+wc+' 题</span></div>'+
-    '<div class="ch-meta">'+(wc?('共 '+wc+' 道错题待巩固 · 可手动移除'):'尚无错题，答题后自动收录')+'</div>'+
-    '<div class="ch-bar"><i style="width:'+(wc?100:0)+'%"></i></div></div>'+
-    (wc?'<button class="go" onclick="event.stopPropagation();openWrong()">去练</button>':'');
-  box.appendChild(we);
-  if(favSet===null) favSet=loadFavSet();
-  const fc=favSet.size;
-  const fe=document.createElement('div'); fe.className='chapter ch-fav';
-  fe.innerHTML='<div class="ch-main" onclick="openFav()">'+
-    '<div class="ch-name">收藏夹<span class="badge">'+fc+' 题</span></div>'+
-    '<div class="ch-meta">'+(fc?('共 '+fc+' 道收藏题 · 点击进入练习'):'答题时点亮☆即可收藏')+'</div>'+
-    '<div class="ch-bar"><i style="width:'+(fc?100:0)+'%"></i></div></div>'+
-    (fc?'<button class="go" onclick="event.stopPropagation();openFav()">去练</button>':'');
-  box.appendChild(fe);
-  // 每日成就卡片
+  // 左：每日成就（占一半，整卡高度）
+  let de=null;
   { const daily=loadDaily(); const dk=Object.keys(daily);
     const todayKey=dayKeyOf(Date.now()); const todayN=(daily[todayKey]&&daily[todayKey].answered)||0;
     let ta=0,tc=0; dk.forEach(k=>{ ta+=daily[k].answered||0; tc+=daily[k].correct||0; });
     const acc=ta?Math.round(tc/ta*100):0; const streak=calcStreak(daily);
-    const de=document.createElement('div'); de.className='chapter ch-achv';
+    const _now=new Date(); _now.setHours(0,0,0,0);
+    const _exam=new Date(_now.getFullYear(),8,5);
+    if(_exam<=_now) _exam.setFullYear(_exam.getFullYear()+1);
+    const examDays=Math.max(0,Math.round((_exam-_now)/86400000));
+    de=document.createElement('div'); de.className='chapter ch-achv'; de.style.flex='1 1 0';
     de.innerHTML='<div class="ch-main" onclick="openAchieve()">'+
       '<div class="ch-name">每日成就<span class="badge">'+todayN+' 题</span></div>'+
       '<div class="ch-meta">'+(dk.length?('累计答题 '+ta+' 题 · 连续打卡 '+streak+' 天'):'从今天开始记录你的每日答题')+'</div>'+
-      '<div class="ch-bar"><i style="width:'+acc+'%"></i></div></div>'+
-      (dk.length?'<button class="go" onclick="event.stopPropagation();openAchieve()">查看</button>':'');
-    box.appendChild(de);
+      '<div class="ch-exam">距离考试还有 <b>'+examDays+'</b> 天</div></div>';
   }
+  // 右：错题库 + 收藏夹 竖向两行（共占另一半，两行总高 = 每日成就）
+  const we=document.createElement('div'); we.className='chapter ch-wrong'; we.style.flex='1 1 0';
+  we.innerHTML='<div class="ch-main" onclick="openWrong()">'+
+    '<div class="ch-name">错题库<span class="badge">'+wc+' 题</span></div></div>';
+  if(favSet===null) favSet=loadFavSet();
+  const fc=favSet.size;
+  const fe=document.createElement('div'); fe.className='chapter ch-fav'; fe.style.flex='1 1 0';
+  fe.innerHTML='<div class="ch-main" onclick="openFav()">'+
+    '<div class="ch-name">收藏夹<span class="badge">'+fc+' 题</span></div></div>';
+  const side=document.createElement('div'); side.className='ch-side';
+  side.appendChild(we); side.appendChild(fe);
+  const duo=document.createElement('div'); duo.className='ch-duo';
+  duo.appendChild(de); duo.appendChild(side);
+  box.appendChild(duo);
   CH_ORDER.forEach(key=>{
     const ch=ALL[key]; const n=ch.questions.length;
     let st=[]; try{ var s=localStorage.getItem('quiz_'+key); if(s) st=(JSON.parse(s).status)||[]; }catch(e){}
