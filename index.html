@@ -149,6 +149,43 @@
   #toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:rgba(30,34,40,.9);
     color:#fff;padding:9px 16px;border-radius:20px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:40;max-width:80%;text-align:center;}
   #toast.show{opacity:1;}
+
+  /* 每日成就 */
+  .ch-achv{display:flex;align-items:stretch;gap:10px;background:linear-gradient(135deg,#ffffff,#eef3ff);
+    border:1.5px solid #cfe0ff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 1px 4px rgba(58,109,240,.08);}
+  .ch-achv .ch-main{flex:1;min-width:0;}
+  .ch-achv .ch-name{font-size:17px;font-weight:800;margin-bottom:4px;color:#2f6fed;display:flex;align-items:center;}
+  .ch-achv .ch-name .badge{font-size:12px;font-weight:800;color:#fff;background:#3a6df0;border-radius:8px;padding:1px 9px;margin-left:8px;}
+  .ch-achv .ch-meta{font-size:13px;color:var(--sub);margin-bottom:8px;}
+  .ch-achv .ch-bar{height:7px;background:#e3ebff;border-radius:5px;overflow:hidden;}
+  .ch-achv .ch-bar i{display:block;height:100%;background:linear-gradient(90deg,#5b8bff,#3a6df0);border-radius:5px;}
+  .ch-achv .go{background:#3a6df0;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;padding:0 14px;align-self:center;}
+  .achv-card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .achv-h{font-size:14px;color:var(--sub);font-weight:700;margin-bottom:8px;}
+  .achv-today .achv-big{font-size:34px;font-weight:800;color:var(--brand);line-height:1.1;}
+  .achv-today .achv-big span{font-size:15px;color:var(--sub);font-weight:600;margin-left:4px;}
+  .achv-sub{font-size:13px;color:var(--sub);margin-top:6px;}
+  .achv-ov{display:flex;gap:8px;margin-bottom:12px;}
+  .achv-ov .ov{flex:1;background:var(--card);border-radius:12px;padding:12px 8px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .achv-ov .ov b{display:block;font-size:20px;font-weight:800;color:var(--ink);}
+  .achv-ov .ov span{font-size:12px;color:var(--sub);}
+  .achv-list .day-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);}
+  .achv-list .day-row:last-child{border-bottom:none;}
+  .achv-list .day-d{width:62px;font-size:13px;color:var(--ink);font-weight:600;flex:none;}
+  .achv-list .day-n{width:48px;font-size:13px;color:var(--sub);flex:none;text-align:right;}
+  .achv-list .day-bar{flex:1;height:8px;background:#eef0f3;border-radius:5px;overflow:hidden;}
+  .achv-list .day-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),#5b8bff);border-radius:5px;}
+  .achv-list .day-c{width:74px;font-size:12px;color:var(--sub);flex:none;text-align:right;}
+  .achv-list .day-row.zero{opacity:.4;}
+  .heat-wrap{overflow-x:auto;padding-bottom:4px;}
+  .heat{display:grid;grid-template-rows:repeat(7,1fr);grid-auto-flow:column;gap:4px;width:max-content;}
+  .heat .hc{width:13px;height:13px;border-radius:3px;background:#ebedf0;}
+  .heat .hc.l1{background:#cfe9da;}
+  .heat .hc.l2{background:#9bd5b2;}
+  .heat .hc.l3{background:#4fae7e;}
+  .heat .hc.l4{background:#1f9d55;}
+  .heat-legend{display:flex;align-items:center;gap:4px;justify-content:flex-end;font-size:11px;color:var(--sub);margin-top:8px;}
+  .heat-legend .hc{width:11px;height:11px;}
 </style>
 </head>
 <body>
@@ -178,6 +215,14 @@
       <button onclick="openGrid()">题号</button>
       <button onclick="next()">下一题</button>
     </nav>
+  </section>
+
+  <section id="achv" class="view hidden">
+    <header class="topbar">
+      <button class="back" onclick="showMenu()">‹</button>
+      <h1 style="font-size:17px;">每日成就</h1>
+    </header>
+    <div id="achvBody" style="flex:1;overflow:auto;padding:14px 16px 96px;"></div>
   </section>
 
   <section id="grid" class="overlay hidden" onclick="if(event.target===this)closeGrid()">
@@ -6227,9 +6272,86 @@ const FAV_KEY='quiz_fav_v1'; let favSet=null;
 function loadFavSet(){ try{ var s=localStorage.getItem(FAV_KEY); if(s) return new Set(JSON.parse(s)); }catch(e){} return new Set(); }
 function saveFavSet(set){ try{ localStorage.setItem(FAV_KEY, JSON.stringify([...set])); }catch(e){} scheduleSync(); }
 
+/* ===== 每日成就（按天记录答题，不影响既有进度）===== */
+function dayKeyOf(ts){ const d=new Date(ts); const p=n=>(''+n).padStart(2,'0'); return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()); }
+function dailyKey(){ return 'quiz_daily_'+(curUser||'guest')+'_v1'; }
+function loadDaily(){ try{ var s=localStorage.getItem(dailyKey()); if(s) return JSON.parse(s)||{}; }catch(e){} return {}; }
+function saveDaily(o){ try{ localStorage.setItem(dailyKey(), JSON.stringify(o)); }catch(e){} scheduleSync(); }
+function recordDaily(correct){
+  const k=dayKeyOf(Date.now()); const all=loadDaily();
+  const e=all[k]||{answered:0,correct:0,wrong:0,lastTs:Date.now()};
+  e.answered++; if(correct) e.correct++; else e.wrong++; e.lastTs=Date.now(); all[k]=e; saveDaily(all);
+}
+function calcStreak(daily){
+  let s=0; const d=new Date(); d.setHours(0,0,0,0);
+  for(;;){ const k=dayKeyOf(d.getTime());
+    if(daily[k]&&daily[k].answered>0) s++; else break;
+    d.setDate(d.getDate()-1); if(s>3650) break; }
+  return s;
+}
+function heatHtml(daily){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const wkStart=new Date(today); wkStart.setDate(wkStart.getDate()-wkStart.getDay());
+  const endTarget=new Date(2026,8,5); // 2026-09-05
+  const end=new Date(endTarget); end.setDate(end.getDate()+(6-end.getDay())); // 该周周六
+  let cells=''; const cur=new Date(wkStart);
+  while(cur<=end){
+    const k=dayKeyOf(cur.getTime()); const e=daily[k]; const n=e?e.answered:0;
+    let l=0; if(n>=1)l=1; if(n>=3)l=2; if(n>=6)l=3; if(n>=10)l=4;
+    cells+='<div class="hc l'+l+'" title="'+k+': '+(n||0)+' 题"></div>';
+    cur.setDate(cur.getDate()+1);
+  }
+  return '<div class="heat">'+cells+'</div>';
+}
+function renderAchieve(){
+  const daily=loadDaily();
+  const today=new Date(); today.setHours(0,0,0,0);
+  const tk=dayKeyOf(today.getTime());
+  const t=daily[tk]||{answered:0,correct:0,wrong:0};
+  const wk=['日','一','二','三','四','五','六'];
+  const todayLabel='今天 · '+(today.getMonth()+1)+'-'+today.getDate()+' 周'+wk[today.getDay()];
+  const tAcc=t.answered?Math.round(t.correct/t.answered*100):0;
+  let ta=0,tc=0; Object.keys(daily).forEach(k=>{ ta+=daily[k].answered||0; tc+=daily[k].correct||0; });
+  const acc=ta?Math.round(tc/ta*100):0;
+  const streak=calcStreak(daily);
+  const dayCount=Object.keys(daily).length;
+  let maxN=1;
+  for(let i=29;i>=0;i--){ const d=new Date(today); d.setDate(d.getDate()-i); const e=daily[dayKeyOf(d.getTime())]; if(e&&e.answered>maxN) maxN=e.answered; }
+  let rows='';
+  for(let i=29;i>=0;i--){
+    const d=new Date(today); d.setDate(d.getDate()-i);
+    const k=dayKeyOf(d.getTime()); const e=daily[k];
+    const n=e?e.answered:0; const c=e?e.correct:0; const w=e?e.wrong:0;
+    if(i!==0 && !n) continue;
+    const dayDiff=i;
+    let label; if(dayDiff===0) label='今天'; else if(dayDiff===1) label='昨天'; else label=(d.getMonth()+1)+'-'+d.getDate();
+    const pct=n?Math.round(n/maxN*100):0;
+    rows+='<div class="day-row'+(n?'':' zero')+'"><span class="day-d">'+label+'</span>'+
+      '<span class="day-n">'+n+'题</span>'+
+      '<span class="day-bar"><i style="width:'+pct+'%"></i></span>'+
+      '<span class="day-c">对'+c+'/错'+w+'</span></div>';
+  }
+  const html=
+    '<div class="achv-card achv-today"><div class="achv-h">'+todayLabel+'</div>'+
+      (t.answered?('<div class="achv-big">'+t.answered+'<span>题</span></div><div class="achv-sub">对 '+t.correct+' · 错 '+t.wrong+' · 正确率 '+tAcc+'%</div>')
+                 :'<div class="achv-big" style="font-size:22px;color:var(--sub);">今日还没答题</div><div class="achv-sub">去练几题，开启你的打卡吧</div>')+
+    '</div>'+
+    '<div class="achv-ov">'+
+      '<div class="ov"><b>'+dayCount+'</b><span>打卡天数</span></div>'+
+      '<div class="ov"><b>'+ta+'</b><span>累计答题</span></div>'+
+      '<div class="ov"><b>'+acc+'%</b><span>平均正确率</span></div>'+
+      '<div class="ov"><b>'+streak+'</b><span>连续打卡</span></div>'+
+    '</div>'+
+    '<div class="achv-card"><div class="achv-h">最近 30 天</div><div class="achv-list">'+rows+'</div></div>'+
+    '<div class="achv-card"><div class="achv-h">本周 ~ 9/5 那周 · 答题热力图</div><div class="heat-wrap">'+heatHtml(daily)+'</div>'+
+      '<div class="heat-legend">少<span class="hc"></span><span class="hc l1"></span><span class="hc l2"></span><span class="hc l3"></span><span class="hc l4"></span>多</div></div>';
+  const box=document.getElementById('achvBody'); if(box) box.innerHTML=html;
+}
+function openAchieve(){ show('achv'); renderAchieve(); }
 function show(view){
   document.getElementById('menu').classList.toggle('hidden', view!=='menu');
   document.getElementById('quiz').classList.toggle('hidden', view!=='quiz');
+  document.getElementById('achv').classList.toggle('hidden', view!=='achv');
   if(view!=='grid') document.getElementById('grid').classList.add('hidden');
 }
 function saveProgress(){
@@ -6370,6 +6492,18 @@ function renderMenu(){
     '<div class="ch-bar"><i style="width:'+(fc?100:0)+'%"></i></div></div>'+
     (fc?'<button class="go" onclick="event.stopPropagation();openFav()">去练</button>':'');
   box.appendChild(fe);
+  // 每日成就卡片
+  { const daily=loadDaily(); const dk=Object.keys(daily);
+    let ta=0,tc=0; dk.forEach(k=>{ ta+=daily[k].answered||0; tc+=daily[k].correct||0; });
+    const acc=ta?Math.round(tc/ta*100):0; const streak=calcStreak(daily);
+    const de=document.createElement('div'); de.className='chapter ch-achv';
+    de.innerHTML='<div class="ch-main" onclick="openAchieve()">'+
+      '<div class="ch-name">每日成就<span class="badge">'+dk.length+' 天</span></div>'+
+      '<div class="ch-meta">'+(dk.length?('累计答题 '+ta+' 题 · 连续打卡 '+streak+' 天'):'从今天开始记录你的每日答题')+'</div>'+
+      '<div class="ch-bar"><i style="width:'+acc+'%"></i></div></div>'+
+      (dk.length?'<button class="go" onclick="event.stopPropagation();openAchieve()">查看</button>':'');
+    box.appendChild(de);
+  }
   CH_ORDER.forEach(key=>{
     const ch=ALL[key]; const n=ch.questions.length;
     let st=[]; try{ var s=localStorage.getItem('quiz_'+key); if(s) st=(JSON.parse(s).status)||[]; }catch(e){}
@@ -6492,6 +6626,7 @@ function check(){
   const a=q[idx].answer.slice().sort().join(','), u=(sel[idx]||[]).slice().sort().join(',');
   const correct=(a===u);
   revealed[idx]=true; status[idx]=correct?1:2;
+  recordDaily(correct);
   const id=curId();
   if(wrongSet===null) wrongSet=loadWrongSet();
   if(!correct){ wrongSet.add(id); }   // 仅答错时收录，不再自动移除
