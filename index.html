@@ -88,6 +88,20 @@
   .ch-fav .ch-bar i{display:block;height:100%;background:linear-gradient(90deg,#f0c869,#d9a524);border-radius:5px;}
   .ch-fav .go{background:#d9a524;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;
     padding:0 14px;align-self:center;}
+  .ch-rand{display:flex;align-items:stretch;gap:10px;background:linear-gradient(135deg,#ffffff,#f3f0ff);
+    border:1.5px solid #d9ccff;border-radius:14px;padding:14px;margin-bottom:12px;
+    box-shadow:0 1px 4px rgba(124,93,250,.08);}
+  .ch-rand .ch-main{flex:1;min-width:0;}
+  .ch-rand .ch-name{font-size:17px;font-weight:800;margin-bottom:4px;color:#6a3cf5;display:flex;align-items:center;white-space:nowrap;}
+  .ch-rand .ch-name .badge{font-size:12px;font-weight:800;color:#fff;background:#6a3cf5;border-radius:8px;
+    padding:1px 9px;margin-left:8px;}
+  .ch-rand .ch-meta{font-size:13px;color:var(--sub);margin-bottom:8px;}
+  .ch-rand .ch-bar{height:7px;background:#ece4ff;border-radius:5px;overflow:hidden;}
+  .ch-rand .ch-bar i{display:block;height:100%;background:linear-gradient(90deg,#9d7bff,#6a3cf5);border-radius:5px;}
+  .ch-rand .go{background:#6a3cf5;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;
+    padding:0 14px;align-self:center;}
+  .rand-done{margin-top:16px;border-radius:12px;padding:12px 14px;font-size:15px;font-weight:700;
+    background:var(--ok-bg);color:var(--ok);text-align:center;}
   .foot{text-align:center;color:var(--sub);font-size:12px;padding:12px;}
 
   /* MENU */
@@ -6305,7 +6319,7 @@ const ALL = {
   }
 };
 const CH_ORDER = Object.keys(ALL);
-let curKey=null, q=[], status=[], sel=[], revealed=[], idx=0, isWrongMode=false, isFavMode=false;
+let curKey=null, q=[], status=[], sel=[], revealed=[], idx=0, isWrongMode=false, isFavMode=false, isRandomMode=false;
 const WRONG_KEY='quiz_wrong_v1'; let wrongSet=null;
 const WRONG_STREAK_KEY='quiz_wrong_streak_v1'; let wrongStreak=null;
 const FAV_KEY='quiz_fav_v1'; let favSet=null;
@@ -6395,6 +6409,7 @@ function show(view){
   if(view!=='grid') document.getElementById('grid').classList.add('hidden');
 }
 function saveProgress(){
+  if(isRandomMode){ saveRandomProgress(); return; }   // 随机会话走 quiz_rand_* 键并上云
   if(!curKey || isWrongMode) return;
   try{ localStorage.setItem('quiz_'+curKey, JSON.stringify({status:status,sel:sel,revealed:revealed,idx:idx})); }catch(e){}
   scheduleSync();
@@ -6416,6 +6431,24 @@ function loadWrongSet(){
 function saveWrongSet(set){ try{ localStorage.setItem(WRONG_KEY, JSON.stringify([...set])); }catch(e){} scheduleSync(); }
 function loadWrongStreak(){ try{ var s=localStorage.getItem(WRONG_STREAK_KEY); if(s) return JSON.parse(s); }catch(e){} return {}; }
 function saveWrongStreak(){ try{ localStorage.setItem(WRONG_STREAK_KEY, JSON.stringify(wrongStreak||{})); }catch(e){} scheduleSync(); }
+
+/* ===== 随机出题会话（键 quiz_rand_<user>_v1，随 Gist 上云，不影响任何 quiz_ch* 章节进度）===== */
+function randProgressKey(){ return 'quiz_rand_'+(curUser||'guest')+'_v1'; }
+function saveRandomProgress(state){
+  // 传入 state 用于刚生成时直接落盘；否则用全局状态
+  if(!state && !isRandomMode) return;
+  const st=state||{questions:q,status:status,sel:sel,revealed:revealed,idx:idx};
+  if(!st||!st.questions||!st.questions.length) return;
+  const done=st.status.length>0 && st.status.every(x=>x===1||x===2);
+  try{ localStorage.setItem(randProgressKey(), JSON.stringify({questions:st.questions,status:st.status,sel:st.sel,revealed:st.revealed,idx:st.idx,done:done})); }catch(e){}
+  scheduleSync();
+}
+function loadRandomProgress(){
+  try{ const s=localStorage.getItem(randProgressKey()); if(s){ const o=JSON.parse(s);
+    if(o&&o.questions&&o.questions.length){ o.done=!!(o.status&&o.status.every(x=>x===1||x===2)); return o; } } }catch(e){}
+  return null;
+}
+function clearRandomProgress(){ try{ localStorage.removeItem(randProgressKey()); }catch(e){} }
 
 /* ===== 上云（路线2：GitHub Gist 存储进度，无后端）===== */
 const GIST_ID="1d7936e91501ec557739f0ddfbe32735";
@@ -6472,7 +6505,7 @@ function syncPull(){
         const txt=f?f.content:null;
         if(txt&&restoreLocal(txt)){
           wrongSet=loadWrongSet(); wrongStreak=loadWrongStreak(); favSet=loadFavSet();
-          if(curKey) loadProgress(curKey);
+          if(curKey && !isRandomMode) loadProgress(curKey);
           renderMenu(); syncStatus('已恢复云端进度');
         }
       }
@@ -6510,7 +6543,7 @@ function saveToken(){
   }
   else { startSession(); }
 }
-function showMenu(){ curKey=null; isWrongMode=false; isFavMode=false; document.getElementById('grid').classList.add('hidden'); renderMenu(); show('menu'); }
+function showMenu(){ curKey=null; isWrongMode=false; isFavMode=false; isRandomMode=false; document.getElementById('grid').classList.add('hidden'); renderMenu(); show('menu'); }
 
 function renderMenu(){
   const box=document.getElementById('chapterList'); box.innerHTML='';
@@ -6546,6 +6579,18 @@ function renderMenu(){
   const duo=document.createElement('div'); duo.className='ch-duo';
   duo.appendChild(de); duo.appendChild(side);
   box.appendChild(duo);
+  // 随机练习卡片：未答完显示进度，答完显示"重新出题"
+  const rp=loadRandomProgress();
+  const rn=(rp&&rp.status)?rp.status.filter(x=>x!==0).length:0;
+  const rdone=!!(rp&&rp.status&&rp.status.length===40&&rp.status.every(x=>x===1||x===2));
+  const rok=(rp&&rp.status)?rp.status.filter(x=>x===1).length:0;
+  const re=document.createElement('div'); re.className='chapter ch-rand';
+  re.innerHTML='<div class="ch-main" onclick="openRandom()">'+
+    '<div class="ch-name">随机练习<span class="badge">'+(rp?(rdone?'已完成':'已答 '+rn+'/40'):'40 题')+'</span></div>'+
+    '<div class="ch-meta">'+(rp?(rdone?('答对 '+rok+' 题'):'继续上次的随机练习'):'随机 20 单选 · 10 多选 · 10 判断')+'</div>'+
+    '<div class="ch-bar"><i style="width:'+(rp?Math.round(rn/40*100):0)+'%"></i></div></div>'+
+    (rdone?'<button class="go" onclick="regenerateRandom()">重新出题</button>':'');
+  box.appendChild(re);
   CH_ORDER.forEach(key=>{
     const ch=ALL[key]; const n=ch.questions.length;
     let st=[]; try{ var s=localStorage.getItem('quiz_'+key); if(s) st=(JSON.parse(s).status)||[]; }catch(e){}
@@ -6561,7 +6606,7 @@ function renderMenu(){
   });
 }
 function openChapter(key){
-  curKey=key; isWrongMode=false; q=ALL[key].questions; loadProgress(key);
+  curKey=key; isWrongMode=false; isFavMode=false; isRandomMode=false; q=ALL[key].questions; loadProgress(key);
   if(status.length!==q.length){ status=new Array(q.length).fill(0); sel=new Array(q.length).fill(null); revealed=new Array(q.length).fill(false); idx=0; }
   if(idx>=q.length) idx=q.length-1; if(idx<0) idx=0;
   document.getElementById('chTitle').textContent=ALL[key].name;
@@ -6607,6 +6652,38 @@ function openFav(){
   if(idx>=q.length) idx=q.length-1;
   document.getElementById('chTitle').textContent='收藏夹';
   show('quiz'); render();
+}
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=arr[i]; arr[i]=arr[j]; arr[j]=t; } return arr; }
+function generateRandomSession(){
+  const buckets={single:[],multi:[],judge:[]};
+  CH_ORDER.forEach(key=>{
+    ALL[key].questions.forEach((item,i)=>{
+      const t=item.type;
+      if(buckets[t]){ const c=Object.assign({},item); c._key=key; c._idx=i; buckets[t].push(c); }
+    });
+  });
+  const take=(arr,n)=>{ shuffle(arr); return arr.slice(0,n); };   // slice 前 N → 桶内天然不重复
+  const questions=take(buckets.single,20).concat(take(buckets.multi,10),take(buckets.judge,10));
+  return {questions:questions, status:new Array(questions.length).fill(0),
+          sel:new Array(questions.length).fill(null),
+          revealed:new Array(questions.length).fill(false), idx:0, done:false};
+}
+function openRandom(){
+  let s=loadRandomProgress();
+  if(!s) s=generateRandomSession();                              // 首次进入（键不存在）自动生成
+  q=s.questions; status=s.status; sel=s.sel; revealed=s.revealed; idx=s.idx||0;
+  if(status.length!==q.length){ status=new Array(q.length).fill(0); sel=new Array(q.length).fill(null); revealed=new Array(q.length).fill(false); idx=0; }
+  if(idx>=q.length) idx=q.length-1; if(idx<0) idx=0;
+  isRandomMode=true; isWrongMode=false; isFavMode=false; curKey='__random__';
+  saveRandomProgress();                                          // 新生成的会话落盘
+  document.getElementById('chTitle').textContent='随机练习';
+  show('quiz'); render();
+}
+function regenerateRandom(){
+  if(!confirm('重新出题将清空当前 40 题的进度并重新抽取，确定？')) return;
+  clearRandomProgress();
+  openRandom();
+  renderMenu();
 }
 function resetChapter(key){
   const nm=(ALL[key]&&ALL[key].name)?ALL[key].name:'本章';
@@ -6664,6 +6741,11 @@ function render(){
     h+='<div class="explain"><b>解析：</b>'+esc(item.explain)+'</div>';
     h+='<button class="retry" onclick="retry()">重做本题</button>';
   }
+  if(isRandomMode && status.length===40 && status.every(x=>x===1||x===2)){
+    const _ok=status.filter(x=>x===1).length;
+    h+='<div class="rand-done">随机练习已完成 40 题 · 答对 '+_ok+' 题</div>';
+    h+='<button class="confirm" onclick="regenerateRandom()">重新出题</button>';
+  }
   card.innerHTML=h;
   document.getElementById('pos').textContent=(idx+1)+'/'+q.length;
   updateStat();
@@ -6709,7 +6791,7 @@ function check(){
   render(); updateStat();
 }
 function retry(){ if(!revealed[idx]) return; revealed[idx]=false; status[idx]=0; sel[idx]=null; render(); }
-function curId(){ return (isWrongMode||isFavMode)? (q[idx]._key+'#'+q[idx]._idx) : (curKey+'#'+idx); }
+function curId(){ return (isWrongMode||isFavMode||isRandomMode)? (q[idx]._key+'#'+q[idx]._idx) : (curKey+'#'+idx); }
 function toggleFav(){
   if(favSet===null) favSet=loadFavSet();
   const id=curId();
@@ -6737,7 +6819,7 @@ function prev(){ if(idx>0){ idx--; render(); saveProgress(); } else toast('已�
 
 function openGrid(){
   if(!q.length) return;
-  document.getElementById('gridTitle').textContent=((curKey==='__wrong__'?'错题库':(curKey==='__fav__'?'收藏夹':ALL[curKey].name)))+' · 点击跳题';
+  document.getElementById('gridTitle').textContent=((curKey==='__wrong__'?'错题库':(curKey==='__fav__'?'收藏夹':(curKey==='__random__'?'随机练习':ALL[curKey].name))))+' · 点击跳题';
   const cells=document.getElementById('gridCells'); cells.innerHTML='';
   q.forEach((item,i)=>{
     let cls='cell '+(i===idx?'cur':status[i]===1?'ok':status[i]===2?'bad':'un');
